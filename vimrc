@@ -9,9 +9,16 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 
 " Add plugins here
-Plugin 'tpope/vim-rails' 	" Rails development plugin
-Plugin 'fatih/vim-go' 		" Go development plugin
-Plugin 'sbl/scvim'		" SuperCollider development plugin
+Plugin 'vim-ruby/vim-ruby'			" Ruby development plugin
+Plugin 'tpope/vim-rails' 			" Rails development plugin
+Plugin 'fatih/vim-go' 				" Go development plugin
+Plugin 'sbl/scvim'				" SuperCollider development plugin
+Plugin 'dsawardekar/wordpress.vim'		" Wordpress development plugin
+Plugin 'Shougo/vimproc.vim'			" Async command execution
+						" NOTE you need to `make` the
+						" install directory of this
+						" plugin
+Plugin 'Shougo/unite.vim'			" Source code search
 
 " End plugins
 
@@ -39,7 +46,7 @@ map Q gq
 
 " CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
 " so that you can undo CTRL-U after inserting a line break.
-inoremap <C-U> <C-G>u<C-U>
+"inoremap <C-U> <C-G>u<C-U>
 
 " In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
@@ -85,10 +92,37 @@ endif " has("autocmd")
 " file it was loaded from, thus the changes you made.
 " Only define it when not defined already.
 if !exists(":DiffOrig")
-  command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
-		  \ | wincmd p | diffthis
+  command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis | wincmd p
 endif
 
 " Use line numbers
 set number
+
+" Set Ruby indents to two spaces
+autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
+
+" Leader is <space>
+let mapleader="\<space>"
+
+""""""""""""""""""""""""""""""
+" unite configuration
+""""""""""""""""""""""""""""""
+if executable('ag')
+	let g:unite_source_rec_async_command = ['ag', '--nocolor', '--nogroup', '-g', '']
+	let g:unite_source_grep_command = 'ag'
+	let g:unite_source_grep_default_opts = '-i --vimgrep --hidden'
+	let g:unite_source_grep_recursive_opt = ''
+endif
+call unite#filters#matcher_default#use(['matcher_fuzzy'])
+call unite#filters#sorter_default#use(['sorter_rank'])
+" search a file in the filetree
+nnoremap <leader><space> :vsplit<cr>:<C-u>Unite -start-insert -auto-preview file_rec/async<cr>
+" grep for files
+nnoremap <leader>/ :vsplit<cr>:<C-u>Unite -auto-preview grep:.<cr>
+" reset unite cache
+nnoremap <leader>r <Plug>(unite_restart)
+""""""""""""""""""""""""""""""
+" End unite configuration
+""""""""""""""""""""""""""""""
+
 
