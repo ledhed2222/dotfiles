@@ -19,7 +19,7 @@ Plugin 'Shougo/vimproc.vim'			" Async command execution
 						" install directory of this
 						" plugin
 Plugin 'Shougo/unite.vim'			" Source code search
-
+Plugin 'JamshedVesuna/vim-markdown-preview'	" Preview .md files
 " End plugins
 
 call vundle#end()
@@ -102,7 +102,7 @@ set number
 autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
 
 " Leader is <space>
-let mapleader="\<space>"
+let mapleader = "\<space>"
 
 """"""""""""""""""""""""""""""
 " unite configuration
@@ -125,4 +125,16 @@ nnoremap <leader>r <Plug>(unite_restart)
 " End unite configuration
 """"""""""""""""""""""""""""""
 
+""""""""""""""""""""""""""""""
+" vim-markdown-preview configuration
+""""""""""""""""""""""""""""""
+if executable('grip')
+	" github rendering mode using grip
+	let vim_markdown_preview_github = 1
+endif
+" shortcut for seeing preview
+let vim_markdown_preview_hotkey = '<leader>pre'
+""""""""""""""""""""""""""""""
+" End vim-markdown-preview configuration
+""""""""""""""""""""""""""""""
 
