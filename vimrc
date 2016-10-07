@@ -13,12 +13,14 @@ Plugin 'vim-ruby/vim-ruby'			" Ruby development plugin
 Plugin 'tpope/vim-rails' 			" Rails development plugin
 Plugin 'fatih/vim-go' 				" Go development plugin
 Plugin 'sbl/scvim'				" SuperCollider development plugin
+Plugin 'shawncplus/phpcomplete.vim'		" PHP autocompletion
 Plugin 'dsawardekar/wordpress.vim'		" Wordpress development plugin
 Plugin 'Shougo/vimproc.vim'			" Async command execution
 						" NOTE you need to `make` the
 						" install directory of this
 						" plugin
 Plugin 'Shougo/unite.vim'			" Source code search
+Plugin 'Shougo/neocomplete.vim'			" Autocompletion
 Plugin 'JamshedVesuna/vim-markdown-preview'	" Preview .md files
 " End plugins
 
@@ -28,8 +30,39 @@ filetype plugin indent on
 " End Vundle config
 """"""""""""""""""""""""""""""
 
+""""""""""""""""""""""""""""""
+" General config
+""""""""""""""""""""""""""""""
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
+" line numbers
+set number
+" Allow project-specific vimrc files
+set exrc
+" Leader is <space>
+let mapleader="\<space>"
+" Set Ruby indents to two spaces
+autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
+" In many terminal emulators the mouse works just fine, thus enable it.
+if has('mouse')
+	set mouse=a
+endif
+" Switch syntax highlighting on, when the terminal has colors
+" Also switch on highlighting the last used search pattern.
+if &t_Co > 2 || has("gui_running")
+	syntax on
+	set hlsearch
+endif
+" Convenient command to see the difference between the current buffer and the
+" file it was loaded from, thus the changes you made.
+" Only define it when not defined already.
+if !exists(":DiffOrig")
+	command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis 
+				\ | wincmd p | diffthis | wincmd p
+endif
+""""""""""""""""""""""""""""""
+" End general config
+""""""""""""""""""""""""""""""
 
 if has("vms")
   set nobackup		" do not keep a backup file, use versions instead
@@ -47,18 +80,6 @@ map Q gq
 " CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
 " so that you can undo CTRL-U after inserting a line break.
 "inoremap <C-U> <C-G>u<C-U>
-
-" In many terminal emulators the mouse works just fine, thus enable it.
-if has('mouse')
-  set mouse=a
-endif
-
-" Switch syntax highlighting on, when the terminal has colors
-" Also switch on highlighting the last used search pattern.
-if &t_Co > 2 || has("gui_running")
-  syntax on
-  set hlsearch
-endif
 
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
@@ -88,30 +109,14 @@ else
 
 endif " has("autocmd")
 
-" Convenient command to see the difference between the current buffer and the
-" file it was loaded from, thus the changes you made.
-" Only define it when not defined already.
-if !exists(":DiffOrig")
-  command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis | wincmd p | diffthis | wincmd p
-endif
-
-" Use line numbers
-set number
-
-" Set Ruby indents to two spaces
-autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
-
-" Leader is <space>
-let mapleader = "\<space>"
-
 """"""""""""""""""""""""""""""
 " unite configuration
 """"""""""""""""""""""""""""""
 if executable('ag')
-	let g:unite_source_rec_async_command = ['ag', '--nocolor', '--nogroup', '-g', '']
-	let g:unite_source_grep_command = 'ag'
-	let g:unite_source_grep_default_opts = '-i --vimgrep --hidden'
-	let g:unite_source_grep_recursive_opt = ''
+	let g:unite_source_rec_async_command=['ag', '--nocolor', '--nogroup', '-g', '']
+	let g:unite_source_grep_command='ag'
+	let g:unite_source_grep_default_opts='-i --vimgrep --hidden'
+	let g:unite_source_grep_recursive_opt=''
 endif
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
 call unite#filters#sorter_default#use(['sorter_rank'])
@@ -130,11 +135,20 @@ nnoremap <leader>r <Plug>(unite_restart)
 """"""""""""""""""""""""""""""
 if executable('grip')
 	" github rendering mode using grip
-	let vim_markdown_preview_github = 1
+	let vim_markdown_preview_github=1
 endif
 " shortcut for seeing preview
-let vim_markdown_preview_hotkey = '<leader>pre'
+let vim_markdown_preview_hotkey='<leader>pre'
 """"""""""""""""""""""""""""""
 " End vim-markdown-preview configuration
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" Config that must be at .vimrc end
+""""""""""""""""""""""""""""""
+" Disable unsafe commands after this point, ie in exrc's
+set secure
+""""""""""""""""""""""""""""""
+" End config that must be at .vimrc end
 """"""""""""""""""""""""""""""
 

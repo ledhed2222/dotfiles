@@ -6,27 +6,39 @@ export PS1="[\W]Bro? "
 alias top="top -o cpu -s 3 -stats pid,command,cpu,rprvt,rsize,vprvt,vsize,user,state,threads,ppid,pgrp,faults,cow"
 alias clojure="java -cp clojure-1.7.0.jar clojure.main"
 alias rm="rm -i"
-alias exit="source /Users/gregweisbrod/Documents/Dev/osxScripts/exit.sh"
-alias permissionrepair="/usr/libexec/repair_packages --repair --standard-pkgs --volume /"
 
-# Ability to cd into aliases
-# https://github.com/shiguol/CD2Alies
-function cd {
-	if [ ${#1} == 0 ]
-	then
-		builtin cd
-	elif [ -d "${1}" ]
-	then
-		builtin cd "${1}"
-	elif [[ -f "${1}" || -L "${1}" ]]
-	then
-		path=$(getTrueName "$1")
-		builtin cd "$path"
-	else
-		builtin cd "${1}"
-	fi
-}
-#
+# MacOS specific stuff
+if [[ `uname` == "Darwin" ]]
+then
+	# Ability to cd into aliases
+	# https://github.com/shiguol/CD2Alies
+	function cd {
+		if [ ${#1} == 0 ]
+		then
+			builtin cd
+		elif [ -d "${1}" ]
+		then
+			builtin cd "${1}"
+		elif [[ -f "${1}" || -L "${1}" ]]
+		then
+			path=$(getTrueName "$1")
+			builtin cd "$path"
+		else
+			builtin cd "${1}"
+		fi
+	}
+	# Linux-like `exit` that kills Terminal
+	# when last session ends
+	function exit {
+		if [[ `ps -o tty | grep '[[:digit:]]' | uniq | wc -l` -gt 1 ]]
+		then
+			builtin exit
+		else
+			killall Terminal
+		fi
+	}
+fi
+# End MacOS specific stuff
 
 # Common locations
 export DEVHOME="$HOME/Documents/Dev"
@@ -55,3 +67,4 @@ export PATH=$PATH:$NPM_PACKAGES/bin
 # Java setup
 export JAVA_HOME=`/usr/libexec/java_home`
 export JAVA_EXTENSION_PATH=$HOME/Library/Java/Extensions
+
