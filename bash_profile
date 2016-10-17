@@ -1,8 +1,8 @@
 # Change the prompt
 export PS1="[\W]Bro? "
 
-# Alias common commands that are
-# not already their own bin
+# Alias common commands that are not already their own bin
+# or for which we want to default options
 alias top="top -o cpu -s 3 -stats pid,command,cpu,rprvt,rsize,vprvt,vsize,user,state,threads,ppid,pgrp,faults,cow"
 alias clojure="java -cp clojure-1.7.0.jar clojure.main"
 alias rm="rm -i"
@@ -59,12 +59,11 @@ export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 export ANDROID_HOME=$HOME/Library/Android/sdk
 export PATH=$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
 
-# Node setup
-export NPM_PACKAGES=$HOME/.npm-packages
-export NODE_PATH=$NPM_PACKAGES/lib/node_modules:$NODE_PATH
-export PATH=$PATH:$NPM_PACKAGES/bin
+# NVM setup
+export NVM_DIR=$HOME/.nvm
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
 # Java setup
 export JAVA_HOME=`/usr/libexec/java_home`
-export JAVA_EXTENSION_PATH=$HOME/Library/Java/Extensions
+export JAVA_EXTENSION_PATH=$HOME/Library/Java/Extensions # Just to make it easy to remember where extensions are
 
