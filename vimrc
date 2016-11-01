@@ -22,6 +22,8 @@ Plugin 'Shougo/vimproc.vim'			" Async command execution
 Plugin 'Shougo/unite.vim'			" Source code search
 Plugin 'Shougo/neocomplete.vim'			" Autocompletion
 Plugin 'JamshedVesuna/vim-markdown-preview'	" Preview .md files
+Plugin 'scrooloose/nerdtree'			" File system explorer
+Plugin 'flazz/vim-colorschemes'			" A package of many color schemes
 " End plugins
 
 call vundle#end()
@@ -33,6 +35,8 @@ filetype plugin indent on
 """"""""""""""""""""""""""""""
 " General config
 """"""""""""""""""""""""""""""
+" set colorscheme
+colorscheme benokai
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 " line numbers
@@ -141,6 +145,17 @@ endif
 let vim_markdown_preview_hotkey='<leader>pre'
 """"""""""""""""""""""""""""""
 " End vim-markdown-preview configuration
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" NERDtree configuration
+""""""""""""""""""""""""""""""
+" toggle NERDtree
+nnoremap <leader>t :NERDTreeToggle .<cr>
+" by default show hidden files
+let NERDTreeShowHidden=1
+""""""""""""""""""""""""""""""
+" End NERDtree configuration
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
