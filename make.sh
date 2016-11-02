@@ -4,7 +4,7 @@
 
 dir=`pwd`
 olddir=~/dotfiles_backup
-files="bash_profile vimrc"
+files="bash_profile vimrc psqlrc"
 
 echo "Creating $olddir for backup of any existing dotfiles in ~"
 mkdir -p $olddir

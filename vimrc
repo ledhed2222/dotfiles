@@ -45,6 +45,11 @@ set number
 set exrc
 " Leader is <space>
 let mapleader="\<space>"
+" remap split switching
+nnoremap <c-j> <c-w>j
+nnoremap <c-k> <c-w>k
+nnoremap <c-h> <c-w>h
+nnoremap <c-l> <c-w>l
 " Set Ruby indents to two spaces
 autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
 " In many terminal emulators the mouse works just fine, thus enable it.

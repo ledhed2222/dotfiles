@@ -1,0 +1,6 @@
+-- By default NULL displays as an empty space.
+-- This makes the distinction between "" and NULL clear.
+\pset null '[NULL]'
+-- Use table format by default but switch to expanded
+-- table format when there's a lot of data
+\x auto
