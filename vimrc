@@ -50,6 +50,8 @@ nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
 nnoremap <c-h> <c-w>h
 nnoremap <c-l> <c-w>l
+" no backups
+set nobackup
 " Set Ruby indents to two spaces
 autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
 " In many terminal emulators the mouse works just fine, thus enable it.
@@ -72,16 +74,6 @@ endif
 """"""""""""""""""""""""""""""
 " End general config
 """"""""""""""""""""""""""""""
-
-if has("vms")
-  set nobackup		" do not keep a backup file, use versions instead
-else
-  set backup		" keep a backup file
-endif
-set history=50		" keep 50 lines of command line history
-set ruler		" show the cursor position all the time
-set showcmd		" display incomplete commands
-set incsearch		" do incremental searching
 
 " Don't use Ex mode, use Q for formatting
 map Q gq
