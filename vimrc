@@ -1,3 +1,4 @@
+" Be improved
 set nocompatible
 
 """"""""""""""""""""""""""""""
@@ -43,27 +44,30 @@ set backspace=indent,eol,start
 set number
 " Allow project-specific vimrc files
 set exrc
+" no backups
+set nobackup
+
 " Leader is <space>
 let mapleader="\<space>"
+
 " remap split switching
 nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
 nnoremap <c-h> <c-w>h
 nnoremap <c-l> <c-w>l
-" no backups
-set nobackup
-" Set Ruby indents to two spaces
-autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
+
 " In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
 	set mouse=a
 endif
+
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
 if &t_Co > 2 || has("gui_running")
 	syntax on
 	set hlsearch
 endif
+
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.
 " Only define it when not defined already.
@@ -75,40 +79,19 @@ endif
 " End general config
 """"""""""""""""""""""""""""""
 
-" Don't use Ex mode, use Q for formatting
-map Q gq
+""""""""""""""""""""""""""""""
+" Autocommands (only if compiled with support for them)
+""""""""""""""""""""""""""""""
+if has('autocmd')
+	" Set Ruby indents to two spaces
+	autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
 
-" CTRL-U in insert mode deletes a lot.  Use CTRL-G u to first break undo,
-" so that you can undo CTRL-U after inserting a line break.
-"inoremap <C-U> <C-G>u<C-U>
-
-" Only do this part when compiled with support for autocommands.
-if has("autocmd")
-
-  " Put these in an autocmd group, so that we can delete them easily.
-  augroup vimrcEx
-  au!
-
-  " For all text files set 'textwidth' to 78 characters.
-  autocmd FileType text setlocal textwidth=78
-
-  " When editing a file, always jump to the last known cursor position.
-  " Don't do it when the position is invalid or when inside an event handler
-  " (happens when dropping a file on gvim).
-  " Also don't do it when the mark is in the first line, that is the default
-  " position when opening a file.
-  autocmd BufReadPost *
-    \ if line("'\"") > 1 && line("'\"") <= line("$") |
-    \   exe "normal! g`\"" |
-    \ endif
-
-  augroup END
-
-else
-
-  set autoindent		" always set autoindenting on
-
-endif " has("autocmd")
+	" For all text files set 'textwidth' to 78 chars
+	autocmd FileType text setlocal textwidth=78
+endif
+""""""""""""""""""""""""""""""
+" End autocommands
+""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
 " unite configuration
@@ -155,12 +138,6 @@ let NERDTreeShowHidden=1
 " End NERDtree configuration
 """"""""""""""""""""""""""""""
 
-""""""""""""""""""""""""""""""
-" Config that must be at .vimrc end
-""""""""""""""""""""""""""""""
 " Disable unsafe commands after this point, ie in exrc's
 set secure
-""""""""""""""""""""""""""""""
-" End config that must be at .vimrc end
-""""""""""""""""""""""""""""""
 
