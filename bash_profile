@@ -34,7 +34,7 @@ then
 		then
 			builtin exit
 		else
-			killall Terminal
+			osascript -e 'quit app "Terminal"'
 		fi
 	}
 fi
