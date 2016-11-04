@@ -107,9 +107,9 @@ endif
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
 call unite#filters#sorter_default#use(['sorter_rank'])
 " search a file in the filetree
-nnoremap <leader><space> :vsplit<cr>:<C-u>Unite -start-insert -auto-preview file_rec/async<cr>
+nnoremap <leader><space> :<C-u>Unite -start-insert -auto-preview file_rec/async<cr>
 " grep for files
-nnoremap <leader>/ :vsplit<cr>:<C-u>Unite -auto-preview grep:.<cr>
+nnoremap <leader>/ :<C-u>Unite -auto-preview grep:.<cr>
 " reset unite cache
 nnoremap <leader>r <Plug>(unite_restart)
 """"""""""""""""""""""""""""""
