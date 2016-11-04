@@ -25,6 +25,8 @@ Plugin 'Shougo/neocomplete.vim'			" Autocompletion
 Plugin 'JamshedVesuna/vim-markdown-preview'	" Preview .md files
 Plugin 'scrooloose/nerdtree'			" File system explorer
 Plugin 'flazz/vim-colorschemes'			" A package of many color schemes
+Plugin 'pangloss/vim-javascript'		" JavaScript development plugin
+Plugin 'mxw/vim-jsx'				" JSX development plugin
 " End plugins
 
 call vundle#end()
