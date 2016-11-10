@@ -1,6 +1,9 @@
 # Change the prompt
 export PS1="[\W]Bro? "
 
+# Use vim for all editing
+export EDITOR="vim"
+
 # Alias common commands that are not already their own bin
 # or for which we want to default options
 alias top="top -o cpu -s 3 -stats pid,command,cpu,rprvt,rsize,vprvt,vsize,user,state,threads,ppid,pgrp,faults,cow"
