@@ -3,7 +3,7 @@
 # Creates symlinks from ~ to any desired dotfiles
 dir=`pwd`
 olddir=~/dotfiles_backup
-files=`ls | grep [^make\.sh|README\.md]`
+files=`ls | grep "[^make\.sh|README\.md]"`
 
 echo "Creating $olddir for backup of any existing dotfiles in ~"
 mkdir -p $olddir
