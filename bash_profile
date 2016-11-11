@@ -70,3 +70,6 @@ export NVM_DIR=$HOME/.nvm
 export JAVA_HOME=`/usr/libexec/java_home`
 export JAVA_EXTENSION_PATH=$HOME/Library/Java/Extensions # Just to make it easy to remember where extensions are
 
+# Git setup
+source "usr/local/etc/bash_completion.d/git_completion.bash"
+
