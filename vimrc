@@ -110,6 +110,8 @@ call unite#filters#sorter_default#use(['sorter_rank'])
 nnoremap <leader><space> :<C-u>Unite -start-insert -auto-preview file_rec/async<cr>
 " grep for files
 nnoremap <leader>/ :<C-u>Unite -auto-preview grep:.<cr>
+" grep for files containing word under cursor
+nnoremap <leader>f :<C-u>UniteWithCursorWord -auto-preview grep:.<cr> 
 " reset unite cache
 nnoremap <leader>r <Plug>(unite_restart)
 """"""""""""""""""""""""""""""
