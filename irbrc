@@ -6,7 +6,7 @@ IRB.conf[:AUTO_INDENT] = true
 
 # Save history to ~/.irb-history
 IRB.conf[:SAVE_HISTORY] = 1000
-IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb-history"
+IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb_history"
 
 # Some Rails helpers
 if defined?(Rails) && Rails.env.development?
