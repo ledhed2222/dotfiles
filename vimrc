@@ -107,13 +107,13 @@ endif
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
 call unite#filters#sorter_default#use(['sorter_rank'])
 " search a file in the filetree
-nnoremap <leader><space> :<C-u>Unite -start-insert -auto-preview file_rec/async<cr>
+nnoremap <leader><space> :<c-u>Unite -start-insert -auto-preview file_rec/async<cr>
 " grep for files
-nnoremap <leader>/ :<C-u>Unite -auto-preview grep:.<cr>
+nnoremap <leader>/ :<c-u>Unite -auto-preview grep:.<cr>
 " grep for files containing word under cursor
-nnoremap <leader>f :<C-u>UniteWithCursorWord -auto-preview grep:.<cr> 
+nnoremap <leader>f :<c-u>UniteWithCursorWord -auto-preview grep:.<cr> 
 " reset unite cache
-nnoremap <leader>r <Plug>(unite_restart)
+nnoremap <leader>r <Plug>(unite_redraw)
 """"""""""""""""""""""""""""""
 " End unite configuration
 """"""""""""""""""""""""""""""
