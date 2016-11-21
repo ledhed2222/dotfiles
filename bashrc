@@ -16,10 +16,10 @@ then
 	# Ability to cd into aliases
 	# https://github.com/shiguol/CD2Alies
 	function cd {
-		if [ ${#1} == 0 ]
+		if [[ "${#1}" == 0 ]]
 		then
 			builtin cd
-		elif [ -d "${1}" ]
+		elif [[ -d "${1}" ]]
 		then
 			builtin cd "${1}"
 		elif [[ -f "${1}" || -L "${1}" ]]
@@ -33,7 +33,7 @@ then
 	# Linux-like `exit` that kills Terminal
 	# when last session ends
 	function exit {
-		if [[ `ps -o tty | grep '[[:digit:]]' | uniq | wc -l` -gt 1 ]]
+		if [[ `ps -o tty | grep '[0-9]' | uniq | wc -l` -gt 1 ]]
 		then
 			builtin exit
 		else
