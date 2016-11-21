@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/gregweisbrod/.oh-my-zsh
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
@@ -63,7 +63,7 @@ source $ZSH/oh-my-zsh.sh
 # export LANG=en_US.UTF-8
 
 # Preferred editor
-export EDITOR='vim'
+export EDITOR="vim"
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -76,7 +76,37 @@ export EDITOR='vim'
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 alias rm="rm -i"
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+
+# MacOS specific stuff
+if [[ `uname` == "Darwin" ]]
+then
+	# Ability to cd into aliases
+	# https://github.com/shiguol/CD2Alies
+	function cd {
+		if [ ${#1} == 0 ]
+		then
+			builtin cd
+		elif [ -d "${1}" ]
+		then
+			builtin cd "${1}"
+		elif [[ -f "${1}" || -L "${1}" ]]
+		then
+			path=$(getTrueName "$1")
+			builtin cd "$path"
+		else
+			builtin cd "${1}"
+		fi
+	}
+	# Linux-like `exit` that kills Terminal
+	# when last session ends
+	function exit {
+		if [[ `ps -o tty | grep '[0-9]' | uniq | wc -l` -gt 1 ]]
+		then
+			builtin exit
+		else
+			osascript -e 'quit app "Terminal"'
+		fi
+	}
+fi
+# End MacOS specific stuff
+
