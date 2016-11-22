@@ -48,6 +48,8 @@ set number
 set exrc
 " no backups
 set nobackup
+" default yanks go to clipboard
+set clipboard=unnamed
 
 " Leader is <space>
 let mapleader="\<space>"
