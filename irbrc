@@ -12,9 +12,7 @@ IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb_history"
 if defined?(Rails) && Rails.env.development?
 
   module ActiveRecordExtensions
-
     module ClassMethods
-
       # Retreive a random record of model
       def random
         offset(rand(count)).first
@@ -24,10 +22,9 @@ if defined?(Rails) && Rails.env.development?
     def self.included(base)
       base.extend ClassMethods
     end
-
   end
 
-  ActiveRecord::Base.send(:include, ActiveRecordExtensions)
+  ActiveRecord::Base.include(ActiveRecordExtensions)
 
 end
 
