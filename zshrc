@@ -127,7 +127,6 @@ export GOPATH="$DEVHOME/go"
 export PATH="$PATH:$GOPATH/bin"
 
 # RVM setup
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 
 # NVM setup
@@ -141,5 +140,4 @@ export JAVA_EXTENSION_PATH="$HOME/Library/Java/Extensions" # Just to make it eas
 # Android setup
 export ANDROID_HOME="$HOME/Library/Android/sdk"
 export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
-
 
