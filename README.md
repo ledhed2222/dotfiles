@@ -3,8 +3,8 @@
 * Autocompletion requires vim compiled with Lua. On MacOS install with: `brew install vim --with-lua`
 * Markdown previewing in Github style requires `grip`. On MacOS install with: `brew install grip`
 * Remember to install plugins via:
-```vimscript
-:PluginInstall
+```viml
+PluginInstall
 ```
 * Some plugins require extra compilation - see .vimrc
 
