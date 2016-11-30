@@ -94,6 +94,9 @@ if has('autocmd')
 
 	" Some nice plaintext formatting options
 	autocmd FileType text setlocal autoindent spell formatoptions=a2t
+
+	" For some reason, the above autocmd adds spell to help too
+	autocmd FileType help setlocal nospell
 endif
 """"""""""""""""""""""""""""""
 " End autocommands
