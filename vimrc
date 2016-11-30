@@ -50,6 +50,8 @@ set exrc
 set nobackup
 " default yanks go to clipboard
 set clipboard=unnamed
+" text formatting
+set textwidth=78
 
 " Leader is <space>
 let mapleader="\<space>"
@@ -90,8 +92,8 @@ if has('autocmd')
 	" Set Ruby indents to two spaces
 	autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
 
-	" For all text files set 'textwidth' to 78 chars
-	autocmd FileType text setlocal textwidth=78
+	" Some nice plaintext formatting options
+	autocmd FileType text setlocal autoindent spell formatoptions=a2t
 endif
 """"""""""""""""""""""""""""""
 " End autocommands
