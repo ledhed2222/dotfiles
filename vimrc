@@ -93,7 +93,7 @@ if has('autocmd')
 	autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
 
 	" Some nice plaintext formatting options
-	autocmd FileType text setlocal autoindent spell formatoptions=a2t
+	autocmd FileType text,gitcommit setlocal autoindent spell formatoptions=a2t
 
 	" For some reason, the above autocmd adds spell to help too
 	autocmd FileType help setlocal nospell
