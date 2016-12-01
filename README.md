@@ -4,10 +4,9 @@
 * Markdown previewing in Github style requires `grip`. On MacOS install with: `brew install grip`
 * Remember to install plugins via:
 ```viml
-PluginInstall
+:PluginInstall
 ```
 * Some plugins require extra compilation - see .vimrc
-
 
 #shell
 * For cd'ing into MacOS aliases need [getTruePath](https://github.com/shiguol/CD2Alies)
@@ -21,7 +20,13 @@ chsh -s `which bash`
 ```
 
 ##Terminal.app configuration
-* Preferences > Profiles > Shell - set 'when the shell exits' to 'close if the shell exited cleanly'
-* Preferences > Profiles > Shell - set 'ask before closing' to 'only if there are processes other than the login shell and:' and add 'osascript' to that list
-* Preferences > Profiles > Keyboard - map the 'home' key to \001 and the 'end' key to \005
+* Preferences > Profiles > Shell - set 'when the shell exists' to 'close if
+  the shell exited cleanly'
+* Preferences > Profiles > Shell - set 'ask before closing' to 'only if there
+  are processes other than the login shell and:' and add 'osascript' to that
+  list
+* Preferences > Profiles > Keyboard - map the 'home' key to \001 and the 'end'
+  key to \005
+* Preferences > Profiles > Advanced - uncheck 'Allow VT100 application keypad
+  mode"
 
