@@ -86,23 +86,17 @@ then
 			builtin cd
 		elif [[ -d "${1}" ]]
 		then
-
 			builtin cd "${1}"
-
 		elif [[ -f "${1}" || -L "${1}" ]]
 		then
 			path=$(getTrueName "$1")
-
 			builtin cd "$path"
 		else
-
 			builtin cd "${1}"
 		fi
-
 	}
 	# Linux-like `exit` that kills Terminal
 	# when last session ends
-
 	function exit {
 		if [[ `ps -o tty | grep '[0-9]' | uniq | wc -l` -gt 1 ]]
 		then
@@ -110,7 +104,6 @@ then
 		else
 			osascript -e 'quit app "Terminal"'
 		fi
-
 	}
 fi
 # End MacOS specific stuff
