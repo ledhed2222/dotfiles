@@ -52,6 +52,7 @@ set nobackup
 set clipboard=unnamed
 " text formatting
 set textwidth=78
+set spell
 
 " Leader is <space>
 let mapleader="\<space>"
@@ -93,9 +94,9 @@ if has('autocmd')
 	autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
 
 	" Some nice plaintext formatting options
-	autocmd FileType text,gitcommit setlocal autoindent spell formatoptions=a2tw
+	autocmd FileType text,gitcommit setlocal autoindent formatoptions=a2tw
 
-	" For some reason, the above autocmd adds spell to help too
+	" Spell checking w/in help system is tedious
 	autocmd FileType help setlocal nospell
 endif
 """"""""""""""""""""""""""""""
