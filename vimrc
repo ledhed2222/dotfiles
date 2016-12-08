@@ -52,7 +52,7 @@ set nobackup
 set clipboard=unnamed
 " text formatting
 set textwidth=78
-set spell
+set nospell
 
 " Leader is <space>
 let mapleader="\<space>"
@@ -94,10 +94,7 @@ if has('autocmd')
 	autocmd FileType ruby,js,jsx,json setlocal expandtab shiftwidth=2 tabstop=2
 
 	" Some nice plaintext formatting options
-	autocmd FileType text,gitcommit setlocal autoindent formatoptions=a2tw
-
-	" Spell checking w/in config files, vim/help system is tedious
-	autocmd FileType xml,json,vim,help setlocal nospell
+	autocmd FileType text,gitcommit setlocal autoindent formatoptions=a2tw spell
 endif
 """"""""""""""""""""""""""""""
 " End autocommands
