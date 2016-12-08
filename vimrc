@@ -90,14 +90,14 @@ endif
 " Autocommands (only if compiled with support for them)
 """"""""""""""""""""""""""""""
 if has('autocmd')
-	" Set Ruby indents to two spaces
-	autocmd FileType ruby setlocal expandtab shiftwidth=2 tabstop=2
+	" Set Ruby, JS, JSON indents to two spaces
+	autocmd FileType ruby,js,jsx,json setlocal expandtab shiftwidth=2 tabstop=2
 
 	" Some nice plaintext formatting options
 	autocmd FileType text,gitcommit setlocal autoindent formatoptions=a2tw
 
-	" Spell checking w/in help system is tedious
-	autocmd FileType help setlocal nospell
+	" Spell checking w/in config files, vim/help system is tedious
+	autocmd FileType xml,json,vim,help setlocal nospell
 endif
 """"""""""""""""""""""""""""""
 " End autocommands
