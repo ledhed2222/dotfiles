@@ -92,7 +92,7 @@ endif
 """"""""""""""""""""""""""""""
 if has('autocmd')
 	" Set Ruby, JS, JSON indents to two spaces
-	autocmd FileType ruby,js,jsx,json setlocal expandtab shiftwidth=2 tabstop=2
+	autocmd FileType ruby,javascript,javascript.jsx,json setlocal expandtab shiftwidth=2 tabstop=2
 
 	" Some nice plaintext formatting options
 	autocmd FileType text,gitcommit setlocal autoindent formatoptions=a2tw spell
