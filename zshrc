@@ -74,6 +74,7 @@ export EDITOR="vim"
 # For a full list of active aliases, run `alias`.
 alias rm="rm -i"
 alias top="top -o cpu -s 3 -stats pid,command,cpu,rprvt,rsize,vprvt,vsize,user,state,threads,ppid,pgrp,faults,cow"
+alias grep="grep -E"
 
 # MacOS specific stuff
 if [[ `uname` == "Darwin" ]]
