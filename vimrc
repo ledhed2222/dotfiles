@@ -27,6 +27,7 @@ Plugin 'scrooloose/nerdtree'			" File system explorer
 Plugin 'flazz/vim-colorschemes'			" A package of many color schemes
 Plugin 'pangloss/vim-javascript'		" JavaScript development plugin
 Plugin 'mxw/vim-jsx'				" JSX development plugin
+Plugin 'cakebaker/scss-syntax.vim'		" SCSS development plugin
 " End plugins
 
 call vundle#end()
