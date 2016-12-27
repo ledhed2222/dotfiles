@@ -1,0 +1,2 @@
+# don't check in nvim plugins
+config/nvim/bundle

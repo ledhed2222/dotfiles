@@ -1,22 +1,17 @@
 #vim
 * File searching best done with `ag`. On MacOS install with: `brew install ag`
-* Autocompletion requires vim compiled with Lua. On MacOS install with: `brew install vim --with-lua`
-* Markdown previewing in Github style requires `grip`. On MacOS install with: `brew install grip`
-* Remember to install plugins via:
-```viml
-:PluginInstall
+* Editor is `nvim`. On MacOS install with:
+```zsh
+brew tap neovim/neovim
+brew install neovim
 ```
-* Some plugins require extra compilation - see .vimrc
+* Markdown previewing in Github style requires `grip`. On MacOS install with: `brew install grip`
 
 #shell
 * For cd'ing into MacOS aliases need [getTruePath](https://github.com/shiguol/CD2Alies)
 * To switch default shell from bash to zsh:
 ```bash
 chsh -s `which zsh`
-```
-* To switch default shell from zsh to bash:
-```zsh
-chsh -s `which bash`
 ```
 
 ##Terminal.app configuration

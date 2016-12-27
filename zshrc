@@ -60,7 +60,7 @@ source $ZSH/oh-my-zsh.sh
 # export LANG=en_US.UTF-8
 
 # Preferred editor
-export EDITOR="vim"
+export EDITOR="nvim"
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -112,6 +112,7 @@ fi
 # Common locations
 export DEVHOME="$HOME/Documents/Dev"
 export APACHEDIR="/etc/apache2" #virtual hosts in vhosts dir
+export XDG_CONFIG_HOME="$HOME/.config"
 
 # Binaries in /usr/local/bin take precedence over /usr/local
 export PATH="/usr/local/bin:${PATH}"
