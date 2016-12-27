@@ -124,6 +124,10 @@ endif
 if executable('ag')
 	call denite#custom#var('file_rec', 'command', ['ag', '--follow', '--nocolor', '--nogroup', '-g', ''])
 	call denite#custom#var('grep', 'command', ['ag'])
+	call denite#custom#var('grep', 'default_opts', ['-i', '--vimgrep'])
+	call denite#custom#var('grep', 'recursive_opts', [])
+	call denite#custom#var('grep', 'final_opts', [])
+	call denite#custom#var('grep', 'pattern_opt', [])
 endif
 " search a file in the filetree
 nnoremap <leader><space> :<c-u>Denite -auto-preview file_rec<cr>
@@ -131,8 +135,6 @@ nnoremap <leader><space> :<c-u>Denite -auto-preview file_rec<cr>
 nnoremap <leader>colors :<c-u>Denite -mode=normal colorscheme<cr>
 " grep for files
 nnoremap <leader>/ :<c-u>Denite -auto-preview -mode=normal grep<cr>
-" grep for files containing word under cursor
-nnoremap <leader>f :<c-u>DeniteCursorWord -auto-preview -mode=normal grep<cr><cr>
 """"""""""""""""""""""""""""""
 " End denite configuration
 """"""""""""""""""""""""""""""
