@@ -136,3 +136,6 @@ export JAVA_EXTENSION_PATH="$HOME/Library/Java/Extensions" # Just to make it eas
 export ANDROID_HOME="$HOME/Library/Android/sdk"
 export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
 
+
+# added by travis gem
+[ -f /Users/gregweisbrod/.travis/travis.sh ] && source /Users/gregweisbrod/.travis/travis.sh
