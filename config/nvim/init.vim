@@ -3,10 +3,10 @@ let s:editor_root=expand($XDG_CONFIG_HOME . '/nvim')
 " Vundle config
 """"""""""""""""""""""""""""""
 " automatically install vundle and plugins if not present
-let vundle_installed=1
-let vundle_readme=s:editor_root . '/bundle/Vundle.vim/README.md'
-if !filereadable(vundle_readme)
-	let vundle_installed=0
+let s:vundle_installed=1
+let s:vundle_readme=s:editor_root . '/bundle/Vundle.vim/README.md'
+if !filereadable(s:vundle_readme)
+	let s:vundle_installed=0
 	echo "Installing Vundle...\n"
 	silent execute "!mkdir -p " . s:editor_root . "/bundle"
 	silent execute "!git clone https://github.com/VundleVim/Vundle.vim.git " . s:editor_root . "/bundle/Vundle.vim"
@@ -39,10 +39,10 @@ Plugin 'cakebaker/scss-syntax.vim'		" SCSS development plugin
 call vundle#end()
 filetype plugin indent on
 
-if vundle_installed == 0
+if s:vundle_installed == 0
 	echo "Installing plugins...\n"
 	:PluginInstall
-	let vundle_installed=1
+	let s:vundle_installed=1
 endif
 """"""""""""""""""""""""""""""
 " End Vundle config
@@ -75,6 +75,9 @@ nnoremap <c-k> <c-w>k
 nnoremap <c-h> <c-w>h
 nnoremap <c-l> <c-w>l
 
+" use <esc> to leave terminal mode
+tnoremap <esc> <c-\><c-n>
+
 " In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
 	set mouse=a
@@ -99,21 +102,19 @@ endif
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
-" Autocommands (only if compiled with support for them)
+" Autocommands
 """"""""""""""""""""""""""""""
-if has('autocmd')
-	" Set Ruby, JS, JSON indents to two spaces
-	autocmd FileType ruby,javascript,javascript.jsx,json setlocal expandtab shiftwidth=2 tabstop=2
+" Set Ruby, JS, JSON indents to two spaces
+autocmd FileType ruby,javascript,javascript.jsx,json setlocal expandtab shiftwidth=2 tabstop=2
 
-	" Some nice plaintext formatting options
-	autocmd FileType text,gitcommit setlocal autoindent formatoptions=a2tw spell
+" Some nice plaintext formatting options
+autocmd FileType text,gitcommit setlocal autoindent formatoptions=a2tw spell
 
-	" Spelling on for md
-	autocmd FileType markdown setlocal spell
+" Spelling on for md
+autocmd FileType markdown setlocal spell
 
-	" Spell in help is really annoying
-	autocmd FileType help setlocal nospell
-endif
+" Spell in help is really annoying
+autocmd FileType help setlocal nospell
 """"""""""""""""""""""""""""""
 " End autocommands
 """"""""""""""""""""""""""""""
@@ -124,7 +125,7 @@ endif
 if executable('ag')
 	call denite#custom#var('file_rec', 'command', ['ag', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', ''])
 	call denite#custom#var('grep', 'command', ['ag'])
-	call denite#custom#var('grep', 'default_opts', ['-i', '--vimgrep', '--hidden'])
+	call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--hidden'])
 	call denite#custom#var('grep', 'recursive_opts', [])
 	call denite#custom#var('grep', 'final_opts', [])
 	call denite#custom#var('grep', 'pattern_opt', [])
@@ -135,6 +136,8 @@ nnoremap <leader><space> :<c-u>Denite -auto-preview file_rec<cr>
 nnoremap <leader>colors :<c-u>Denite -mode=normal colorscheme<cr>
 " grep for files
 nnoremap <leader>/ :<c-u>Denite -auto-preview -mode=normal grep<cr>
+" mappings w/in denite buffers
+call denite#custom#map('insert', '<esc>', '<denite:enter_mode:normal>')
 """"""""""""""""""""""""""""""
 " End denite configuration
 """"""""""""""""""""""""""""""
