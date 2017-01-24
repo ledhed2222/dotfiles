@@ -175,6 +175,15 @@ let g:javascript_plugin_flow=1
 " End vim-javascript configuration
 """"""""""""""""""""""""""""""
 
+""""""""""""""""""""""""""""""
+" vim-flow configuration
+""""""""""""""""""""""""""""""
+let g:flow#autoclose=1
+""""""""""""""""""""""""""""""
+" End vim-flow configuration
+""""""""""""""""""""""""""""""
+
+
 " Disable unsafe commands after this point, ie in exrc's
 set secure
 
