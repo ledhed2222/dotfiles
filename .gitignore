@@ -1,2 +1,5 @@
 # don't check in nvim plugins
 config/nvim/bundle
+config/heroku
+config/karabiner
+.DS_Store

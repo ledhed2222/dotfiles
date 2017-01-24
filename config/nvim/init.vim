@@ -34,6 +34,7 @@ Plugin 'flazz/vim-colorschemes'			" A package of many color schemes
 Plugin 'pangloss/vim-javascript'		" JavaScript development plugin
 Plugin 'mxw/vim-jsx'				" JSX development plugin
 Plugin 'cakebaker/scss-syntax.vim'		" SCSS development plugin
+Plugin 'flowtype/vim-flow'			" Flow development plugin
 " End plugins
 
 call vundle#end()
@@ -164,6 +165,14 @@ nnoremap <leader>t :NERDTreeToggle .<cr>
 let NERDTreeShowHidden=1
 """"""""""""""""""""""""""""""
 " End NERDtree configuration
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" vim-javascript configuration
+""""""""""""""""""""""""""""""
+let g:javascript_plugin_flow=1
+""""""""""""""""""""""""""""""
+" End vim-javascript configuration
 """"""""""""""""""""""""""""""
 
 " Disable unsafe commands after this point, ie in exrc's
