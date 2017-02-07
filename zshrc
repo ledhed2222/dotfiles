@@ -76,6 +76,16 @@ alias rm="rm -i"
 alias top="top -o cpu -s 3 -stats pid,command,cpu,rprvt,rsize,vprvt,vsize,user,state,threads,ppid,pgrp,faults,cow"
 alias grep="grep -E"
 
+# serve this directory - default port is 3000
+function server {
+	if [[ "${#1}" == 0 ]]
+	then
+		python -m SimpleHTTPServer 3000
+	else
+		python -m SimpleHTTPServer "${1}"
+	fi
+}
+
 # MacOS specific stuff
 if [[ `uname` == "Darwin" ]]
 then
