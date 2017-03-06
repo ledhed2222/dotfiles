@@ -1,7 +1,7 @@
 node_modules/
 bower_components/
-\.git
+.git/
 *~
-*\.swp
+*.swp
 vendor/
 vnd/
