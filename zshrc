@@ -74,7 +74,7 @@ export EDITOR="nvim"
 # For a full list of active aliases, run `alias`.
 alias rm="rm -i"
 alias top="top -o cpu -s 3 -stats pid,command,cpu,rprvt,rsize,vprvt,vsize,user,state,threads,ppid,pgrp,faults,cow"
-alias grep="grep -E"
+alias grep="grep -E --color=always"
 
 # serve this directory - default port is 3000
 function server {
