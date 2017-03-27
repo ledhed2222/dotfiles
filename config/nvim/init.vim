@@ -35,6 +35,7 @@ Plugin 'pangloss/vim-javascript'		" JavaScript development plugin
 Plugin 'mxw/vim-jsx'				" JSX development plugin
 Plugin 'cakebaker/scss-syntax.vim'		" SCSS development plugin
 Plugin 'flowtype/vim-flow'			" Flow development plugin
+Plugin 'tomtom/tcomment_vim'			" File-type sensitive comments
 " End plugins
 
 call vundle#end()
@@ -60,13 +61,23 @@ set number
 set exrc
 " no backups
 set nobackup
+" no swaps
+set noswapfile
 " default yanks go to clipboard
 set clipboard=unnamed
+" various
+set virtualedit=all
+set timeoutlen=200
 " text formatting
 set textwidth=78
 set nospell
 set spelllang=en_us
-
+" use ag for keyword lookup
+if executable('ag')
+	set keywordprg=ag
+else
+	set keywordprg=grep
+endif
 " Leader is <space>
 let mapleader="\<space>"
 
@@ -75,6 +86,15 @@ nnoremap <c-j> <c-w>j
 nnoremap <c-k> <c-w>k
 nnoremap <c-h> <c-w>h
 nnoremap <c-l> <c-w>l
+
+" to switch between current file and last file in buffer
+nnoremap <leader>, <c-^>
+
+noremap ; :
+
+" easily re-indent
+vnoremap > >gv
+vnoremap < <gv
 
 " use <esc> to leave terminal mode
 tnoremap <esc> <c-\><c-n>
