@@ -66,7 +66,6 @@ set noswapfile
 " default yanks go to clipboard
 set clipboard=unnamed
 " various
-set virtualedit=all
 set timeoutlen=200
 " text formatting
 set textwidth=78
