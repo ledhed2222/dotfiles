@@ -36,6 +36,7 @@ Plugin 'mxw/vim-jsx'				" JSX development plugin
 Plugin 'cakebaker/scss-syntax.vim'		" SCSS development plugin
 Plugin 'flowtype/vim-flow'			" Flow development plugin
 Plugin 'tomtom/tcomment_vim'			" File-type sensitive comments
+Plugin 'neomake/neomake'			" Asynch makeprg
 " End plugins
 
 call vundle#end()
@@ -201,6 +202,19 @@ let g:flow#autoclose=1
 """"""""""""""""""""""""""""""
 " End vim-flow configuration
 """"""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" neomake configuration
+""""""""""""""""""""""""""""""
+let g:neomake_place_signs=1
+let g:neomake_echo_current_error=1
+let g:neomake_highlight_columns=1
+let g:neomake_javascript_enabled_makers=['eslint']
+autocmd! BufWritePost * Neomake
+""""""""""""""""""""""""""""""
+" End neomake configuration
+""""""""""""""""""""""""""""""
+
 
 
 " Disable unsafe commands after this point, ie in exrc's
