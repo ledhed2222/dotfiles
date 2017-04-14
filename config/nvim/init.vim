@@ -154,7 +154,7 @@ endif
 " search a file in the filetree
 nnoremap <leader><space> :<c-u>Denite -auto-preview file_rec<cr>
 " browse colorschemes
-nnoremap <leader>colors :<c-u>Denite -mode=normal colorscheme<cr>
+nnoremap <leader>colors :<c-u>Denite -auto-preview -mode=normal colorscheme<cr>
 " grep for files
 nnoremap <leader>/ :<c-u>Denite -auto-preview -mode=normal grep<cr>
 " mappings w/in denite buffers
