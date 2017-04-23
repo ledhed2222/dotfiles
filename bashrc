@@ -7,7 +7,6 @@ export EDITOR="vim"
 # Alias common commands that are not already their own bin
 # or for which we want to default options
 alias top="top -o cpu -s 3 -stats pid,command,cpu,rprvt,rsize,vprvt,vsize,user,state,threads,ppid,pgrp,faults,cow"
-alias clojure="java -cp clojure-1.7.0.jar clojure.main"
 alias rm="rm -i"
 
 # MacOS specific stuff
