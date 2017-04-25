@@ -37,6 +37,7 @@ Plugin 'cakebaker/scss-syntax.vim'		" SCSS development plugin
 Plugin 'flowtype/vim-flow'			" Flow development plugin
 Plugin 'tomtom/tcomment_vim'			" File-type sensitive comments
 Plugin 'neomake/neomake'			" Asynch makeprg
+Plugin 'tpope/vim-fireplace'			" Clojure
 " End plugins
 
 call vundle#end()

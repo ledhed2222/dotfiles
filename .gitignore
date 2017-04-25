@@ -3,3 +3,7 @@ config/nvim/bundle
 config/heroku
 config/karabiner
 .DS_Store
+
+# we only want the pgcli config not the other stuff
+config/pgcli/*
+!config/pgcli/config
