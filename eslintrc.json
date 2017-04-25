@@ -8,5 +8,12 @@
         "jsx-a11y",
         "import",
         "flowtype"
-    ]
+    ],
+    "env": {
+      "browser": true
+    },
+    "rules": {
+      "arrow-body-style": "off",
+      "arrow-parens": "off"
+    }
 }
