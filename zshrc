@@ -132,7 +132,8 @@ export GOPATH="$DEVHOME/go"
 export PATH="$PATH:$GOPATH/bin"
 
 # RVM setup
-export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+export PATH="$HOME/.rvm/bin/:${PATH}" # Add RVM to PATH for scripting - RVM rubies take precedence
 
 # NVM setup
 export NVM_DIR="$HOME/.nvm"
