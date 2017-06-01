@@ -4,16 +4,24 @@
       "plugin:flowtype/recommended"
     ],
     "plugins": [
-        "react",
-        "jsx-a11y",
-        "import",
-        "flowtype"
+      "react",
+      "jsx-a11y",
+      "import",
+      "flowtype"
     ],
     "env": {
       "browser": true
     },
     "rules": {
       "arrow-body-style": "off",
-      "arrow-parens": "off"
+      "arrow-parens": "off",
+      "no-underscore-dangle": "off",
+      "spaced-comment": "off",
+      "func-names": "off",
+      "space-before-function-paren": ["warning", {
+        "anonymous": "ignore",
+        "named": "always",
+        "asyncArrow": "ignore"
+      }]
     }
 }
