@@ -1,8 +1,9 @@
 # don't check in nvim plugins
-config/nvim/bundle
-config/heroku
-config/karabiner
+config
 .DS_Store
+
+# nvim uses config
+!config/nvim
 
 # we only want the pgcli config not the other stuff
 config/pgcli/*
