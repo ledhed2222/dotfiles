@@ -67,8 +67,10 @@ set nobackup
 set noswapfile
 " default yanks go to clipboard
 set clipboard=unnamed
-" various
+" decrease time to detect macro-y things 
 set timeoutlen=200
+" consider '_' a word boundry
+set iskeyword-=_
 " text formatting
 set textwidth=78
 set nospell
