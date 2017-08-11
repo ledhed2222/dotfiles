@@ -124,20 +124,9 @@ export DEVHOME="$HOME/Documents/Dev"
 export APACHEDIR="/etc/apache2" #virtual hosts in vhosts dir
 export XDG_CONFIG_HOME="$HOME/.config"
 
-# Binaries in /usr/local/bin take precedence over /usr/local
-export PATH="/usr/local/bin:${PATH}"
-
 # Go setup
 export GOPATH="$DEVHOME/go"
 export PATH="$PATH:$GOPATH/bin"
-
-# RVM setup
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
-export PATH="$HOME/.rvm/bin/:${PATH}" # Add RVM to PATH for scripting - RVM rubies take precedence
-
-# NVM setup
-export NVM_DIR="$HOME/.nvm"
-[[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
 
 # Java setup
 export JAVA_HOME=`/usr/libexec/java_home`
@@ -147,3 +136,11 @@ export JAVA_EXTENSION_PATH="$HOME/Library/Java/Extensions" # Just to make it eas
 export ANDROID_HOME="$HOME/Library/Android/sdk"
 export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
 
+# NVM setup
+export NVM_DIR="$HOME/.nvm"
+[[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
+
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*

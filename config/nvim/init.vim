@@ -37,7 +37,9 @@ Plugin 'cakebaker/scss-syntax.vim'		" SCSS development plugin
 Plugin 'flowtype/vim-flow'			" Flow development plugin
 Plugin 'tomtom/tcomment_vim'			" File-type sensitive comments
 Plugin 'neomake/neomake'			" Asynch makeprg
-Plugin 'tpope/vim-fireplace'			" Clojure
+Plugin 'tpope/vim-fireplace'			" Clojure helpers
+Plugin 'guns/vim-clojure-static'		" Basic syntax highlighting for Clojure
+Plugin 'guns/vim-clojure-highlight'		" Extended syntax highlighting for Clojure
 " End plugins
 
 call vundle#end()
@@ -129,7 +131,7 @@ endif
 " Autocommands
 """"""""""""""""""""""""""""""
 " Set Ruby, JS, JSON indents to two spaces
-autocmd FileType ruby,javascript,javascript.jsx,json setlocal expandtab shiftwidth=2 tabstop=2
+autocmd FileType html,xml,scss,ruby,javascript,javascript.jsx,json setlocal expandtab shiftwidth=2 tabstop=2
 
 " Some nice plaintext formatting options
 autocmd FileType text,gitcommit setlocal autoindent formatoptions=a2tw spell
@@ -196,6 +198,14 @@ let NERDTreeShowHidden=1
 let g:javascript_plugin_flow=1
 """"""""""""""""""""""""""""""
 " End vim-javascript configuration
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" vim-jsx configuration
+""""""""""""""""""""""""""""""
+let g:jsx_ext_required=0
+""""""""""""""""""""""""""""""
+" End vim-jsx configuration
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
