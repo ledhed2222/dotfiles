@@ -40,7 +40,6 @@ Plugin 'neomake/neomake'			" Asynch makeprg
 Plugin 'tpope/vim-fireplace'			" Clojure helpers
 Plugin 'guns/vim-clojure-static'		" Basic syntax highlighting for Clojure
 Plugin 'guns/vim-clojure-highlight'		" Extended syntax highlighting for Clojure
-Plugin 'vim-syntastic/syntastic'		" JavaScript lint integration
 " End plugins
 
 call vundle#end()
