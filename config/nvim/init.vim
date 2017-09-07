@@ -24,7 +24,6 @@ Plugin 'VundleVim/Vundle.vim'
 
 " Add plugins here
 Plugin 'vim-ruby/vim-ruby'			" Ruby development plugin
-Plugin 'tpope/vim-rails' 			" Rails development plugin
 Plugin 'fatih/vim-go' 				" Go development plugin
 Plugin 'sbl/scvim'				" SuperCollider development plugin
 Plugin 'Shougo/denite.nvim'			" Various UI tools
@@ -71,8 +70,6 @@ set noswapfile
 set clipboard=unnamed
 " decrease time to detect macro-y things 
 set timeoutlen=200
-" consider '_' a word boundry
-set iskeyword-=_
 " text formatting
 set textwidth=78
 set nospell
