@@ -39,6 +39,8 @@ Plugin 'neomake/neomake'			" Asynch makeprg
 Plugin 'tpope/vim-fireplace'			" Clojure helpers
 Plugin 'guns/vim-clojure-static'		" Basic syntax highlighting for Clojure
 Plugin 'guns/vim-clojure-highlight'		" Extended syntax highlighting for Clojure
+Plugin 'tpope/vim-fugitive'			" Git wrapper
+Plugin 'airblade/vim-gitgutter'			" Git line annotations in gutter
 " End plugins
 
 call vundle#end()
@@ -152,6 +154,7 @@ if executable('ag')
 	call denite#custom#var('grep', 'recursive_opts', [])
 	call denite#custom#var('grep', 'final_opts', [])
 	call denite#custom#var('grep', 'pattern_opt', [])
+	call denite#custom#var('grep', 'separator', ['--'])
 endif
 " search a file in the filetree
 nnoremap <leader><space> :<c-u>Denite -auto-preview file_rec<cr>
@@ -159,6 +162,8 @@ nnoremap <leader><space> :<c-u>Denite -auto-preview file_rec<cr>
 nnoremap <leader>colors :<c-u>Denite -auto-preview -mode=normal colorscheme<cr>
 " grep for files
 nnoremap <leader>/ :<c-u>Denite -auto-preview -mode=normal grep<cr>
+" grep for word under cursor
+nnoremap <leader>w :<c-u>DeniteCursorWord --auto-preview -mode=normal grep<cr>
 " mappings w/in denite buffers
 call denite#custom#map('insert', '<esc>', '<denite:enter_mode:normal>')
 """"""""""""""""""""""""""""""
