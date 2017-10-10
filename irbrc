@@ -1,6 +1,9 @@
 # Enable autocompletion
 require 'irb/completion'
 
+# We always want PP in irb
+require 'pp'
+
 # Auto-indent mode
 IRB.conf[:AUTO_INDENT] = true
 
