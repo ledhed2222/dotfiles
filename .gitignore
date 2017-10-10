@@ -2,9 +2,6 @@
 config
 .DS_Store
 
-# nvim uses config
-!config/nvim
-
-# we only want the pgcli config not the other stuff
-config/pgcli/*
+!config/nvim/init.vim
 !config/pgcli/config
+
