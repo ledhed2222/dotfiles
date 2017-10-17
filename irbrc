@@ -11,23 +11,33 @@ IRB.conf[:AUTO_INDENT] = true
 IRB.conf[:SAVE_HISTORY] = 1000
 IRB.conf[:HISTORY_FILE] = "#{ENV['HOME']}/.irb_history"
 
-# Some Rails helpers
-if defined?(Rails) && Rails.env.development?
+if defined?(Rails)
+  IRB.conf[:PROMPT][:RAILS] = {
+    PROMPT_I: "#{Rails.env}> ",
+    PROMPT_N: nil,
+    PROMPT_S: nil,
+    PROMPT_C: nil,
+    RETURN: "=> %s\n",
+  }
+  IRB.conf[:PROMPT_MODE] = :RAILS
 
-  module ActiveRecordExtensions
-    module ClassMethods
-      # Retreive a random record of model
-      def random
-        offset(rand(count)).first
+  # Some Rails helpers
+  if Rails.env.development?
+    module ActiveRecordExtensions
+      module ClassMethods
+        # Retreive a random record of model
+        def random
+          offset(rand(count)).first
+        end
+      end
+
+      def self.included(base)
+        base.extend ClassMethods
       end
     end
 
-    def self.included(base)
-      base.extend ClassMethods
-    end
+    ActiveRecord::Base.include(ActiveRecordExtensions)
   end
-
-  ActiveRecord::Base.include(ActiveRecordExtensions)
 
 end
 
