@@ -225,8 +225,7 @@ let g:neomake_place_signs=1
 let g:neomake_echo_current_error=1
 let g:neomake_highlight_columns=1
 let g:neomake_javascript_enabled_makers=['eslint']
-let g:neomake_ruby_rubocop_args=['--format', 'emacs', '-D', '--force-exclusion', '-R']
-let g:neomake_ruby_enabled_makers=['mri', 'rubocop']
+let g:neomake_ruby_enabled_makers=['rubocop']
 autocmd! BufWritePost * Neomake
 """"""""""""""""""""""""""""""
 " End neomake configuration
