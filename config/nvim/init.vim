@@ -226,7 +226,7 @@ let g:neomake_echo_current_error=1
 let g:neomake_highlight_columns=1
 let g:neomake_javascript_enabled_makers=['eslint']
 let g:neomake_ruby_enabled_makers=['rubocop']
-autocmd! BufWritePost * Neomake
+call neomake#configure#automake('nw', 500)
 """"""""""""""""""""""""""""""
 " End neomake configuration
 """"""""""""""""""""""""""""""
