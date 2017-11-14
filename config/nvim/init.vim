@@ -6,15 +6,15 @@ let s:editor_root=expand($XDG_CONFIG_HOME . '/nvim')
 let s:vundle_installed=1
 let s:vundle_readme=s:editor_root . '/bundle/Vundle.vim/README.md'
 if !filereadable(s:vundle_readme)
-	let s:vundle_installed=0
-	echo "Installing Vundle...\n"
-	silent execute "!mkdir -p " . s:editor_root . "/bundle"
-	silent execute "!git clone https://github.com/VundleVim/Vundle.vim.git " . s:editor_root . "/bundle/Vundle.vim"
+  let s:vundle_installed=0
+  echo "Installing Vundle...\n"
+  silent execute "!mkdir -p " . s:editor_root . "/bundle"
+  silent execute "!git clone https://github.com/VundleVim/Vundle.vim.git " . s:editor_root . "/bundle/Vundle.vim"
 endif
 if !has('python3')
-	echo "Installing neovim python3 support...\n"
-	silent execute "!pip3 install neovim"
-	:UpdateRemotePlugins
+  echo "Installing neovim python3 support...\n"
+  silent execute "!pip3 install neovim"
+  :UpdateRemotePlugins
 endif
 
 filetype off
@@ -33,7 +33,6 @@ Plugin 'flazz/vim-colorschemes'			" A package of many color schemes
 Plugin 'pangloss/vim-javascript'		" JavaScript development plugin
 Plugin 'mxw/vim-jsx'				" JSX development plugin
 Plugin 'cakebaker/scss-syntax.vim'		" SCSS development plugin
-Plugin 'flowtype/vim-flow'			" Flow development plugin
 Plugin 'tomtom/tcomment_vim'			" File-type sensitive comments
 Plugin 'neomake/neomake'			" Asynch makeprg
 Plugin 'tpope/vim-fireplace'			" Clojure helpers
@@ -47,9 +46,9 @@ call vundle#end()
 filetype plugin indent on
 
 if s:vundle_installed == 0
-	echo "Installing plugins...\n"
-	:PluginInstall
-	let s:vundle_installed=1
+  echo "Installing plugins...\n"
+  :PluginInstall
+  let s:vundle_installed=1
 endif
 """"""""""""""""""""""""""""""
 " End Vundle config
@@ -76,11 +75,15 @@ set timeoutlen=200
 set textwidth=78
 set nospell
 set spelllang=en_us
+" space tabs
+set expandtab
+set shiftwidth=2
+set tabstop=2
 " use ag for keyword lookup
 if executable('ag')
-	set keywordprg=ag
+  set keywordprg=ag
 else
-	set keywordprg=grep
+  set keywordprg=grep
 endif
 " Leader is <space>
 let mapleader="\<space>"
@@ -105,21 +108,21 @@ tnoremap <esc> <c-\><c-n>
 
 " In many terminal emulators the mouse works just fine, thus enable it.
 if has('mouse')
-	set mouse=a
+  set mouse=a
 endif
 
 " Switch syntax highlighting on, when the terminal has colors
 " Also switch on highlighting the last used search pattern.
 if &t_Co > 2 || has("gui_running")
-	syntax on
-	set hlsearch
+  syntax on
+  set hlsearch
 endif
 
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.
 " Only define it when not defined already.
 if !exists(":DiffOrig")
-	command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis 
+  command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis 
 				\ | wincmd p | diffthis | wincmd p
 endif
 """"""""""""""""""""""""""""""
@@ -129,9 +132,6 @@ endif
 """"""""""""""""""""""""""""""
 " Autocommands
 """"""""""""""""""""""""""""""
-" Set Ruby, JS, JSON indents to two spaces
-autocmd FileType html,xml,scss,ruby,javascript,javascript.jsx,json setlocal expandtab shiftwidth=2 tabstop=2
-
 " Some nice plaintext formatting options
 autocmd FileType text,gitcommit setlocal autoindent formatoptions=a2tw spell
 
@@ -148,13 +148,13 @@ autocmd FileType help setlocal nospell
 " denite configuration
 """"""""""""""""""""""""""""""
 if executable('ag')
-	call denite#custom#var('file_rec', 'command', ['ag', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', ''])
-	call denite#custom#var('grep', 'command', ['ag'])
-	call denite#custom#var('grep', 'default_opts', ['-s', '--vimgrep', '--hidden'])
-	call denite#custom#var('grep', 'recursive_opts', [])
-	call denite#custom#var('grep', 'final_opts', [])
-	call denite#custom#var('grep', 'pattern_opt', [])
-	call denite#custom#var('grep', 'separator', ['--'])
+  call denite#custom#var('file_rec', 'command', ['ag', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', ''])
+  call denite#custom#var('grep', 'command', ['ag'])
+  call denite#custom#var('grep', 'default_opts', ['-s', '--vimgrep', '--hidden'])
+  call denite#custom#var('grep', 'recursive_opts', [])
+  call denite#custom#var('grep', 'final_opts', [])
+  call denite#custom#var('grep', 'pattern_opt', [])
+  call denite#custom#var('grep', 'separator', ['--'])
 endif
 " search a file in the filetree
 nnoremap <leader><space> :<c-u>Denite -auto-preview file_rec<cr>
@@ -211,21 +211,34 @@ let g:jsx_ext_required=0
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
-" vim-flow configuration
-""""""""""""""""""""""""""""""
-let g:flow#autoclose=1
-""""""""""""""""""""""""""""""
-" End vim-flow configuration
-""""""""""""""""""""""""""""""
-
-""""""""""""""""""""""""""""""
 " neomake configuration
 """"""""""""""""""""""""""""""
 let g:neomake_place_signs=1
 let g:neomake_echo_current_error=1
 let g:neomake_highlight_columns=1
+
+" javascript setup - only adding flow if detected and executable found
+function! StrTrim(txt)
+	return substitute(a:txt, '^\n*\s*\(.\{-}\)\n*\s*$', '\1', '')
+endfunction
 let g:neomake_javascript_enabled_makers=['eslint']
+let g:flow_path = StrTrim(system('PATH=$(npm bin):$PATH && which flow'))
+if findfile('.flowconfig', '.;') !=# ''
+  let g:flow_path = StrTrim(system('PATH=$(npm bin):$PATH && which flow'))
+  if g:flow_path != 'flow not found' && executable('flow-vim-quickfix')
+    let g:neomake_javascript_flow_maker = {
+      \ 'exe': 'sh',
+      \ 'args': ['-c', g:flow_path.' --json 2> /dev/null | flow-vim-quickfix'],
+      \ 'errorformat': '%E%f:%l:%c\,%n: %m',
+      \ 'cwd': '%:p:h'
+      \ }
+    " add flow if available
+    let g:neomake_javascript_enabled_makers = g:neomake_javascript_enabled_makers + ['flow']
+  endif
+endif
+
 let g:neomake_ruby_enabled_makers=['rubocop']
+
 call neomake#configure#automake('nw', 500)
 """"""""""""""""""""""""""""""
 " End neomake configuration
