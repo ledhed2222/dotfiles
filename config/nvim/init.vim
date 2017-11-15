@@ -241,7 +241,7 @@ endif
 
 let g:neomake_ruby_enabled_makers=['rubocop']
 
-call neomake#configure#automake('w')
+call neomake#configure#automake('rw')
 """"""""""""""""""""""""""""""
 " End neomake configuration
 """"""""""""""""""""""""""""""
