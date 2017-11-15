@@ -225,6 +225,8 @@ let g:neomake_javascript_enabled_makers=['eslint']
 let g:flow_path = StrTrim(system('PATH=$(npm bin):$PATH && which flow'))
 if findfile('.flowconfig', '.;') !=# ''
   let g:flow_path = StrTrim(system('PATH=$(npm bin):$PATH && which flow'))
+
+  " need to have `flow-vim-quickfix`
   if g:flow_path != 'flow not found' && executable('flow-vim-quickfix')
     let g:neomake_javascript_flow_maker = {
       \ 'exe': 'sh',
@@ -239,7 +241,7 @@ endif
 
 let g:neomake_ruby_enabled_makers=['rubocop']
 
-call neomake#configure#automake('nw', 500)
+call neomake#configure#automake('w')
 """"""""""""""""""""""""""""""
 " End neomake configuration
 """"""""""""""""""""""""""""""
