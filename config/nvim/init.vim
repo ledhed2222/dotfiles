@@ -239,7 +239,7 @@ if findfile('.flowconfig', '.;') !=# ''
   endif
 endif
 
-let g:neomake_ruby_enabled_makers=['rubocop']
+let g:neomake_ruby_enabled_makers=['rubocop_rails']
 
 call neomake#configure#automake('rw')
 """"""""""""""""""""""""""""""

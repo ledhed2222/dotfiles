@@ -27,7 +27,8 @@ if defined?(Rails)
       module ClassMethods
         # Retreive a random record of model
         def random
-          offset(rand(count)).first
+          @_dev_record_count ||= count
+          offset(rand(@_dev_record_count)).first
         end
       end
 
