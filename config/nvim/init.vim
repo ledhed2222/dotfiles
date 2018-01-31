@@ -23,23 +23,23 @@ call vundle#begin(s:editor_root . '/bundle')
 Plugin 'VundleVim/Vundle.vim'
 
 " Add plugins here
-Plugin 'vim-ruby/vim-ruby'			" Ruby development plugin
-Plugin 'fatih/vim-go' 				" Go development plugin
-Plugin 'sbl/scvim'				" SuperCollider development plugin
-Plugin 'Shougo/denite.nvim'			" Various UI tools
-Plugin 'JamshedVesuna/vim-markdown-preview'	" Preview .md files
-Plugin 'scrooloose/nerdtree'			" File system explorer
-Plugin 'flazz/vim-colorschemes'			" A package of many color schemes
-Plugin 'pangloss/vim-javascript'		" JavaScript development plugin
-Plugin 'mxw/vim-jsx'				" JSX development plugin
-Plugin 'cakebaker/scss-syntax.vim'		" SCSS development plugin
-Plugin 'tomtom/tcomment_vim'			" File-type sensitive comments
-Plugin 'neomake/neomake'			" Asynch makeprg
-Plugin 'tpope/vim-fireplace'			" Clojure helpers
-Plugin 'guns/vim-clojure-static'		" Basic syntax highlighting for Clojure
-Plugin 'guns/vim-clojure-highlight'		" Extended syntax highlighting for Clojure
-Plugin 'tpope/vim-fugitive'			" Git wrapper
-Plugin 'airblade/vim-gitgutter'			" Git line annotations in gutter
+Plugin 'vim-ruby/vim-ruby'                    " Ruby development plugin
+Plugin 'fatih/vim-go'                         " Go development plugin
+Plugin 'sbl/scvim'                            " SuperCollider development plugin
+Plugin 'Shougo/denite.nvim'                   " Various UI tools
+Plugin 'JamshedVesuna/vim-markdown-preview'   " Preview .md files
+Plugin 'scrooloose/nerdtree'                  " File system explorer
+Plugin 'flazz/vim-colorschemes'               " A package of many color schemes
+Plugin 'pangloss/vim-javascript'              " JavaScript development plugin
+Plugin 'mxw/vim-jsx'                          " JSX development plugin
+Plugin 'cakebaker/scss-syntax.vim'            " SCSS development plugin
+Plugin 'tomtom/tcomment_vim'                  " File-type sensitive comments
+Plugin 'neomake/neomake'                      " Asynch makeprg
+Plugin 'tpope/vim-fireplace'                  " Clojure helpers
+Plugin 'guns/vim-clojure-static'              " Basic syntax highlighting for Clojure
+Plugin 'guns/vim-clojure-highlight'           " Extended syntax highlighting for Clojure
+Plugin 'tpope/vim-fugitive'                   " Git wrapper
+Plugin 'airblade/vim-gitgutter'               " Git line annotations in gutter
 " End plugins
 
 call vundle#end()
