@@ -48,7 +48,7 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git bundler)
+plugins=(vi-mode git bundler)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -86,8 +86,29 @@ function server {
 	fi
 }
 
+# fo - open the selected file with the default editor. ctrl-o open with
+# default command
+function fo {
+  local out file key
+  IFS=$'\n' out=($(fzf-tmux --select-1 --query="$1" --exit-0 --expect=ctrl-o,ctrl-e))
+  key=$(head -1 <<< "$out")
+  file=$(head -2 <<< "$out" | tail -1)
+  if [[ -n "$file" ]]
+  then
+    [ "$key" = ctrl-o ] && open "$file" || ${EDITOR:-vim} "$file"
+  fi
+}
+
+# fbr - fuzzy checkout git branch
+function fbr {
+  local branches branch
+  branches=$(git branch -vv) &&
+    branch=$(echo "$branches" | fzf +m) &&
+    git checkout $(echo "$branch" | awk '{print $1}' | sed "s/.* //")
+}
+
 # MacOS specific stuff
-if [[ `uname` == "Darwin" ]]
+if [[ $(uname) == "Darwin" ]]
 then
 	# Ability to cd into aliases
 	# https://github.com/shiguol/CD2Alies
