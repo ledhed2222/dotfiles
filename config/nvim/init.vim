@@ -26,10 +26,10 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'vim-ruby/vim-ruby'                    " Ruby development plugin
 Plugin 'fatih/vim-go'                         " Go development plugin
 Plugin 'sbl/scvim'                            " SuperCollider development plugin
-Plugin 'Shougo/denite.nvim'                   " Various UI tools
+Plugin 'junegunn/fzf.vim'                     " fzf integration
 Plugin 'JamshedVesuna/vim-markdown-preview'   " Preview .md files
 Plugin 'scrooloose/nerdtree'                  " File system explorer
-Plugin 'flazz/vim-colorschemes'               " A package of many color schemes
+Plugin 'morhetz/gruvbox'                      " Colorscheme
 Plugin 'pangloss/vim-javascript'              " JavaScript development plugin
 Plugin 'mxw/vim-jsx'                          " JSX development plugin
 Plugin 'cakebaker/scss-syntax.vim'            " SCSS development plugin
@@ -40,6 +40,7 @@ Plugin 'guns/vim-clojure-static'              " Basic syntax highlighting for Cl
 Plugin 'guns/vim-clojure-highlight'           " Extended syntax highlighting for Clojure
 Plugin 'tpope/vim-fugitive'                   " Git wrapper
 Plugin 'airblade/vim-gitgutter'               " Git line annotations in gutter
+Plugin 'elixir-editors/vim-elixir'            " Elixir development plugin
 " End plugins
 
 call vundle#end()
@@ -58,7 +59,10 @@ endif
 " General config
 """"""""""""""""""""""""""""""
 " set colorscheme
-colorscheme benokai
+colorscheme gruvbox
+"set termguicolors <-- only if terminal supports 24-bit colors
+set background=dark
+let g:gruvbox_contrast_dark='medium'
 " line numbers
 set number
 " Allow project-specific vimrc files
@@ -145,32 +149,6 @@ autocmd FileType help setlocal nospell
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
-" denite configuration
-""""""""""""""""""""""""""""""
-if executable('ag')
-  call denite#custom#var('file_rec', 'command', ['ag', '--follow', '--nocolor', '--nogroup', '--hidden', '-g', ''])
-  call denite#custom#var('grep', 'command', ['ag'])
-  call denite#custom#var('grep', 'default_opts', ['-s', '--vimgrep', '--hidden'])
-  call denite#custom#var('grep', 'recursive_opts', [])
-  call denite#custom#var('grep', 'final_opts', [])
-  call denite#custom#var('grep', 'pattern_opt', [])
-  call denite#custom#var('grep', 'separator', ['--'])
-endif
-" search a file in the filetree
-nnoremap <leader><space> :<c-u>Denite -auto-preview file_rec<cr>
-" browse colorschemes
-nnoremap <leader>colors :<c-u>Denite -auto-preview -mode=normal colorscheme<cr>
-" grep for files
-nnoremap <leader>/ :<c-u>Denite -auto-preview -mode=normal grep<cr>
-" grep for word under cursor
-nnoremap <leader>w :<c-u>DeniteCursorWord --auto-preview -mode=normal grep<cr>
-" mappings w/in denite buffers
-call denite#custom#map('insert', '<esc>', '<denite:enter_mode:normal>')
-""""""""""""""""""""""""""""""
-" End denite configuration
-""""""""""""""""""""""""""""""
-
-""""""""""""""""""""""""""""""
 " vim-markdown-preview configuration
 """"""""""""""""""""""""""""""
 if executable('grip')
@@ -246,6 +224,21 @@ call neomake#configure#automake('rw')
 " End neomake configuration
 """"""""""""""""""""""""""""""
 
+""""""""""""""""""""""""""""""
+" fzf configuration
+""""""""""""""""""""""""""""""
+if executable('fzf')
+  set rtp+=/usr/local/opt/fzf
+  " search a file in the filetree
+  nnoremap <leader><space> :Files<cr>
+  " grep w/in files
+  nnoremap <leader>/ :Ag<cr>
+  " browse colorschemes
+  nnoremap <leader>colors :Colors<cr>
+endif
+""""""""""""""""""""""""""""""
+" end fzf configuration
+""""""""""""""""""""""""""""""
 
 
 " Disable unsafe commands after this point, ie in exrc's
