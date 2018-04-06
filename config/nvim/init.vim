@@ -230,9 +230,11 @@ call neomake#configure#automake('rw')
 if executable('fzf')
   set rtp+=/usr/local/opt/fzf
   " search a file in the filetree
+  command! -bang -nargs=* Files call fzf#run(fzf#wrap({'source': 'ag --hidden -f -g ""'}))
   nnoremap <leader><space> :Files<cr>
   " grep w/in files
-  nnoremap <leader>/ :Ag<cr>
+  command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, '--hidden', <bang>0)
+  nnoremap <leader>/ :Ag<space>
   " browse colorschemes
   nnoremap <leader>colors :Colors<cr>
 endif
