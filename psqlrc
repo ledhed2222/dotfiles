@@ -4,3 +4,5 @@
 -- Use table format by default but switch to expanded
 -- table format when there's a lot of data
 \x auto
+-- Turn on query timing
+\timing
