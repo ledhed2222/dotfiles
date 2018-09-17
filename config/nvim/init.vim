@@ -218,7 +218,7 @@ if findfile('.flowconfig', '.;') !=# ''
   endif
 endif
 
-let g:neomake_ruby_enabled_makers=['rubocop_rails']
+let g:neomake_ruby_enabled_makers=['rubocop']
 
 let g:neomake_sass_enabled_makers=['sasslint']
 
