@@ -72,6 +72,10 @@ set exrc
 set nobackup
 " no swaps
 set noswapfile
+" syntax highlighting performance
+set nocursorline
+set nocursorcolumn
+set norelativenumber
 " default yanks go to clipboard
 set clipboard=unnamed
 " decrease time to detect macro-y things 
@@ -182,6 +186,14 @@ let g:javascript_plugin_flow=1
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
+" vim-ruby configuration
+""""""""""""""""""""""""""""""
+let g:ruby_no_expensive=0
+""""""""""""""""""""""""""""""
+" End vim-ruby configuration
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
 " vim-jsx configuration
 """"""""""""""""""""""""""""""
 let g:jsx_ext_required=0
@@ -196,27 +208,44 @@ let g:neomake_place_signs=1
 let g:neomake_echo_current_error=1
 let g:neomake_highlight_columns=1
 
-" javascript setup - only adding flow if detected and executable found
+" javascript setup - only adding eslint or flow if detected and executable found
 function! StrTrim(txt)
 	return substitute(a:txt, '^\n*\s*\(.\{-}\)\n*\s*$', '\1', '')
 endfunction
-let g:neomake_javascript_enabled_makers=['eslint']
-let g:flow_path = StrTrim(system('PATH=$(npm bin):$PATH && which flow'))
+
+let g:neomake_javascript_enabled_makers = []
+
+if findfile('.eslintrc', '.;') !=# ''
+  let s:eslint_path = StrTrim(system('PATH=$(npm bin):$PATH && which eslint'))
+  if s:eslint_path != 'eslint not found'
+    let g:neomake_javascript_eslint_maker = {
+      \ 'exe': s:eslint_path,
+      \ 'args': ['--format=compact'],
+      \ 'errorformat': '%E%f: line %l\, col %c\, Error - %m,' .
+      \   '%W%f: line %l\, col %c\, Warning - %m,%-G,%-G%*\d problems%#',
+      \ 'cwd': '%:p:h',
+      \ 'output_stream': 'stdout',
+      \ }
+    let g:neomake_javascript_enabled_makers = g:neomake_javascript_enabled_makers + ['eslint']
+  endif
+endif
+
 if findfile('.flowconfig', '.;') !=# ''
-  let g:flow_path = StrTrim(system('PATH=$(npm bin):$PATH && which flow'))
+  let s:flow_path = StrTrim(system('PATH=$(npm bin):$PATH && which flow'))
 
   " need to have `flow-vim-quickfix`
-  if g:flow_path != 'flow not found' && executable('flow-vim-quickfix')
+  if s:flow_path != 'flow not found' && executable('flow-vim-quickfix')
     let g:neomake_javascript_flow_maker = {
       \ 'exe': 'sh',
-      \ 'args': ['-c', g:flow_path.' --json 2> /dev/null | flow-vim-quickfix'],
+      \ 'args': ['-c', s:flow_path.' --json 2> /dev/null | flow-vim-quickfix'],
       \ 'errorformat': '%E%f:%l:%c\,%n: %m',
-      \ 'cwd': '%:p:h'
+      \ 'cwd': '%:p:h',
       \ }
     " add flow if available
     let g:neomake_javascript_enabled_makers = g:neomake_javascript_enabled_makers + ['flow']
   endif
 endif
+" end javascript setup
 
 let g:neomake_ruby_enabled_makers=['rubocop']
 
