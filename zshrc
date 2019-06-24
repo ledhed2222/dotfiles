@@ -129,16 +129,18 @@ then
 			builtin cd "${1}"
 		fi
 	}
-	# Linux-like `exit` that kills Terminal
-	# when last session ends
-	function exit {
-		if [[ `ps -o tty | grep '[0-9]' | uniq | wc -l` -gt 1 ]]
-		then
-			builtin exit
-		else
-			osascript -e 'quit app "Terminal"'
-		fi
-	}
+  # Linux-like `exit` that kills Terminal
+  # when last session ends
+  # only use this if you're using Terminal instead of kitty
+  #
+  # function exit {
+  # 	if [[ `ps -o tty | grep '[0-9]' | uniq | wc -l` -gt 1 ]]
+  # 	then
+  # 		builtin exit
+  # 	else
+  # 		osascript -e 'quit app "Terminal"'
+  # 	fi
+  # }
 fi
 # End MacOS specific stuff
 

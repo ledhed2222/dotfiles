@@ -14,6 +14,11 @@ brew install neovim
 chsh -s `which zsh`
 ```
 
+##Kitty emulator
+```zsh
+brew cask install kitty
+```
+
 ##Terminal.app configuration
 * Preferences > Profiles > Shell - set 'when the shell exists' to 'close if
   the shell exited cleanly'
