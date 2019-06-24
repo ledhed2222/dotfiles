@@ -1,7 +1,19 @@
 # don't check in nvim plugins
-config
+config/*
 .DS_Store
 
+# allow nvim
+!config/nvim
+config/nvim/*
 !config/nvim/init.vim
+
+# allow pgcli
+!config/pgcli
+config/pgcli/*
 !config/pgcli/config
+
+# allow kitty
+!config/kitty
+config/kitty/*
+!config/kitty/kitty.conf
 

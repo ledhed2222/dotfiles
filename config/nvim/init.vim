@@ -61,7 +61,7 @@ endif
 """"""""""""""""""""""""""""""
 " set colorscheme
 colorscheme gruvbox
-"set termguicolors <-- only if terminal supports 24-bit colors
+set termguicolors "<-- only if terminal supports 24-bit colors
 set background=dark
 let g:gruvbox_contrast_dark='medium'
 " line numbers
