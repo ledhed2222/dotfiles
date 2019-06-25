@@ -9,6 +9,18 @@
 	remote = origin
 [fetch]
   prune = true
-
+[merge]
+	tool = vimdiff
+[mergetool]
+  prompt = true
+[mergetool "vimdiff"]
+  #cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+  cmd = nvim -d -O $MERGED $REMOTE $LOCAL
 [diff]
 	tool = vimdiff
+[difftool]
+	prompt = false
+[difftool "vimdiff"]
+  #cmd = nvim -d $LOCAL $REMOTE -c '$wincmd w' -c 'wincmd J'
+  cmd = nvim -d -O $REMOTE $LOCAL
+

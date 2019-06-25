@@ -75,8 +75,9 @@ export EDITOR="nvim"
 alias rm="rm -i"
 alias top="top -o cpu -s 3 -stats pid,command,cpu,rprvt,rsize,vprvt,vsize,user,state,threads,ppid,pgrp,faults,cow"
 alias grep="grep -E --color=always"
-alias vimdiff="nvim -d"
 alias python="python3"
+alias gd="git difftool"
+alias gds="git difftool --staged"
 
 # serve this directory - default port is 3000
 function server {
