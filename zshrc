@@ -146,7 +146,7 @@ fi
 # End MacOS specific stuff
 
 # Common locations
-export DEVHOME="$HOME/Documents/Dev"
+export DEVHOME="$HOME/Dev"
 export APACHEDIR="/etc/apache2" #virtual hosts in vhosts dir
 export XDG_CONFIG_HOME="$HOME/.config"
 

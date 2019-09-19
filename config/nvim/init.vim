@@ -162,6 +162,7 @@ if executable('grip')
 endif
 " shortcut for seeing preview
 let vim_markdown_preview_hotkey='<leader>pre'
+let vim_markdown_preview_browser='Firefox'
 """"""""""""""""""""""""""""""
 " End vim-markdown-preview configuration
 """"""""""""""""""""""""""""""
