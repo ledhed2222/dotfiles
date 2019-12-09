@@ -155,7 +155,7 @@ export GOPATH="$DEVHOME/go"
 export PATH="$PATH:$GOPATH/bin"
 
 # Java setup
-export JAVA_HOME=`/usr/libexec/java_home`
+export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 export JAVA_EXTENSION_PATH="$HOME/Library/Java/Extensions" # Just to make it easy to remember where extensions are
 
 # Android setup
