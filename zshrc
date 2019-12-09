@@ -162,6 +162,9 @@ export JAVA_EXTENSION_PATH="$HOME/Library/Java/Extensions" # Just to make it eas
 export ANDROID_HOME="$HOME/Library/Android/sdk"
 export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
 
+# C++ setup
+export BOOST_ROOT="/usr/local/$(ls /usr/local | grep --color=none "^boost" | head -1)"
+
 # NVM setup
 export NVM_DIR="$HOME/.nvm"
 [[ -s "$NVM_DIR/nvm.sh" ]] && . "$NVM_DIR/nvm.sh" # This loads nvm
