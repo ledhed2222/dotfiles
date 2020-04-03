@@ -147,6 +147,7 @@ fi
 
 # Common locations
 export DEVHOME="$HOME/Dev"
+export WORKHOME="$HOME/Documents/Work"
 export APACHEDIR="/etc/apache2" #virtual hosts in vhosts dir
 export XDG_CONFIG_HOME="$HOME/.config"
 
