@@ -151,6 +151,9 @@ export WORKHOME="$HOME/Documents/Work"
 export APACHEDIR="/etc/apache2" #virtual hosts in vhosts dir
 export XDG_CONFIG_HOME="$HOME/.config"
 
+# Homebrew setup
+export PATH="$PATH:/usr/local/sbin"
+
 # Go setup
 export GOPATH="$DEVHOME/go"
 export PATH="$PATH:$GOPATH/bin"
