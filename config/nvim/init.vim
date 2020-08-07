@@ -42,6 +42,7 @@ Plugin 'tpope/vim-fugitive'                   " Git wrapper
 Plugin 'airblade/vim-gitgutter'               " Git line annotations in gutter
 Plugin 'elixir-editors/vim-elixir'            " Elixir development plugin
 Plugin 'gcorne/vim-sass-lint'                 " SCSS linter
+Plugin 'herringtondarkholme/yats'             " TypeScript dev plugin
 " End plugins
 
 call vundle#end()
