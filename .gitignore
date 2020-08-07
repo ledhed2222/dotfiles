@@ -17,3 +17,6 @@ config/pgcli/*
 config/kitty/*
 !config/kitty/kitty.conf
 
+# disallow lein reply history
+lein/repl-history
+
