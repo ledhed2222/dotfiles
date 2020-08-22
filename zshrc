@@ -162,6 +162,10 @@ export PATH="$PATH:$GOPATH/bin"
 export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
 export JAVA_EXTENSION_PATH="$HOME/Library/Java/Extensions" # Just to make it easy to remember where extensions are
 
+## jenv setup
+export PATH="$HOME/.jenv/bin:$PATH"
+eval "$(jenv init -)"
+
 # Android setup
 export ANDROID_HOME="$HOME/Library/Android/sdk"
 export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
