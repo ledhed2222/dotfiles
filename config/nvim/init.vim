@@ -210,17 +210,18 @@ let g:neomake_place_signs=1
 let g:neomake_echo_current_error=1
 let g:neomake_highlight_columns=1
 
-" javascript setup - only adding eslint or flow if detected and executable found
+" javascript/typescript setup - only adding eslint or flow if detected and executable found
 function! StrTrim(txt)
 	return substitute(a:txt, '^\n*\s*\(.\{-}\)\n*\s*$', '\1', '')
 endfunction
 
-let g:neomake_javascript_enabled_makers = []
+let s:js_only_makers = []
+let s:js_ts_makers = []
 
-if findfile('.eslintrc', '.;') !=# ''
+if findfile(glob('.eslintrc*'), '.;') !=# ''
   let s:eslint_path = StrTrim(system('PATH=$(npm bin):$PATH && which eslint'))
   if s:eslint_path != 'eslint not found'
-    let g:neomake_javascript_eslint_maker = {
+    let s:eslint_maker = {
       \ 'exe': s:eslint_path,
       \ 'args': ['--format=compact'],
       \ 'errorformat': '%E%f: line %l\, col %c\, Error - %m,' .
@@ -228,7 +229,9 @@ if findfile('.eslintrc', '.;') !=# ''
       \ 'cwd': '%:p:h',
       \ 'output_stream': 'stdout',
       \ }
-    let g:neomake_javascript_enabled_makers = g:neomake_javascript_enabled_makers + ['eslint']
+    let g:neomake_javascript_eslint_maker = s:eslint_maker
+    let g:neomake_typescript_eslint_maker = s:eslint_maker
+    let s:js_ts_makers = s:js_ts_makers + ['eslint']
   endif
 endif
 
@@ -244,9 +247,12 @@ if findfile('.flowconfig', '.;') !=# ''
       \ 'cwd': '%:p:h',
       \ }
     " add flow if available
-    let g:neomake_javascript_enabled_makers = g:neomake_javascript_enabled_makers + ['flow']
+    let s:js_only_makers = s:js_only_makers + ['flow']
   endif
 endif
+
+let g:neomake_javascript_enabled_makers = s:js_only_makers + s:js_ts_makers
+let g:neomake_typescript_enabled_makers = s:js_ts_makers
 " end javascript setup
 
 let g:neomake_ruby_enabled_makers=['rubocop']
