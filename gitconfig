@@ -24,3 +24,5 @@
   #cmd = nvim -d $LOCAL $REMOTE -c '$wincmd w' -c 'wincmd J'
   cmd = nvim -d -O $REMOTE $LOCAL
 
+[pull]
+	rebase = false
