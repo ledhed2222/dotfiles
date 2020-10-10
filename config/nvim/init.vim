@@ -43,6 +43,7 @@ Plugin 'airblade/vim-gitgutter'               " Git line annotations in gutter
 Plugin 'elixir-editors/vim-elixir'            " Elixir development plugin
 Plugin 'gcorne/vim-sass-lint'                 " SCSS linter
 Plugin 'herringtondarkholme/yats'             " TypeScript dev plugin
+Plugin 'mhinz/vim-mix-format'                 " Elixir mix formatter
 " End plugins
 
 call vundle#end()
@@ -89,6 +90,8 @@ set spelllang=en_us
 set expandtab
 set shiftwidth=2
 set tabstop=2
+" reload files changed outside of vim
+set autoread
 " use ag for keyword lookup
 if executable('ag')
   set keywordprg=ag
@@ -262,6 +265,14 @@ let g:neomake_sass_enabled_makers=['sasslint']
 call neomake#configure#automake('rw')
 """"""""""""""""""""""""""""""
 " End neomake configuration
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" vim-mix-format configuration
+""""""""""""""""""""""""""""""
+let g:mix_format_on_save = 1
+""""""""""""""""""""""""""""""
+" End vim-mix-format configuration
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
