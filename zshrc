@@ -130,18 +130,6 @@ then
 			builtin cd "${1}"
 		fi
 	}
-  # Linux-like `exit` that kills Terminal
-  # when last session ends
-  # only use this if you're using Terminal instead of kitty
-  #
-  # function exit {
-  # 	if [[ `ps -o tty | grep '[0-9]' | uniq | wc -l` -gt 1 ]]
-  # 	then
-  # 		builtin exit
-  # 	else
-  # 		osascript -e 'quit app "Terminal"'
-  # 	fi
-  # }
 fi
 # End MacOS specific stuff
 
@@ -157,6 +145,9 @@ export PATH="$PATH:/usr/local/sbin"
 # Go setup
 export GOPATH="$DEVHOME/go"
 export PATH="$PATH:$GOPATH/bin"
+
+# Elixir setup
+export ERL_AFLAGS="-kernel shell_history enabled"
 
 # Java setup
 export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
