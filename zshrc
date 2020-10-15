@@ -149,11 +149,7 @@ export PATH="$PATH:$GOPATH/bin"
 # Elixir setup
 export ERL_AFLAGS="-kernel shell_history enabled"
 
-# Java setup
-export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
-export JAVA_EXTENSION_PATH="$HOME/Library/Java/Extensions" # Just to make it easy to remember where extensions are
-
-## jenv setup
+# Java/jenv setup
 export PATH="$HOME/.jenv/bin:$PATH"
 eval "$(jenv init -)"
 
