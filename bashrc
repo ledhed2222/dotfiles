@@ -72,3 +72,4 @@ export JAVA_EXTENSION_PATH=$HOME/Library/Java/Extensions # Just to make it easy 
 # Git setup
 source "/usr/local/etc/bash_completion.d/git-completion.bash"
 
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

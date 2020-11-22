@@ -18,6 +18,7 @@
   cmd = nvim -d -O $MERGED $REMOTE $LOCAL
 [diff]
 	tool = vimdiff
+	ignoreSubmodules = dirty
 [difftool]
 	prompt = false
 [difftool "vimdiff"]
