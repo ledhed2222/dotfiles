@@ -83,9 +83,9 @@ alias gds="git difftool --staged"
 function server {
 	if [[ "${#1}" == 0 ]]
 	then
-		python -m SimpleHTTPServer 3000
+		python2 -m SimpleHTTPServer 3000
 	else
-		python -m SimpleHTTPServer "${1}"
+		python2 -m SimpleHTTPServer "${1}"
 	fi
 }
 
