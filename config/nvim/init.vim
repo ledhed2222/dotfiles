@@ -38,12 +38,9 @@ Plugin 'neomake/neomake'                      " Asynch makeprg
 Plugin 'tpope/vim-fireplace'                  " Clojure helpers
 Plugin 'guns/vim-clojure-static'              " Basic syntax highlighting for Clojure
 Plugin 'guns/vim-clojure-highlight'           " Extended syntax highlighting for Clojure
-Plugin 'tpope/vim-fugitive'                   " Git wrapper
 Plugin 'airblade/vim-gitgutter'               " Git line annotations in gutter
 Plugin 'elixir-editors/vim-elixir'            " Elixir development plugin
-Plugin 'gcorne/vim-sass-lint'                 " SCSS linter
 Plugin 'herringtondarkholme/yats'             " TypeScript dev plugin
-Plugin 'mhinz/vim-mix-format'                 " Elixir mix formatter
 " End plugins
 
 call vundle#end()
@@ -166,7 +163,7 @@ if executable('grip')
 endif
 " shortcut for seeing preview
 let vim_markdown_preview_hotkey='<leader>pre'
-let vim_markdown_preview_browser='Firefox'
+let vim_markdown_preview_browser='Google Chrome'
 """"""""""""""""""""""""""""""
 " End vim-markdown-preview configuration
 """"""""""""""""""""""""""""""
@@ -214,6 +211,7 @@ let g:neomake_echo_current_error=1
 let g:neomake_highlight_columns=1
 
 " javascript/typescript setup - only adding eslint or flow if detected and executable found
+" TODO - this may not be necessary any longer
 function! StrTrim(txt)
 	return substitute(a:txt, '^\n*\s*\(.\{-}\)\n*\s*$', '\1', '')
 endfunction
@@ -257,10 +255,6 @@ endif
 let g:neomake_javascript_enabled_makers = s:js_only_makers + s:js_ts_makers
 let g:neomake_typescript_enabled_makers = s:js_ts_makers
 " end javascript setup
-
-let g:neomake_ruby_enabled_makers=['rubocop']
-
-let g:neomake_sass_enabled_makers=['sasslint']
 
 call neomake#configure#automake('rw')
 """"""""""""""""""""""""""""""
