@@ -75,7 +75,6 @@ export EDITOR="nvim"
 alias rm="rm -i"
 alias top="top -o cpu -s 3 -stats pid,command,cpu,rprvt,rsize,vprvt,vsize,user,state,threads,ppid,pgrp,faults,cow"
 alias grep="grep -E --color=always"
-alias python="python3"
 alias gd="git difftool"
 alias gds="git difftool --staged"
 
@@ -184,11 +183,6 @@ load-nvmrc() {
 add-zsh-hook chpwd load-nvmrc
 load-nvmrc
 
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"
-
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
-
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/gregweisbrod/Documents/Dev/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/gregweisbrod/Documents/Dev/google-cloud-sdk/path.zsh.inc'; fi
 
@@ -197,3 +191,7 @@ if [ -f '/Users/gregweisbrod/Documents/Dev/google-cloud-sdk/completion.zsh.inc' 
 
 # load pyenv
 eval "$(pyenv init -)"
+
+# load rbenv
+export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
+eval "$(rbenv init -)"
