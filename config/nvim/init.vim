@@ -41,6 +41,7 @@ Plugin 'guns/vim-clojure-highlight'           " Extended syntax highlighting for
 Plugin 'airblade/vim-gitgutter'               " Git line annotations in gutter
 Plugin 'elixir-editors/vim-elixir'            " Elixir development plugin
 Plugin 'herringtondarkholme/yats'             " TypeScript dev plugin
+Plugin 'tomlion/vim-solidity'                 " Solidity syntax plugin
 " End plugins
 
 call vundle#end()
