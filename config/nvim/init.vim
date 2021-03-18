@@ -36,6 +36,7 @@ Plugin 'cakebaker/scss-syntax.vim'            " SCSS development plugin
 Plugin 'tomtom/tcomment_vim'                  " File-type sensitive comments
 Plugin 'neomake/neomake'                      " Asynch makeprg
 Plugin 'tpope/vim-fireplace'                  " Clojure helpers
+Plugin 'tpope/vim-fugitive'                   " Git integration
 Plugin 'guns/vim-clojure-static'              " Basic syntax highlighting for Clojure
 Plugin 'guns/vim-clojure-highlight'           " Extended syntax highlighting for Clojure
 Plugin 'airblade/vim-gitgutter'               " Git line annotations in gutter
