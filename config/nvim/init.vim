@@ -43,6 +43,7 @@ Plugin 'airblade/vim-gitgutter'               " Git line annotations in gutter
 Plugin 'elixir-editors/vim-elixir'            " Elixir development plugin
 Plugin 'herringtondarkholme/yats'             " TypeScript dev plugin
 Plugin 'tomlion/vim-solidity'                 " Solidity syntax plugin
+Plugin 'python-mode/python-mode'              " Python dev plugin
 " End plugins
 
 call vundle#end()
