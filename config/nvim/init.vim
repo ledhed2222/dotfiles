@@ -273,6 +273,15 @@ let g:mix_format_on_save = 1
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
+" python-mode configuration
+""""""""""""""""""""""""""""""
+let g:pymode_options_colorcolumn = 0
+let g:pymode_lint_cwindow = 0
+""""""""""""""""""""""""""""""
+" End python-mode configuration
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
 " fzf configuration
 """"""""""""""""""""""""""""""
 if executable('fzf')
