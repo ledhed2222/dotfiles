@@ -1,7 +1,7 @@
 # This is Git's per-user configuration file.
 [user]
-	name = Greg Weisbrod
-	email = greg.weisbrod@gmail.com
+	name = ledhed2222
+	email = ledhed2222@users.noreply.github.com
 [color]
 	ui = auto
 	interactive = auto
@@ -29,3 +29,8 @@
 	rebase = false
 [credential]
 	helper = osxkeychain
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process

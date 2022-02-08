@@ -77,6 +77,7 @@ alias top="top -o cpu -s 3 -stats pid,command,cpu,rprvt,rsize,vprvt,vsize,user,s
 alias grep="grep -E --color=always"
 alias gd="git difftool"
 alias gds="git difftool --staged"
+alias ssh="kitty +kitten ssh"
 
 # serve this directory - default port is 3000
 function server {
@@ -157,7 +158,7 @@ export ANDROID_HOME="$HOME/Library/Android/sdk"
 export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
 
 # C++ setup
-export BOOST_ROOT="/usr/local/$(ls /usr/local | grep --color=none "^boost" | head -1)"
+export BOOST_ROOT="/usr/local/Cellar/boost/$(ls /usr/local/Cellar/boost/ | head -1)"
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/gregweisbrod/Documents/Dev/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/gregweisbrod/Documents/Dev/google-cloud-sdk/path.zsh.inc'; fi
