@@ -79,7 +79,10 @@ alias top="top -o cpu -s 3 -stats pid,command,cpu,rprvt,rsize,vprvt,vsize,user,s
 alias grep="grep -E --color=always"
 alias gd="git difftool"
 alias gds="git difftool --staged"
-alias ssh="kitty +kitten ssh"
+if (echo $TERM | grep -q kitty)
+then
+  alias ssh="kitty +kitten ssh"
+fi
 
 # serve this directory - default port is 3000
 function server {
@@ -132,8 +135,10 @@ then
 			builtin cd "${1}"
 		fi
 	}
+
+  # Homebrew setup
+  export PATH="$PATH:/usr/local/sbin"
 fi
-# End MacOS specific stuff
 
 # Common locations
 export DEVHOME="$HOME/Dev"
@@ -141,26 +146,35 @@ export WORKHOME="$HOME/Documents/Work"
 export APACHEDIR="/etc/apache2" #virtual hosts in vhosts dir
 export XDG_CONFIG_HOME="$HOME/.config"
 
-# Homebrew setup
-export PATH="$PATH:/usr/local/sbin"
-
 # Go setup
 export GOPATH="$DEVHOME/go"
-export PATH="$PATH:$GOPATH/bin"
+if [[ -a $GOPATH ]]
+then
+  export PATH="$PATH:$GOPATH/bin"
+fi
 
 # Elixir setup
 export ERL_AFLAGS="-kernel shell_history enabled"
 
 # Java/jenv setup
-export PATH="$HOME/.jenv/bin:$PATH"
-eval "$(jenv init -)"
+if (command -v jenv > /dev/null)
+then
+  export PATH="$HOME/.jenv/bin:$PATH"
+  eval "$(jenv init -)"
+fi
 
 # Android setup
 export ANDROID_HOME="$HOME/Library/Android/sdk"
-export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
+if [[ -a $ANDROID_HOME ]]
+then
+  export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
+fi
 
 # C++ setup
-export BOOST_ROOT="/usr/local/Cellar/boost/$(ls /usr/local/Cellar/boost/ | head -1)"
+if (command -v brew > /dev/null)
+then
+  export BOOST_ROOT="/usr/local/Cellar/boost/$(ls /usr/local/Cellar/boost/ | head -1)"
+fi
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/gregweisbrod/Documents/Dev/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/gregweisbrod/Documents/Dev/google-cloud-sdk/path.zsh.inc'; fi
@@ -169,14 +183,34 @@ if [ -f '/Users/gregweisbrod/Documents/Dev/google-cloud-sdk/path.zsh.inc' ]; the
 if [ -f '/Users/gregweisbrod/Documents/Dev/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/gregweisbrod/Documents/Dev/google-cloud-sdk/completion.zsh.inc'; fi
 
 # load pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init --path)"
-eval "$(pyenv init -)"
+if (command -v pyenv > /dev/null)
+then
+  export PYENV_ROOT="$HOME/.pyenv"
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init --path)"
+  eval "$(pyenv init -)"
+fi
 
-# load rbenv
-export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
-eval "$(rbenv init -)"
+# Ruby/rbenv setup
+if (command -v brew > /dev/null)
+then
+  export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
+fi
+
+if (command -v rbenv > /dev/null)
+then
+  eval "$(rbenv init -)"
+fi
 
 # load nodenv
-eval "$(nodenv init -)"
+if (command -v nodenv > /dev/null)
+then
+  eval "$(nodenv init -)"
+fi
+
+# Finally - allow a place per machine to override anything here in case some
+# path is super specific on another machine
+if [[ -a $HOME/.zshrc_local_overrides ]]
+then
+  source $HOME/.zshrc_local_overrides
+fi
