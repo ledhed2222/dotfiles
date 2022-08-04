@@ -79,15 +79,13 @@ alias top="top -o cpu -s 3 -stats pid,command,cpu,rprvt,rsize,vprvt,vsize,user,s
 alias grep="grep -E --color=always"
 alias gd="git difftool"
 alias gds="git difftool --staged"
-if (echo $TERM | grep -q kitty)
-then
+if (echo $TERM | grep -q kitty); then
   alias ssh="kitty +kitten ssh"
 fi
 
 # serve this directory - default port is 3000
 function server {
-	if [[ "${#1}" == 0 ]]
-	then
+	if [[ "${#1}" == 0 ]]; then
 		python2 -m SimpleHTTPServer 3000
 	else
 		python2 -m SimpleHTTPServer "${1}"
@@ -101,8 +99,7 @@ function fo {
   IFS=$'\n' out=($(fzf-tmux --select-1 --query="$1" --exit-0 --expect=ctrl-o,ctrl-e))
   key=$(head -1 <<< "$out")
   file=$(head -2 <<< "$out" | tail -1)
-  if [[ -n "$file" ]]
-  then
+  if [[ -n "$file" ]]; then
     [ "$key" = ctrl-o ] && open "$file" || ${EDITOR:-vim} "$file"
   fi
 }
@@ -115,20 +112,16 @@ function fbr {
     git checkout $(echo "$branch" | awk '{print $1}' | sed "s/.* //")
 }
 
-# MacOS specific stuff
-if [[ $(uname) == "Darwin" ]]
-then
+# MacOS-specific stuff
+if [[ $(uname) == "Darwin" ]]; then
 	# Ability to cd into aliases
 	# https://github.com/shiguol/CD2Alies
 	function cd {
-		if [[ "${#1}" == 0 ]]
-		then
+		if [[ "${#1}" == 0 ]]; then
 			builtin cd
-		elif [[ -d "${1}" ]]
-		then
+		elif [[ -d "${1}" ]]; then
 			builtin cd "${1}"
-		elif [[ -f "${1}" || -L "${1}" ]]
-		then
+		elif [[ -f "${1}" || -L "${1}" ]]; then
 			path=$(getTrueName "$1")
 			builtin cd "$path"
 		else
@@ -138,6 +131,31 @@ then
 
   # Homebrew setup
   export PATH="$PATH:/usr/local/sbin"
+
+  # fzf setup (assumes installed with homebrew)
+  ##
+  ## add to path
+  if [[ ! "$PATH" == */usr/local/opt/fzf/bin* ]]; then
+    export PATH="${PATH:+${PATH}:}/usr/local/opt/fzf/bin"
+  fi
+  ## auto-completion
+  [[ $- == *i* ]] && source "/usr/local/opt/fzf/shell/completion.zsh" 2> /dev/null
+  ## key bindings
+  source "/usr/local/opt/fzf/shell/key-bindings.zsh"
+fi
+
+# Linux-specific stuff
+if [[ $(uname) == "Linux" ]]; then
+  # fzf setup (assumes installed in ~/.fzf)
+  ##
+  ## add to path
+  if [[ ! "$PATH" == *"$HOME/.fzf/bin"* ]]; then
+    export PATH="${PATH:+${PATH}:}/$HOME/.fzf/bin"
+  fi
+  ## auto-completion
+  [[ $- == *i* ]] && source "$HOME/.fzf/shell/completion.zsh" 2> /dev/null
+  ## key bindings
+  source "$HOME/.fzf/shell/key-bindings.zsh"
 fi
 
 # Common locations
@@ -148,8 +166,7 @@ export XDG_CONFIG_HOME="$HOME/.config"
 
 # Go setup
 export GOPATH="$DEVHOME/go"
-if [[ -a $GOPATH ]]
-then
+if [[ -a $GOPATH ]]; then
   export PATH="$PATH:$GOPATH/bin"
 fi
 
@@ -157,34 +174,24 @@ fi
 export ERL_AFLAGS="-kernel shell_history enabled"
 
 # Java/jenv setup
-if (command -v jenv > /dev/null)
-then
+if (command -v jenv > /dev/null); then
   export PATH="$HOME/.jenv/bin:$PATH"
   eval "$(jenv init -)"
 fi
 
 # Android setup
 export ANDROID_HOME="$HOME/Library/Android/sdk"
-if [[ -a $ANDROID_HOME ]]
-then
+if [[ -a $ANDROID_HOME ]]; then
   export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
 fi
 
 # C++ setup
-if (command -v brew > /dev/null)
-then
-  export BOOST_ROOT="/usr/local/Cellar/boost/$(ls /usr/local/Cellar/boost/ | head -1)"
+if (command -v brew > /dev/null); then
+  export BOOST_ROOT="$(brew --prefix)/Cellar/boost/$(ls $(brew --prefix)/Cellar/boost/ | head -1)"
 fi
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/gregweisbrod/Documents/Dev/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/gregweisbrod/Documents/Dev/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/gregweisbrod/Documents/Dev/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/gregweisbrod/Documents/Dev/google-cloud-sdk/completion.zsh.inc'; fi
-
 # load pyenv
-if (command -v pyenv > /dev/null)
-then
+if (command -v pyenv > /dev/null); then
   export PYENV_ROOT="$HOME/.pyenv"
   export PATH="$PYENV_ROOT/bin:$PATH"
   eval "$(pyenv init --path)"
@@ -192,25 +199,21 @@ then
 fi
 
 # Ruby/rbenv setup
-if (command -v brew > /dev/null)
-then
+if (command -v brew > /dev/null); then
   export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
 fi
 
-if (command -v rbenv > /dev/null)
-then
+if (command -v rbenv > /dev/null); then
   eval "$(rbenv init -)"
 fi
 
 # load nodenv
-if (command -v nodenv > /dev/null)
-then
+if (command -v nodenv > /dev/null); then
   eval "$(nodenv init -)"
 fi
 
 # Finally - allow a place per machine to override anything here in case some
 # path is super specific on another machine
-if [[ -a $HOME/.zshrc_local_overrides ]]
-then
+if [[ -a $HOME/.zshrc_local_overrides ]]; then
   source $HOME/.zshrc_local_overrides
 fi

@@ -78,8 +78,8 @@ set noswapfile
 set nocursorline
 set nocursorcolumn
 set norelativenumber
-" default yanks go to clipboard
-set clipboard=unnamed
+" try to use nvim's clipboard integration
+set clipboard+=unnamedplus
 " decrease time to detect macro-y things 
 set timeoutlen=200
 " text formatting
@@ -286,7 +286,9 @@ let g:pymode_lint_cwindow = 0
 " fzf configuration
 """"""""""""""""""""""""""""""
 if executable('fzf')
+  " set this for both the Homebrew install and the $HOME install
   set rtp+=/usr/local/opt/fzf
+  set rtp+=~/.fzf
   " search a file in the filetree
   command! -bang -nargs=* Files call fzf#run(fzf#wrap({'source': 'ag --hidden -f -g ""'}))
   nnoremap <leader><space> :Files<cr>
