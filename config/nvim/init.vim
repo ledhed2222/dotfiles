@@ -23,27 +23,16 @@ call vundle#begin(s:editor_root . '/bundle')
 Plugin 'VundleVim/Vundle.vim'
 
 " Add plugins here
-Plugin 'vim-ruby/vim-ruby'                    " Ruby development plugin
-Plugin 'fatih/vim-go'                         " Go development plugin
+Plugin 'sheerun/vim-polyglot'                 " Various language syntax files
 Plugin 'sbl/scvim'                            " SuperCollider development plugin
 Plugin 'junegunn/fzf.vim'                     " fzf integration
 Plugin 'JamshedVesuna/vim-markdown-preview'   " Preview .md files
 Plugin 'scrooloose/nerdtree'                  " File system explorer
 Plugin 'morhetz/gruvbox'                      " Colorscheme
-Plugin 'pangloss/vim-javascript'              " JavaScript development plugin
-Plugin 'mxw/vim-jsx'                          " JSX development plugin
-Plugin 'cakebaker/scss-syntax.vim'            " SCSS development plugin
 Plugin 'tomtom/tcomment_vim'                  " File-type sensitive comments
 Plugin 'neomake/neomake'                      " Asynch makeprg
-Plugin 'tpope/vim-fireplace'                  " Clojure helpers
 Plugin 'tpope/vim-fugitive'                   " Git integration
-Plugin 'guns/vim-clojure-static'              " Basic syntax highlighting for Clojure
-Plugin 'guns/vim-clojure-highlight'           " Extended syntax highlighting for Clojure
 Plugin 'airblade/vim-gitgutter'               " Git line annotations in gutter
-Plugin 'elixir-editors/vim-elixir'            " Elixir development plugin
-Plugin 'herringtondarkholme/yats'             " TypeScript dev plugin
-Plugin 'tomlion/vim-solidity'                 " Solidity syntax plugin
-Plugin 'python-mode/python-mode'              " Python dev plugin
 " End plugins
 
 call vundle#end()
@@ -185,7 +174,6 @@ let NERDTreeShowHidden=1
 """"""""""""""""""""""""""""""
 " vim-javascript configuration
 """"""""""""""""""""""""""""""
-let g:javascript_plugin_flow=1
 let g:javascript_plugin_jsdoc=1
 """"""""""""""""""""""""""""""
 " End vim-javascript configuration
@@ -197,14 +185,6 @@ let g:javascript_plugin_jsdoc=1
 let g:ruby_no_expensive=0
 """"""""""""""""""""""""""""""
 " End vim-ruby configuration
-""""""""""""""""""""""""""""""
-
-""""""""""""""""""""""""""""""
-" vim-jsx configuration
-""""""""""""""""""""""""""""""
-let g:jsx_ext_required=0
-""""""""""""""""""""""""""""""
-" End vim-jsx configuration
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
@@ -266,23 +246,6 @@ call neomake#configure#automake('rw')
 """"""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""
-" vim-mix-format configuration
-""""""""""""""""""""""""""""""
-let g:mix_format_on_save = 1
-""""""""""""""""""""""""""""""
-" End vim-mix-format configuration
-""""""""""""""""""""""""""""""
-
-""""""""""""""""""""""""""""""
-" python-mode configuration
-""""""""""""""""""""""""""""""
-let g:pymode_options_colorcolumn = 0
-let g:pymode_lint_cwindow = 0
-""""""""""""""""""""""""""""""
-" End python-mode configuration
-""""""""""""""""""""""""""""""
-
-""""""""""""""""""""""""""""""
 " fzf configuration
 """"""""""""""""""""""""""""""
 if executable('fzf')
@@ -305,4 +268,3 @@ endif
 
 " Disable unsafe commands after this point, ie in exrc's
 set secure
-
