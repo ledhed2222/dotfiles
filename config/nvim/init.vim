@@ -250,7 +250,7 @@ call neomake#configure#automake('rw')
 """"""""""""""""""""""""""""""
 if executable('fzf')
   " set this for both the Homebrew install and the $HOME install
-  set rtp+=/usr/local/opt/fzf
+  set rtp+=$FZF_HOME
   set rtp+=~/.fzf
   " search a file in the filetree
   command! -bang -nargs=* Files call fzf#run(fzf#wrap({'source': 'ag --hidden -f -g ""'}))
