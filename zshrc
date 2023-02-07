@@ -205,11 +205,6 @@ if [[ -a $ANDROID_HOME ]]; then
   export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
 fi
 
-# C++ setup
-if (command -v brew > /dev/null); then
-  export BOOST_ROOT="$(brew --prefix)/Cellar/boost/$(ls $(brew --prefix)/Cellar/boost/ | head -1)"
-fi
-
 # load pyenv
 if (command -v pyenv > /dev/null); then
   export PYENV_ROOT="$HOME/.pyenv"
