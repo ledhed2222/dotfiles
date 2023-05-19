@@ -137,8 +137,8 @@ endif
 " Some nice plaintext formatting options
 autocmd FileType text,gitcommit setlocal autoindent formatoptions=a2tw spell
 
-" Spelling on for md
-autocmd FileType markdown setlocal spell
+" Spelling on and line lengths off for markdown
+autocmd FileType markdown setlocal spell textwidth=0
 
 " Spell in help is really annoying
 autocmd FileType help setlocal nospell
