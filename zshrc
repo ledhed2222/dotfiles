@@ -205,6 +205,9 @@ if [[ -a $ANDROID_HOME ]]; then
   export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
 fi
 
+# Docker setup
+export PATH="$HOME/.docker/bin:$PATH"
+
 # load pyenv
 if (command -v pyenv > /dev/null); then
   export PYENV_ROOT="$HOME/.pyenv"
