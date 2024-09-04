@@ -55,9 +55,6 @@ colorscheme gruvbox
 set termguicolors "<-- only if terminal supports 24-bit colors
 set background=dark
 let g:gruvbox_contrast_dark='medium'
-" syntax highlight operators
-exec "hi Operator guifg=SteelBlue1"
-exec "hi Operator ctermfg=SteelBlue1"
 " line numbers
 set number
 " Allow project-specific vimrc files
@@ -241,6 +238,13 @@ endif
 
 let g:neomake_javascript_enabled_makers = s:js_only_makers + s:js_ts_makers
 let g:neomake_typescript_enabled_makers = s:js_ts_makers
+
+" We need to mark JS operators as Special for syntax highlighting to work
+" correctly based on our syntax group
+hi! link jsOperatorKeyword Special
+hi! link jsOf Special
+hi! link jsSpreadOperator Special
+hi! link jsRestOperator Special
 " end javascript setup
 
 call neomake#configure#automake('rw')
