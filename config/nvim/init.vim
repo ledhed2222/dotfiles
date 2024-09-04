@@ -55,6 +55,9 @@ colorscheme gruvbox
 set termguicolors "<-- only if terminal supports 24-bit colors
 set background=dark
 let g:gruvbox_contrast_dark='medium'
+" syntax highlight operators
+exec "hi Operator guifg=SteelBlue1"
+exec "hi Operator ctermfg=SteelBlue1"
 " line numbers
 set number
 " Allow project-specific vimrc files
