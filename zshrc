@@ -170,7 +170,7 @@ if [[ $(uname) == "Linux" ]]; then
   ##
   ## add to path
   if [[ ! "$PATH" == *"$HOME/.fzf/bin"* ]]; then
-    export PATH="${PATH:+${PATH}:}/$HOME/.fzf/bin"
+    export PATH="$HOME/.fzf/bin:$PATH"
   fi
   ## auto-completion
   [[ $- == *i* ]] && source "$HOME/.fzf/shell/completion.zsh" 2> /dev/null
@@ -232,3 +232,7 @@ fi
 if [[ -a $HOME/.zshrc_local_overrides ]]; then
   source $HOME/.zshrc_local_overrides
 fi
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

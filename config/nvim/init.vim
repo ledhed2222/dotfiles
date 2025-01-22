@@ -33,6 +33,7 @@ Plugin 'tomtom/tcomment_vim'                  " File-type sensitive comments
 Plugin 'neomake/neomake'                      " Asynch makeprg
 Plugin 'tpope/vim-fugitive'                   " Git integration
 Plugin 'airblade/vim-gitgutter'               " Git line annotations in gutter
+Plugin 'fatih/vim-go'                         " go-lang
 " End plugins
 
 call vundle#end()
@@ -41,6 +42,7 @@ filetype plugin indent on
 if s:vundle_installed == 0
   echo "Installing plugins...\n"
   :PluginInstall
+  :GoInstallBinaries
   let s:vundle_installed=1
 endif
 """"""""""""""""""""""""""""""
@@ -96,6 +98,11 @@ nnoremap <c-k> <c-w>k
 nnoremap <c-h> <c-w>h
 nnoremap <c-l> <c-w>l
 
+" remap error navigation
+map <c-n> :cnext<cr>
+map <c-m> :cprevious<cr>
+nnoremap <leader>a ::cclose<cr>
+
 " to switch between current file and last file in buffer
 nnoremap <leader>, <c-^>
 
@@ -142,6 +149,9 @@ autocmd FileType markdown setlocal spell textwidth=0
 
 " Spell in help is really annoying
 autocmd FileType help setlocal nospell
+
+" Various go-lang things
+autocmd FileType go setlocal autowrite
 """"""""""""""""""""""""""""""
 " End autocommands
 """"""""""""""""""""""""""""""
