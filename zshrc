@@ -170,7 +170,7 @@ if [[ $(uname) == "Linux" ]]; then
   ##
   ## add to path
   if [[ ! "$PATH" == *"$HOME/.fzf/bin"* ]]; then
-    export PATH="${PATH:+${PATH}:}/$HOME/.fzf/bin"
+    export PATH="$HOME/.fzf/bin:$PATH"
   fi
   ## auto-completion
   [[ $- == *i* ]] && source "$HOME/.fzf/shell/completion.zsh" 2> /dev/null
