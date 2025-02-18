@@ -34,6 +34,8 @@ Plugin 'neomake/neomake'                      " Asynch makeprg
 Plugin 'tpope/vim-fugitive'                   " Git integration
 Plugin 'airblade/vim-gitgutter'               " Git line annotations in gutter
 Plugin 'fatih/vim-go'                         " go-lang
+Plugin 'majutsushi/tagbar'                    " tag bar/file outline
+Plugin 'jjo/vim-cue'                          " cuefile support
 " End plugins
 
 call vundle#end()
@@ -149,9 +151,6 @@ autocmd FileType markdown setlocal spell textwidth=0
 
 " Spell in help is really annoying
 autocmd FileType help setlocal nospell
-
-" Various go-lang things
-autocmd FileType go setlocal autowrite
 """"""""""""""""""""""""""""""
 " End autocommands
 """"""""""""""""""""""""""""""
@@ -280,6 +279,42 @@ if executable('fzf')
 endif
 """"""""""""""""""""""""""""""
 " end fzf configuration
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" tagbar configuration
+""""""""""""""""""""""""""""""
+nmap <leader>o :TagbarToggle<cr>
+""""""""""""""""""""""""""""""
+" end tagbar configuration
+""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""
+" vim-go/go configuration
+""""""""""""""""""""""""""""""
+autocmd FileType go setlocal autowrite
+autocmd FileType go setlocal tabstop=4
+let g:go_highlight_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_metalinter_autosave = 0
+let g:go_def_mode = "gopls"
+let g:syntastic_go_checkers = ['gometalinter']
+let g:go_fmt_options = {
+  \ 'gofmt': '-s',
+  \ 'goimports': '-local github.com/anchorlabsinc/anchorage',
+  \ }
+let g:go_fmt_command = "goimports"
+let g:go_fmt_autosave = 1
+let g:go_debug_address = '127.0.0.1:8999'
+
+au FileType go nmap <Leader>m <Plug>(go-implements)
+au FileType go nmap <Leader>i <Plug>(go-info)
+au FileType go nmap <Leader>e <Plug>(go-rename)
+au FileType go nmap <Leader>pc :GoCallers<cr>
+""""""""""""""""""""""""""""""
+" end vim-go/go configuration
 """"""""""""""""""""""""""""""
 
 
