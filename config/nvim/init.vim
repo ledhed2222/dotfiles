@@ -285,6 +285,7 @@ endif
 " tagbar configuration
 """"""""""""""""""""""""""""""
 nmap <leader>o :TagbarToggle<cr>
+let g:tagbar_position = 'rightbelow vertical'
 """"""""""""""""""""""""""""""
 " end tagbar configuration
 """"""""""""""""""""""""""""""
