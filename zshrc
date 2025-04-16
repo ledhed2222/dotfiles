@@ -50,9 +50,10 @@ DEFAULT_USER="$(whoami)$(prompt_context(){})"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(vi-mode git bundler)
+plugins=(git tmux)
 
-source $ZSH/oh-my-zsh.sh
+# for some reason plugins aren't loading unless this is at the end
+# source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
@@ -69,6 +70,12 @@ export EDITOR="nvim"
 
 # ssh
 # export SSH_KEY_PATH="~/.ssh/rsa_id"
+
+# tmux configs
+export ZSH_TMUX_AUTOSTART=true
+export ZSH_TMUX_AUTOCONNECT=true
+export ZSH_TMUX_UNICODE=true
+export ZSH_TMUX_CONFIG=~/.config/tmux/tmux.conf
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
@@ -226,6 +233,9 @@ fi
 if (command -v nodenv > /dev/null); then
   eval "$(nodenv init -)"
 fi
+
+# see above note about plugins
+source $ZSH/oh-my-zsh.sh
 
 # Finally - allow a place per machine to override anything here in case some
 # path is super specific on another machine
