@@ -318,6 +318,8 @@ au FileType go nmap <Leader>pc :GoCallers<cr>
 " end vim-go/go configuration
 """"""""""""""""""""""""""""""
 
-
 " Disable unsafe commands after this point, ie in exrc's
 set secure
+
+" source external override rc
+source ~/.config/nvim/local_overrides.vim
