@@ -17,6 +17,11 @@ config/pgcli/*
 config/kitty/*
 !config/kitty/kitty.conf
 
-# disallow lein reply history
+# allow tmux
+!config/tmux
+config/tmux/*
+!config/tmux/tmux.conf
+
+# disallow lein repl history
 lein/repl-history
 

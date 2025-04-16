@@ -25,3 +25,6 @@ brew install ag fzf grip neovim
 ```zsh
 brew install jenv nodenv pyenv rbenv
 ```
+
+# tmux
+[install tmux plugin manager](https://github.com/tmux-plugins/tpm)(TPM)

@@ -36,6 +36,7 @@ Plugin 'airblade/vim-gitgutter'               " Git line annotations in gutter
 Plugin 'fatih/vim-go'                         " go-lang
 Plugin 'majutsushi/tagbar'                    " tag bar/file outline
 Plugin 'jjo/vim-cue'                          " cuefile support
+Plugin 'christoomey/vim-tmux-navigator'       " vim x tmux integration
 " End plugins
 
 call vundle#end()
