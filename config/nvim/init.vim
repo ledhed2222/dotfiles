@@ -36,6 +36,7 @@ Plugin 'airblade/vim-gitgutter'               " Git line annotations in gutter
 Plugin 'fatih/vim-go'                         " go-lang
 Plugin 'majutsushi/tagbar'                    " tag bar/file outline
 Plugin 'jjo/vim-cue'                          " cuefile support
+Plugin 'christoomey/vim-tmux-navigator'       " vim x tmux integration
 " End plugins
 
 call vundle#end()
@@ -318,6 +319,8 @@ au FileType go nmap <Leader>pc :GoCallers<cr>
 " end vim-go/go configuration
 """"""""""""""""""""""""""""""
 
-
 " Disable unsafe commands after this point, ie in exrc's
 set secure
+
+" source external override rc
+source ~/.config/nvim/local_overrides.vim
