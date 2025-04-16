@@ -323,4 +323,6 @@ au FileType go nmap <Leader>pc :GoCallers<cr>
 set secure
 
 " source external override rc
-source ~/.config/nvim/local_overrides.vim
+if filereadable("~/.config/nvim/local_overrides.vim")
+  source ~/.config/nvim/local_overrides.vim
+endif
