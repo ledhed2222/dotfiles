@@ -206,12 +206,6 @@ if (command -v jenv > /dev/null); then
   eval "$(jenv init -)"
 fi
 
-# Android setup
-export ANDROID_HOME="$HOME/Library/Android/sdk"
-if [[ -a $ANDROID_HOME ]]; then
-  export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools"
-fi
-
 # load pyenv
 if (command -v pyenv > /dev/null); then
   export PYENV_ROOT="$HOME/.pyenv"
