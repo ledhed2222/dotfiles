@@ -50,7 +50,7 @@ DEFAULT_USER="$(whoami)$(prompt_context(){})"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git tmux)
+plugins=(git tmux vi-mode)
 
 # for some reason plugins aren't loading unless this is at the end
 # source $ZSH/oh-my-zsh.sh
@@ -216,7 +216,7 @@ fi
 
 # Ruby/rbenv setup
 if (command -v brew > /dev/null); then
-  export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@1.1)"
+  export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@3)"
 fi
 
 if (command -v rbenv > /dev/null); then
@@ -236,3 +236,6 @@ source $ZSH/oh-my-zsh.sh
 if [[ -a $HOME/.zshrc_local_overrides ]]; then
   source $HOME/.zshrc_local_overrides
 fi
+
+# Ensure shell starts with clean exit status
+true
