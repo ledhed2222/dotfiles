@@ -52,8 +52,7 @@ DEFAULT_USER="$(whoami)$(prompt_context(){})"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git tmux vi-mode)
 
-# for some reason plugins aren't loading unless this is at the end
-# source $ZSH/oh-my-zsh.sh
+source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
@@ -72,7 +71,7 @@ export EDITOR="nvim"
 # export SSH_KEY_PATH="~/.ssh/rsa_id"
 
 # tmux configs
-export ZSH_TMUX_AUTOSTART=true
+export ZSH_TMUX_AUTOSTART=false
 export ZSH_TMUX_AUTOCONNECT=true
 export ZSH_TMUX_UNICODE=true
 export ZSH_TMUX_CONFIG=~/.config/tmux/tmux.conf
@@ -86,6 +85,7 @@ alias top="top -o cpu -s 3 -stats pid,command,cpu,rprvt,rsize,vprvt,vsize,user,s
 alias grep="grep -E --color=always"
 alias gd="git difftool"
 alias gds="git difftool --staged"
+alias mux="tmuxinator"
 if (echo $TERM | grep -q kitty); then
   alias ssh="kitty +kitten ssh"
 fi
@@ -227,9 +227,6 @@ fi
 if (command -v nodenv > /dev/null); then
   eval "$(nodenv init -)"
 fi
-
-# see above note about plugins
-source $ZSH/oh-my-zsh.sh
 
 # Finally - allow a place per machine to override anything here in case some
 # path is super specific on another machine
