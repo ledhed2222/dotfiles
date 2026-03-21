@@ -16,9 +16,9 @@ brew install kitty
 ```
 
 # vim
-For file searching, markdown preview, and neovim:
+For file searching and neovim:
 ```zsh
-brew install ag fzf grip neovim
+brew install ag fzf neovim
 ```
 
 # langs
@@ -26,5 +26,7 @@ brew install ag fzf grip neovim
 brew install jenv nodenv pyenv rbenv
 ```
 
-# tmux
-[install tmux plugin manager](https://github.com/tmux-plugins/tpm)(TPM)
+# tmux additional steps
+install the [tmux plugin manager](https://github.com/tmux-plugins/tpm)
+
+use [tmuxinator](https://github.com/tmuxinator/tmuxinator) for workspace management
