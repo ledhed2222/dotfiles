@@ -262,16 +262,13 @@ require("lazy").setup({
     "junegunn/fzf.vim",
     dependencies = { "junegunn/fzf" },
     config = function()
-      -- Respect FZF_HOME and ~/.fzf
       vim.opt.rtp:append(vim.env.FZF_HOME or "")
       vim.opt.rtp:append(vim.fn.expand("~/.fzf"))
 
-      -- File search via ag
       vim.api.nvim_create_user_command("Files", function(opts)
-        vim.fn["fzf#run"](vim.fn["fzf#wrap"]({ source = "ag --hidden -f -g ''" }))
+        vim.fn["fzf#vim#files"]("", { source = "ag --hidden -f -g ''" }, opts.bang)
       end, { bang = true, nargs = "*" })
 
-      -- Grep via ag
       vim.api.nvim_create_user_command("Ag", function(opts)
         vim.fn["fzf#vim#ag"](opts.args, "--hidden", opts.bang and 1 or 0)
       end, { bang = true, nargs = "*" })
