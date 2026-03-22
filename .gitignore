@@ -6,6 +6,11 @@ config/*
 !config/nvim
 config/nvim/*
 !config/nvim/init.lua
+!config/nvim/after
+config/nvim/after/*
+!config/nvim/after/indent
+config/nvim/after/indent/*
+!config/nvim/after/indent/elixir.lua
 
 # allow pgcli
 !config/pgcli

@@ -78,6 +78,9 @@ map("v", ";", ":")
 map("v", ">", ">gv")
 map("v", "<", "<gv")
 
+-- Diagnostic float
+map("n", "<leader>d", vim.diagnostic.open_float)
+
 -- Terminal: esc to normal mode
 map("t", "<esc>", "<c-\\><c-n>")
 
@@ -208,20 +211,6 @@ require("lazy").setup({
       })
       vim.lsp.enable("clangd")
 
-      -- Elixir
-      vim.lsp.config("elixirls", {
-        cmd = { "elixir-ls" },
-        on_attach = function(_, bufnr)
-          local opts = { buffer = bufnr }
-          vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-          vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-          vim.keymap.set("n", "<leader>i", vim.lsp.buf.hover, opts)
-          vim.keymap.set("n", "<leader>e", vim.lsp.buf.rename, opts)
-          vim.keymap.set("n", "<leader>m", vim.lsp.buf.implementation, opts)
-        end,
-      })
-      vim.lsp.enable("elixirls")
-
       -- Format on save
       vim.api.nvim_create_autocmd("BufWritePre", {
         pattern = { "*.go" },
@@ -229,6 +218,10 @@ require("lazy").setup({
       })
       vim.api.nvim_create_autocmd("BufWritePre", {
         pattern = { "*.c", "*.cc", "*.cpp", "*.h", "*.hpp" },
+        callback = function() vim.lsp.buf.format({ async = false }) end,
+      })
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        pattern = { "*.ex", "*.exs", "*.heex" },
         callback = function() vim.lsp.buf.format({ async = false }) end,
       })
     end,
@@ -328,6 +321,31 @@ require("lazy").setup({
 
   -- CUE filetype
   { "jjo/vim-cue" },
+
+  -- Elixir (LSP + better indent via elixir-tools)
+  {
+    "elixir-tools/elixir-tools.nvim",
+    version = "*",
+    event = { "BufReadPre", "BufNewFile" },
+    dependencies = { "nvim-lua/plenary.nvim" },
+    config = function()
+      require("elixir").setup({
+        nextls = { enable = false },
+        elixirls = {
+          enable = true,
+          cmd = { "elixir-ls" },
+          on_attach = function(_, bufnr)
+            local opts = { buffer = bufnr }
+            vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+            vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+            vim.keymap.set("n", "<leader>i", vim.lsp.buf.hover, opts)
+            vim.keymap.set("n", "<leader>e", vim.lsp.buf.rename, opts)
+            vim.keymap.set("n", "<leader>m", vim.lsp.buf.implementation, opts)
+          end,
+        },
+      })
+    end,
+  },
 
 }, {
   -- lazy.nvim options
