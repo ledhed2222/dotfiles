@@ -119,6 +119,13 @@ autocmd("FileType", {
   end,
 })
 
+-- Treesitter highlighting
+autocmd("FileType", {
+  callback = function(ev)
+    pcall(vim.treesitter.start, ev.buf)
+  end,
+})
+
 -- Go
 autocmd("FileType", {
   pattern = "go",
@@ -153,7 +160,8 @@ require("lazy").setup({
         ensure_installed = {
           "go", "python", "javascript", "typescript",
           "lua", "bash", "markdown", "json", "yaml", "toml",
-          "cpp", "c",
+          "cpp", "c", "elixir", "ruby", "html", "sql",
+          "supercollider", "scss", "css",
         },
         highlight = { enable = true },
         indent    = { enable = true },
@@ -199,6 +207,20 @@ require("lazy").setup({
         end,
       })
       vim.lsp.enable("clangd")
+
+      -- Elixir
+      vim.lsp.config("elixirls", {
+        cmd = { "elixir-ls" },
+        on_attach = function(_, bufnr)
+          local opts = { buffer = bufnr }
+          vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+          vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+          vim.keymap.set("n", "<leader>i", vim.lsp.buf.hover, opts)
+          vim.keymap.set("n", "<leader>e", vim.lsp.buf.rename, opts)
+          vim.keymap.set("n", "<leader>m", vim.lsp.buf.implementation, opts)
+        end,
+      })
+      vim.lsp.enable("elixirls")
 
       -- Format on save
       vim.api.nvim_create_autocmd("BufWritePre", {
