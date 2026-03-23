@@ -25,6 +25,7 @@ brew install ag fzf neovim tree-sitter-cli
 - For Go using [gopls](https://go.dev/gopls/)
 - For C++ using [clangd](https://clangd.llvm.org/)
 - For Elixir using [elixir-ls](https://github.com/elixir-lsp/elixir-ls)
+- For JavaScript/TypeScript using [typescript-language-server](https://github.com/typescript-language-server/typescript-language-server)
 
 # langs
 ```zsh
