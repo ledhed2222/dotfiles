@@ -151,6 +151,7 @@ require("lazy").setup({
     config = function()
       vim.g.gruvbox_contrast_dark = "medium"
       vim.cmd("colorscheme gruvbox")
+      vim.api.nvim_set_hl(0, "javascriptLabel", { link = "Keyword" })
     end,
   },
 
@@ -161,13 +162,11 @@ require("lazy").setup({
     config = function()
       require("nvim-treesitter").setup({
         ensure_installed = {
-          "go", "python", "javascript", "typescript",
+          "go", "python", "javascript", "typescript", "tsx",
           "lua", "bash", "markdown", "json", "yaml", "toml",
           "cpp", "c", "elixir", "ruby", "html", "sql",
           "supercollider", "scss", "css",
         },
-        highlight = { enable = true },
-        indent    = { enable = true },
       })
     end,
   },
@@ -211,6 +210,19 @@ require("lazy").setup({
       })
       vim.lsp.enable("clangd")
 
+      -- JS/TS
+      vim.lsp.config("ts_ls", {
+        on_attach = function(_, bufnr)
+          local opts = { buffer = bufnr }
+          vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+          vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+          vim.keymap.set("n", "<leader>i", vim.lsp.buf.hover, opts)
+          vim.keymap.set("n", "<leader>e", vim.lsp.buf.rename, opts)
+          vim.keymap.set("n", "<leader>m", vim.lsp.buf.implementation, opts)
+        end,
+      })
+      vim.lsp.enable("ts_ls")
+
       -- Format on save
       vim.api.nvim_create_autocmd("BufWritePre", {
         pattern = { "*.go" },
@@ -227,14 +239,51 @@ require("lazy").setup({
     end,
   },
 
+  -- Formatting / autofix
+  {
+    "stevearc/conform.nvim",
+    config = function()
+      local conform = require("conform")
+      conform.setup({
+        formatters = {
+          eslint_fix = {
+            command = "npx",
+            args = { "eslint", "--fix", "$FILENAME" },
+            stdin = false,
+            exit_codes = { 0, 1 },
+          },
+        },
+        formatters_by_ft = {
+          javascript      = { "eslint_fix" },
+          javascriptreact = { "eslint_fix" },
+          typescript      = { "eslint_fix" },
+          typescriptreact = { "eslint_fix" },
+        },
+      })
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        pattern = { "*.js", "*.jsx", "*.ts", "*.tsx" },
+        callback = function(args)
+          conform.format({ bufnr = args.buf, async = false, lsp_fallback = false })
+        end,
+      })
+    end,
+  },
+
   -- Linting
   {
     "mfussenegger/nvim-lint",
     config = function()
       local lint = require("lint")
+      lint.linters.eslint = vim.tbl_deep_extend("force", lint.linters.eslint, {
+        cwd = function(params)
+          return vim.fs.dirname(params.filename)
+        end,
+      })
       lint.linters_by_ft = {
-        javascript = { "eslint" },
-        typescript = { "eslint" },
+        javascript      = { "eslint" },
+        javascriptreact = { "eslint" },
+        typescript      = { "eslint" },
+        typescriptreact = { "eslint" },
       }
       vim.api.nvim_create_autocmd({ "BufWritePost", "BufReadPost" }, {
         callback = function()

@@ -152,9 +152,10 @@ alias grep="grep -E --color=always"
 alias gd="git difftool"
 alias gds="git difftool --staged"
 alias mux="tmuxinator"
-if (echo $TERM | grep -q kitty); then
-  alias ssh="kitty +kitten ssh"
-fi
+# need to get kitty ssh copy/paste buffer synching working another time
+# if [[ -n "$KITTY_WINDOW_ID" ]]; then
+#   alias ssh="kitty +kitten ssh"
+# fi
 
 # serve this directory - default port is 3000
 function server {
