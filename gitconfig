@@ -2,6 +2,8 @@
 [user]
   name = ledhed2222
   email = ledhed2222@users.noreply.github.com
+[core]
+  editor = nvim
 [color]
   ui = auto
   interactive = auto
