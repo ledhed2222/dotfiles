@@ -1,36 +1,37 @@
 # This is Git's per-user configuration file.
 [user]
-	name = ledhed2222
-	email = ledhed2222@users.noreply.github.com
+  name = ledhed2222
+  email = ledhed2222@users.noreply.github.com
 [color]
-	ui = auto
-	interactive = auto
+  ui = auto
+  interactive = auto
 [branch "master"]
-	remote = origin
+  remote = origin
 [fetch]
   prune = true
 [merge]
-	tool = vimdiff
+  tool = vimdiff
 [mergetool]
   prompt = true
 [mergetool "vimdiff"]
-  #cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
   cmd = nvim -d -O $MERGED $REMOTE $LOCAL
 [diff]
-	tool = vimdiff
-	ignoreSubmodules = dirty
+  tool = vimdiff
+  ignoreSubmodules = dirty
 [difftool]
-	prompt = false
+  prompt = false
 [difftool "vimdiff"]
-  #cmd = nvim -d $LOCAL $REMOTE -c '$wincmd w' -c 'wincmd J'
   cmd = nvim -d -O $REMOTE $LOCAL
-
 [pull]
-	rebase = false
+  rebase = false
 [credential]
-	helper = osxkeychain
+  helper = osxkeychain
 [filter "lfs"]
-	required = true
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
+  required = true
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+[include]
+  # put a file here with overrides to any of the above configs to override
+  # them locally only.
+  path = ~/.gitconfig_local_overrides
