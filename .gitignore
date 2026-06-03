@@ -30,3 +30,8 @@ config/tmux/*
 # disallow lein repl history
 lein/repl-history
 
+# local gitconfig overrides (machine-specific, not committed)
+gitconfig_local_overrides
+
+# local zshrc overrides (machine-specific, not committed)
+zshrc_local_overrides
