@@ -8,3 +8,6 @@
 ## Code style
 - No comments unless the why is genuinely non-obvious.
 - No docstrings.
+
+## Git
+- Do not include Claude as a co-author in commits.
