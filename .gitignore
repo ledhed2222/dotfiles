@@ -35,3 +35,8 @@ gitconfig_local_overrides
 
 # local zshrc overrides (machine-specific, not committed)
 zshrc_local_overrides
+
+# only check in specific claude config files
+claude/*
+!claude/CLAUDE.md
+!claude/settings.json
