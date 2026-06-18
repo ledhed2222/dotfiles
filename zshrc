@@ -126,6 +126,11 @@ plugins=(git tmux vi-mode)
 
 source $ZSH/oh-my-zsh.sh
 
+# The omz tmux plugin aliases `tmux` to `_zsh_tmux_plugin_run`, but Claude Code's
+# shell snapshot captures aliases without the referenced function, breaking `tmux`.
+# Unaliasing here lets `tmux` resolve to the real binary while keeping autostart.
+unalias tmux 2>/dev/null || true
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"

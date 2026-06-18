@@ -27,6 +27,11 @@ config/kitty/*
 config/tmux/*
 !config/tmux/tmux.conf
 
+# allow tmuxinator default template only
+!config/tmuxinator
+config/tmuxinator/*
+!config/tmuxinator/default.yml
+
 # disallow lein repl history
 lein/repl-history
 
@@ -40,3 +45,8 @@ zshrc_local_overrides
 claude/*
 !claude/CLAUDE.md
 !claude/settings.json
+!claude/keybindings.json
+!claude/commands
+claude/commands/*
+!claude/commands/new-worktree.md
+!claude/commands/close-worktree.md

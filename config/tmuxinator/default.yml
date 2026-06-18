@@ -1,0 +1,17 @@
+# Default "working on a repo" layout.
+# Run from within a project directory: mux start default
+# The session name and root default to the current directory.
+#
+# Override PROJECT_ROOT or PROJECT_NAME to set them explicitly:
+#   PROJECT_ROOT=~/Dev/myproject mux start default
+#
+# Per-project override: create ~/.config/tmuxinator/<project>.yml
+# or place .tmuxinator.yml in the project root and run: mux local
+
+name: <%= ENV['PROJECT_NAME'] || File.basename(Dir.pwd) %>
+root: <%= ENV['PROJECT_ROOT'] || Dir.pwd %>
+
+windows:
+  - editor: nvim
+  - ai: claude
+  - zsh:
