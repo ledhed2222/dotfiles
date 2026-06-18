@@ -34,4 +34,9 @@ brew install jenv nodenv pyenv rbenv
 
 # tmux additional steps
 - Install the [tmux plugin manager](https://github.com/tmux-plugins/tpm)
-- Use [tmuxinator](https://github.com/tmuxinator/tmuxinator) for workspace management
+- Install [tmuxinator](https://github.com/tmuxinator/tmuxinator) for workspace management:
+```zsh
+brew install tmuxinator
+```
+- The default layout (`mux start default`) opens nvim, claude, and a terminal in the current directory
+- To override per-project, run `mux new <project-name>` or place `.tmuxinator.yml` in the project root and run `mux local`

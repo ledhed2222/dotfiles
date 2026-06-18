@@ -3,7 +3,10 @@
 # Creates symlinks from ~ to any desired dotfiles
 dir=`pwd`
 olddir=~/dotfiles_backup
-files=`ls | grep "[^make\.sh|README\.md]"`
+# files in this repo that should NOT be symlinked into ~
+ignore=(make.sh README.md CLAUDE.md)
+ignore_pattern=$(IFS='|'; echo "^(${ignore[*]})$")
+files=`ls | grep -Ev "$ignore_pattern"`
 
 echo "Creating $olddir for backup of any existing dotfiles in ~"
 mkdir -p $olddir
