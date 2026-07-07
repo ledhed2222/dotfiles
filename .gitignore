@@ -26,6 +26,16 @@ config/kitty/*
 !config/tmux
 config/tmux/*
 !config/tmux/tmux.conf
+!config/tmux/tmux-clear-flag.sh
+!config/tmux/tmux-attention-summary.sh
+
+# allow claude hooks
+!config/claude
+config/claude/*
+!config/claude/hooks
+config/claude/hooks/*
+!config/claude/hooks/tmux-flag-attention.sh
+!config/claude/hooks/tmux-clear-attention.sh
 
 # allow tmuxinator default template only
 !config/tmuxinator
@@ -46,7 +56,8 @@ claude/*
 !claude/CLAUDE.md
 !claude/settings.json
 !claude/keybindings.json
-!claude/commands
-claude/commands/*
-!claude/commands/new-worktree.md
-!claude/commands/close-worktree.md
+!claude/skills
+claude/skills/*
+!claude/skills/new-worktree
+!claude/skills/connect-worktree
+!claude/skills/close-worktree

@@ -2,5 +2,39 @@
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true
+  },
+  "tui": "fullscreen",
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "permission_prompt|agent_needs_input",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.config/claude/hooks/tmux-flag-attention.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.config/claude/hooks/tmux-clear-attention.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.config/claude/hooks/tmux-clear-attention.sh"
+          }
+        ]
+      }
+    ]
   }
 }
