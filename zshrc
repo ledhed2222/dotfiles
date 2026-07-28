@@ -15,6 +15,11 @@ if [[ $(uname) == "Darwin" ]]; then
 		fi
 	}
 
+  # Docker Desktop
+  if [[ -d "$HOME/.docker/bin" ]]; then
+    export PATH="$HOME/.docker/bin:$PATH"
+  fi
+
   # Different things depending on Apple or Intel
   if [[ $(sysctl -n machdep.cpu.brand_string | grep Apple) ]]; then
     # Homebrew setup
