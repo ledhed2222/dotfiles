@@ -1,9 +1,5 @@
 {
-  "enabledPlugins": {
-    "clangd-lsp@claude-plugins-official": true,
-    "gopls-lsp@claude-plugins-official": true
-  },
-  "tui": "fullscreen",
+  "model": "opus[1m]",
   "hooks": {
     "Notification": [
       {
@@ -36,5 +32,10 @@
         ]
       }
     ]
-  }
+  },
+  "enabledPlugins": {
+    "clangd-lsp@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true
+  },
+  "tui": "fullscreen"
 }
