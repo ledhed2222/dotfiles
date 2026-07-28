@@ -13,5 +13,5 @@ root: <%= ENV['PROJECT_ROOT'] || Dir.pwd %>
 
 windows:
   - editor: nvim
-  - ai: claude
+  - ai: claude --continue
   - zsh:
