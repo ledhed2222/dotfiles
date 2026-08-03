@@ -79,7 +79,7 @@ windows:
   - ai:
       root: $WORKTREE_PATH
       panes:
-        - claude --continue
+        - claude --continue || claude
   - zsh:
       root: $WORKTREE_PATH
       panes:
