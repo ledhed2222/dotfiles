@@ -196,6 +196,17 @@ function fbr {
     git checkout $(echo "$branch" | awk '{print $1}' | sed "s/.* //")
 }
 
+# Bare `claude` resumes this directory's most recent conversation. `--continue`
+# exits 1 when there's no history to resume, so fall back to a fresh session.
+# Any explicit args (-p, --resume, a prompt) pass straight through.
+function claude {
+  if (( $# == 0 )); then
+    command claude --continue || command claude
+  else
+    command claude "$@"
+  fi
+}
+
 # Common locations
 export DEVHOME="$HOME/Dev"
 export WORKHOME="$HOME/Documents/Work"

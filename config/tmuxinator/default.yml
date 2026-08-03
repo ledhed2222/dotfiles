@@ -13,7 +13,5 @@ root: <%= ENV['PROJECT_ROOT'] || Dir.pwd %>
 
 windows:
   - editor: nvim
-  # Resume this directory's most recent conversation; start a fresh one if
-  # there's nothing to continue (`--continue` exits 1 in that case).
-  - ai: claude --continue || claude
+  - ai: claude
   - zsh:
