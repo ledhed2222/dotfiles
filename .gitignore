@@ -58,6 +58,3 @@ claude/*
 !claude/keybindings.json
 !claude/skills
 claude/skills/*
-!claude/skills/new-worktree
-!claude/skills/connect-worktree
-!claude/skills/close-worktree
