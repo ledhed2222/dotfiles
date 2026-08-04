@@ -207,6 +207,15 @@ function claude {
   fi
 }
 
+# Everything in the repo's zsh/ dir. Resolved relative to this file's real
+# location (%x survives being read as ~/.zshrc; :A resolves the symlink), so it
+# works straight out of the repo without make.sh having run. (N) skips the loop
+# entirely when nothing matches.
+for _zshrc_part in "${${(%):-%x}:A:h}"/zsh/*.zsh(N); do
+  source "$_zshrc_part"
+done
+unset _zshrc_part
+
 # Common locations
 export DEVHOME="$HOME/Dev"
 export WORKHOME="$HOME/Documents/Work"
