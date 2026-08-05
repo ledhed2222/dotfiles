@@ -15,8 +15,10 @@ Directories like `claude/`, `config/`, etc. are gitignored by default with expli
 `zsh/worktree.zsh` defines `wt`, which pairs a git worktree with a tmux session. It replaces the old `/new-worktree`, `/connect-worktree`, and `/close-worktree` Claude skills so worktree navigation doesn't require Claude.
 
 - `wt new [-l layout] <branch>` — branches off `origin`'s default branch, creates a worktree at `$WORKTREE_HOME/<repo>/<branch-suffix>`, starts a session and switches to it. The current checkout is never touched.
-- `wt open [-l layout] [branch]` — opens (or jumps to) the session for an existing worktree; no argument gives an fzf picker
+- `wt open [-l layout] [branch]` — opens (or jumps to) the session for an existing worktree
 - `wt close [branch]` — removes the worktree, deletes the branch, kills the session. Prompts if the branch is unmerged or the tree is dirty.
+
+`open` and `close` accept an exact branch (full name, suffix, or worktree directory name), a fuzzy fragment, or nothing at all. Exact matches are used directly; anything else goes to `fzf` with the argument as the starting query. `open` auto-accepts a single fuzzy hit, `close` never does — it always makes you confirm the selection, so a typo can't delete the wrong worktree.
 - `wt ls` — lists worktrees, marking those with a live session
 
 Sessions are named after the branch suffix (everything after the last `/`). `WORKTREE_HOME` defaults to `~/worktrees`.
