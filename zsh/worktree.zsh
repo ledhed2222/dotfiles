@@ -5,6 +5,9 @@
 #   wt close [branch]             remove the worktree, delete the branch, kill the session
 #   wt ls                         list worktrees, marking the ones with a live session
 #
+# open and close take an exact branch, a fuzzy fragment, or no argument at all —
+# anything short of an exact match goes through fzf.
+#
 # Worktrees live in $WORKTREE_HOME/<repo>/<branch-suffix>. Sessions are named
 # after the branch suffix.
 #
@@ -46,26 +49,59 @@ _wt_default_branch() {
   fi
 }
 
-# "<path>\t<branch>" per worktree
+# "<branch>\t<path>" per worktree. Branch first so it leads in the fzf picker
+# and lands in field 1 for --nth.
 _wt_list() {
   git worktree list --porcelain | awk '
     /^worktree /  { path = substr($0, 10); branch = "(detached)" }
     /^branch /    { branch = substr($0, 8); sub(/^refs\/heads\//, "", branch) }
-    /^$/          { if (path != "") print path "\t" branch; path = "" }
-    END           { if (path != "") print path "\t" branch }
+    /^$/          { if (path != "") print branch "\t" path; path = "" }
+    END           { if (path != "") print branch "\t" path }
   '
 }
 
-# Resolve a query against full branch, branch suffix, or directory name
+# Exact match against full branch, branch suffix, or directory name
 _wt_find() {
   _wt_list | awk -F'\t' -v q="$1" '
-    { suffix = $2; sub(/.*\//, "", suffix); dir = $1; sub(/.*\//, "", dir) }
-    $2 == q || suffix == q || dir == q { print; exit }
+    { suffix = $1; sub(/.*\//, "", suffix); leaf = $2; sub(/.*\//, "", leaf) }
+    $1 == q || suffix == q || leaf == q { print; exit }
   '
 }
 
-_wt_pick() {
-  _wt_list | fzf --delimiter='\t' --with-nth=2,1 --height=40% --reverse --prompt="$1 "
+# Pick a worktree: an exact match wins outright, anything else seeds an fzf
+# filter (so `wt open pl1a` finds plat-1-alpha, and no argument lists them all).
+# $3 auto-accepts a unique fuzzy hit — `close` leaves it unset so a typo can
+# never resolve straight into deleting a worktree you didn't mean.
+_wt_resolve() {
+  local query=$1 prompt=$2 autoselect=$3 sel rc
+  if [[ -n $query ]]; then
+    sel=$(_wt_find "$query")
+    [[ -n $sel ]] && { print -- "$sel"; return 0 }
+  fi
+
+  if ! (( $+commands[fzf] )); then
+    print -u2 "wt: no worktree matching '$query' (install fzf to match fuzzily)"
+    return 1
+  fi
+
+  # --nth=1 matches on the branch alone. The path still shows, but searching it
+  # too would let a long worktree path manufacture matches of its own. (Don't
+  # reach for --with-nth here: it concatenates fields with no separator, which
+  # both mangles the display and collapses everything into one field.)
+  local -a opts
+  opts=(--delimiter='\t' --nth=1 --height=40% --reverse
+        --prompt="$prompt " --query="$query" --exit-0)
+  [[ -n $autoselect ]] && opts+=(--select-1)
+
+  sel=$(_wt_list | fzf "${opts[@]}")
+  rc=$?
+  case $rc in
+    0)   ;;
+    1)   print -u2 "wt: no worktree matching '$query'"; return 1 ;;
+    130) return 1 ;;  # backed out on purpose, nothing to say
+    *)   print -u2 "wt: fzf exited with status $rc"; return 1 ;;
+  esac
+  print -- "$sel"
 }
 
 _wt_goto() {
@@ -151,16 +187,10 @@ _wt_open() {
   shift $wt_optshift
 
   local sel dir branch
-  if [[ -n $1 ]]; then
-    sel=$(_wt_find "$1")
-    [[ -z $sel ]] && { print -u2 "wt: no worktree matching '$1'"; return 1 }
-  else
-    sel=$(_wt_pick "open>")
-    [[ -z $sel ]] && return 1
-  fi
+  sel=$(_wt_resolve "$1" "open>" autoselect) || return 1
 
-  dir=${sel%%$'\t'*}
-  branch=${sel##*$'\t'}
+  branch=${sel%%$'\t'*}
+  dir=${sel##*$'\t'}
   [[ -d $dir ]] || { print -u2 "wt: $dir no longer exists"; return 1 }
 
   _wt_session "$dir" "${branch##*/}" "$layout" || return 1
@@ -169,20 +199,14 @@ _wt_open() {
 
 _wt_close() {
   local sel dir branch base force_branch=0
-  if [[ -n $1 ]]; then
-    sel=$(_wt_find "$1")
-    [[ -z $sel ]] && { print -u2 "wt: no worktree matching '$1'"; return 1 }
-  else
-    sel=$(_wt_pick "close>")
-    [[ -z $sel ]] && return 1
-  fi
+  sel=$(_wt_resolve "$1" "close>") || return 1
 
-  dir=${sel%%$'\t'*}
-  branch=${sel##*$'\t'}
+  branch=${sel%%$'\t'*}
+  dir=${sel##*$'\t'}
   base=$(_wt_default_branch)
 
   local main_root
-  main_root=$(_wt_list | head -1 | cut -f1)
+  main_root=$(_wt_list | head -1 | cut -f2)
   if [[ $dir == $main_root ]]; then
     print -u2 "wt: refusing to close the main worktree"
     return 1
@@ -229,7 +253,7 @@ _wt_close() {
 
 _wt_ls() {
   local dir branch mark
-  _wt_list | while IFS=$'\t' read -r dir branch; do
+  _wt_list | while IFS=$'\t' read -r branch dir; do
     if tmux has-session -t "=${branch##*/}" 2>/dev/null; then
       mark="●"
     else
