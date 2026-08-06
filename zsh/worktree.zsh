@@ -123,7 +123,16 @@ _wt_session() {
   # Resolve against the target worktree, not $PWD — `wt open` is often run from
   # a different repo than the one being opened.
   [[ -z $layout ]] && layout=$(_wt_layout "$dir")
-  PROJECT_ROOT="$dir" PROJECT_NAME="$session" tmuxinator start "$layout" -a false
+  PROJECT_ROOT="$dir" PROJECT_NAME="$session" tmuxinator start "$layout" -a false || return 1
+
+  # A layout that hardcodes `name:` rather than reading PROJECT_NAME starts a
+  # session under the wrong name and still exits 0, so the failure only shows up
+  # later as a baffling "can't find session" from tmux.
+  if ! tmux has-session -t "=$session" 2>/dev/null; then
+    print -u2 "wt: layout '$layout' started no session named '$session'"
+    print -u2 "wt: its name:/root: must read PROJECT_NAME/PROJECT_ROOT (see default.yml)"
+    return 1
+  fi
 }
 
 # Strips a leading -l/--layout from $@; caller reads $REPLY and shifts $wt_optshift
