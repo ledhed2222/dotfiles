@@ -11,14 +11,15 @@
 # Worktrees live in $WORKTREE_HOME/<repo>/<branch-suffix>. Sessions are named
 # after the branch suffix.
 #
-# A repo selects its tmuxinator layout by committing a .tmuxinator-layout file
-# holding one layout name, resolved against ~/.config/tmuxinator/<name>.yml.
-# Repos without one get `default`, so only the exceptions need a file. It has to
-# be committed to apply to worktrees, since `wt new` checks out a fresh tree and
-# untracked files don't come along. -l overrides it for a single invocation.
+# A repo selects its tmuxinator layout with `git config wt.layout <name>`,
+# resolved against ~/.config/tmuxinator/<name>.yml. Repos without one get
+# `default`. Local git config lives in .git/config, so it never gets committed
+# to a shared repo and needs no .gitignore entry, and every worktree of the repo
+# reads the same value (worktrees share the common config file). Setting it in
+# --global makes a personal default for every repo. -l overrides it for a single
+# invocation.
 
 export WORKTREE_HOME="${WORKTREE_HOME:-$HOME/worktrees}"
-export WT_LAYOUT_FILE="${WT_LAYOUT_FILE:-.tmuxinator-layout}"
 
 _wt_repo_name() {
   local dir=${1:-.} url
@@ -31,13 +32,9 @@ _wt_repo_name() {
 }
 
 _wt_layout() {
-  local marker="$1/$WT_LAYOUT_FILE" name
-  if [[ -r $marker ]]; then
-    # First non-blank, non-comment line
-    name=$(awk 'NF && $1 !~ /^#/ { print $1; exit }' "$marker")
-    [[ -n $name ]] && { print -- "$name"; return }
-  fi
-  print -- default
+  local name
+  name=$(git -C "$1" config --get wt.layout 2>/dev/null)
+  print -- "${name:-default}"
 }
 
 _wt_default_branch() {

@@ -31,4 +31,11 @@ Sessions are named after the branch suffix (everything after the last `/`). `WOR
 PROJECT_ROOT=<path> PROJECT_NAME=<name> mux start default --no-attach
 ```
 
-`wt` uses `default` unless a repo commits a `.tmuxinator-layout` file naming another layout in `config/tmuxinator/`. It must be committed — `wt new` checks out a fresh tree, so untracked files don't reach new worktrees. Any layout `wt` drives has to read `PROJECT_ROOT`/`PROJECT_NAME` the way `default.yml` does.
+`wt` uses `default` unless the repo sets another layout from `config/tmuxinator/`:
+
+```
+git config wt.layout personalsite     # this repo
+git config --global wt.layout <name>  # personal default everywhere
+```
+
+Local git config lives in `.git/config`, so this never gets committed to a shared repo and needs no `.gitignore` entry, and every worktree of the repo reads the same value. Resolution order is `wt -l <layout>` → local → global → `default`. Any layout `wt` drives has to read `PROJECT_ROOT`/`PROJECT_NAME` the way `default.yml` does.
