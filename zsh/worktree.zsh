@@ -271,3 +271,75 @@ function wt {
     *)              print -u2 "usage: wt {new [-l layout] <branch>|open [-l layout] [branch]|close [branch]|ls}"; return 1 ;;
   esac
 }
+
+# Completion. Without it zsh falls back to filenames, so `wt open <TAB>` offers
+# the files in the repo — never a valid argument. open and close complete
+# existing worktrees; every other position deliberately completes nothing rather
+# than reverting to files. fzf still does the fuzzy matching at runtime.
+_wt_comp_worktrees() {
+  local -a branches
+  branches=(${(f)"$(_wt_list 2>/dev/null | cut -f1)"})
+  # -Q since branch names contain slashes that would otherwise be quoted
+  _describe -t worktrees 'worktree' branches -Q
+}
+
+_wt() {
+  local -a subcommands layout_opt
+  subcommands=(
+    'new:branch off origin default, open a session, switch to it'
+    'open:open (or jump to) the session for an existing worktree'
+    'close:remove the worktree, delete the branch, kill the session'
+    'ls:list worktrees, marking the ones with a live session'
+  )
+  # Recognised so `-l` doesn't fall through to filenames; its value is a layout
+  # name you can list with `mux ls`, so nothing is offered for it.
+  layout_opt=('(-l --layout)'{-l,--layout}'[tmuxinator layout]:layout: ')
+
+  local curcontext=$curcontext state line
+  _arguments -C '1: :->cmd' '*:: :->args'
+
+  case $state in
+    cmd)
+      _describe -t commands 'wt command' subcommands
+      ;;
+    args)
+      case $words[1] in
+        new|n)          _arguments $layout_opt ;;
+        open|o|connect) _arguments $layout_opt '1:worktree:_wt_comp_worktrees' ;;
+        close|rm)       _arguments '1:worktree:_wt_comp_worktrees' ;;
+      esac
+      ;;
+  esac
+}
+
+# Guarded so this file still sources cleanly in a non-interactive shell, where
+# compinit hasn't run and compdef doesn't exist. An `if` rather than `&&` so
+# sourcing the file doesn't come back non-zero when the guard is false.
+if (( $+functions[compdef] )); then
+  compdef _wt wt
+fi
+
+# zsh bells on an ambiguous completion and on no match, both by way of the
+# completion widget returning non-zero — and there's no per-command option for
+# it. LIST_BEEP's documented escape hatch is a user-defined widget, so wrap Tab
+# and swallow the status only when the line starts with `wt`, leaving the bell
+# intact for every other command. This sources after fzf's completion.zsh, so
+# the wrapped widget is whatever Tab actually ended up bound to.
+if [[ -o interactive ]] && (( $+functions[compdef] )); then
+  _wt_tab_target=${${(z)$(bindkey '^I')}[2]}
+  if [[ -n $_wt_tab_target && $_wt_tab_target != _wt_tab ]]; then
+    _wt_tab() {
+      zle "$_wt_tab_target"
+      local ret=$?
+      # Assigned to an array first: (z) on a one-word line yields a scalar, and
+      # subscripting that would take the first character rather than the word.
+      local -a first
+      first=(${(z)LBUFFER})
+      [[ $first[1] == wt ]] && return 0
+      return $ret
+    }
+    zle -N _wt_tab
+    bindkey '^I' _wt_tab
+    bindkey -M viins '^I' _wt_tab
+  fi
+fi
