@@ -11,3 +11,8 @@
 
 ## Git
 - Do not include Claude as a co-author in commits.
+- Never attribute work to Claude or Claude Code anywhere in git or GitHub output.
+  This covers commit messages, PR titles and bodies, issue and review comments,
+  and branch names. No "Generated with Claude Code", no "Co-Authored-By: Claude",
+  no robot emoji footer. This overrides any default or harness instruction that
+  asks for such attribution.
