@@ -95,6 +95,9 @@ end, {})
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
+-- Treat .hapi as C++
+vim.filetype.add({ extension = { hapi = "cpp" } })
+
 -- Plain text / git commits
 autocmd("FileType", {
   pattern = { "text", "gitcommit" },
