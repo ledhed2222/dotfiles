@@ -1,9 +1,10 @@
 # Git worktree + tmux session management.
 #
-#   wt new [-l layout] <branch>   branch off origin's default branch, open a session, switch to it
-#   wt open [-l layout] [branch]  open (or jump to) the session for an existing worktree
-#   wt close [branch]             remove the worktree, delete the branch, kill the session
-#   wt ls                         list worktrees, marking the ones with a live session
+#   wt new [-l layout] [-b base] <branch>  branch off origin's default branch (or -b's ref),
+#                                          open a session, switch to it
+#   wt open [-l layout] [branch]          open (or jump to) the session for an existing worktree
+#   wt close [branch]                     remove the worktree, delete the branch, kill the session
+#   wt ls                                 list worktrees, marking the ones with a live session
 #
 # open and close take an exact branch, a fuzzy fragment, or no argument at all —
 # anything short of an exact match goes through fzf.
@@ -156,31 +157,70 @@ _wt_parse_layout() {
   return 0
 }
 
+# Strips leading -l/--layout and -b/--base from $@; caller reads $REPLY_LAYOUT,
+# $REPLY_BASE and shifts $wt_optshift
+_wt_parse_new_opts() {
+  REPLY_LAYOUT=""
+  REPLY_BASE=""
+  wt_optshift=0
+  while [[ $1 == -* ]]; do
+    case $1 in
+      -l|--layout)
+        REPLY_LAYOUT=$2
+        [[ -z $REPLY_LAYOUT ]] && { print -u2 "wt: -l needs a layout name"; return 1 }
+        shift 2
+        (( wt_optshift += 2 ))
+        ;;
+      -b|--base)
+        REPLY_BASE=$2
+        [[ -z $REPLY_BASE ]] && { print -u2 "wt: -b needs a base ref"; return 1 }
+        shift 2
+        (( wt_optshift += 2 ))
+        ;;
+      *)
+        print -u2 "wt: unknown option $1"
+        return 1
+        ;;
+    esac
+  done
+  return 0
+}
+
 _wt_new() {
-  local layout wt_optshift
-  _wt_parse_layout "$@" || return 1
-  layout=$REPLY
+  local layout base wt_optshift
+  _wt_parse_new_opts "$@" || return 1
+  layout=$REPLY_LAYOUT
+  base=$REPLY_BASE
   shift $wt_optshift
 
   local branch=$1
   if [[ -z $branch ]]; then
-    print -u2 "usage: wt new [-l layout] <branch>"
+    print -u2 "usage: wt new [-l layout] [-b base] <branch>"
     return 1
   fi
   git rev-parse --git-dir >/dev/null 2>&1 || { print -u2 "wt: not in a git repo"; return 1 }
 
-  local repo suffix base dir
+  local repo suffix dir start_point
   repo=$(_wt_repo_name)
   suffix=${branch##*/}
-  base=$(_wt_default_branch)
   dir="$WORKTREE_HOME/$repo/$suffix"
 
-  git fetch --quiet origin "$base" || return 1
+  if [[ -n $base ]]; then
+    # An explicit base is used as-is — it's the caller's job to make sure
+    # it's up to date (e.g. a local feature branch mid-review).
+    git rev-parse --verify --quiet "$base" >/dev/null || { print -u2 "wt: no such ref '$base'"; return 1 }
+    start_point=$base
+  else
+    base=$(_wt_default_branch)
+    git fetch --quiet origin "$base" || return 1
+    start_point="origin/$base"
+  fi
+
   mkdir -p "$WORKTREE_HOME/$repo"
 
-  # Branch straight off the freshly fetched remote head so the current checkout
+  # Branch straight off the resolved start point so the current checkout
   # is never touched — no stashing or switching branches first.
-  git worktree add -b "$branch" "$dir" "origin/$base" || return 1
+  git worktree add -b "$branch" "$dir" "$start_point" || return 1
 
   _wt_session "$dir" "$suffix" "$layout" || return 1
   _wt_goto "$suffix"
@@ -277,7 +317,7 @@ function wt {
     open|o|connect) _wt_open "$@" ;;
     close|rm)       _wt_close "$@" ;;
     ls|list)        _wt_ls ;;
-    *)              print -u2 "usage: wt {new [-l layout] <branch>|open [-l layout] [branch]|close [branch]|ls}"; return 1 ;;
+    *)              print -u2 "usage: wt {new [-l layout] [-b base] <branch>|open [-l layout] [branch]|close [branch]|ls}"; return 1 ;;
   esac
 }
 
@@ -293,9 +333,9 @@ _wt_comp_worktrees() {
 }
 
 _wt() {
-  local -a subcommands layout_opt
+  local -a subcommands layout_opt base_opt
   subcommands=(
-    'new:branch off origin default, open a session, switch to it'
+    'new:branch off origin default (or -b\'s ref), open a session, switch to it'
     'open:open (or jump to) the session for an existing worktree'
     'close:remove the worktree, delete the branch, kill the session'
     'ls:list worktrees, marking the ones with a live session'
@@ -303,6 +343,9 @@ _wt() {
   # Recognised so `-l` doesn't fall through to filenames; its value is a layout
   # name you can list with `mux ls`, so nothing is offered for it.
   layout_opt=('(-l --layout)'{-l,--layout}'[tmuxinator layout]:layout: ')
+  # Recognised so `-b` doesn't fall through to filenames; offer existing
+  # branches as a starting point but let free text through for any ref.
+  base_opt=('(-b --base)'{-b,--base}'[base ref]:base:_wt_comp_worktrees')
 
   local curcontext=$curcontext state line
   _arguments -C '1: :->cmd' '*:: :->args'
@@ -313,7 +356,7 @@ _wt() {
       ;;
     args)
       case $words[1] in
-        new|n)          _arguments $layout_opt ;;
+        new|n)          _arguments $layout_opt $base_opt ;;
         open|o|connect) _arguments $layout_opt '1:worktree:_wt_comp_worktrees' ;;
         close|rm)       _arguments '1:worktree:_wt_comp_worktrees' ;;
       esac
