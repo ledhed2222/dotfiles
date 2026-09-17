@@ -9,8 +9,10 @@
 # open and close take an exact branch, a fuzzy fragment, or no argument at all —
 # anything short of an exact match goes through fzf.
 #
-# Worktrees live in $WORKTREE_HOME/<repo>/<branch-suffix>. Sessions are named
-# after the branch suffix.
+# Worktrees live in $WORKTREE_HOME/<repo>/<branch-suffix>, defaulting to a
+# hidden dir under $DEVHOME (~/.worktrees if zshrc hasn't set DEVHOME) so the
+# duplicate checkouts stay out of fd/rg/fzf runs over the dev dir. Sessions are
+# named after the branch suffix.
 #
 # A repo selects its tmuxinator layout with `git config wt.layout <name>`,
 # resolved against ~/.config/tmuxinator/<name>.yml. Repos without one get
@@ -20,7 +22,7 @@
 # --global makes a personal default for every repo. -l overrides it for a single
 # invocation.
 
-export WORKTREE_HOME="${WORKTREE_HOME:-$HOME/worktrees}"
+export WORKTREE_HOME="${WORKTREE_HOME:-${DEVHOME:-$HOME}/.worktrees}"
 
 _wt_repo_name() {
   local dir=${1:-.} url

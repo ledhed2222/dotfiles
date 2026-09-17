@@ -21,7 +21,7 @@ Directories like `claude/`, `config/`, etc. are gitignored by default with expli
 `open` and `close` accept an exact branch (full name, suffix, or worktree directory name), a fuzzy fragment, or nothing at all. Exact matches are used directly; anything else goes to `fzf` with the argument as the starting query. `open` auto-accepts a single fuzzy hit, `close` never does — it always makes you confirm the selection, so a typo can't delete the wrong worktree.
 - `wt ls` — lists worktrees, marking those with a live session
 
-Sessions are named after the branch suffix (everything after the last `/`). `WORKTREE_HOME` defaults to `~/worktrees`.
+Sessions are named after the branch suffix (everything after the last `/`). `WORKTREE_HOME` defaults to `$DEVHOME/.worktrees` (`~/.worktrees` if `DEVHOME` is unset) — hidden so the duplicate checkouts stay out of `fd`/`rg`/fzf runs over the dev dir. `zshrc` exports the common-location vars before it sources `zsh/*.zsh` so `DEVHOME` is visible there.
 
 ## tmuxinator layouts
 
