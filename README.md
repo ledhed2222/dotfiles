@@ -15,6 +15,15 @@ chsh -s $(which zsh)
 brew install kitty
 ```
 
+## font
+`kitty.conf` sets `font_family PragmataPro Mono Liga`. PragmataPro is a paid
+font from [Fabrizio Schiavi](https://fsd.it/shop/fonts/pragmatapro/), so the
+`.ttf` files are licensed per-person and are not in this repo — download them
+with your license and drop them in `~/Library/Fonts`. The config wants the
+`PragmataPro_Mono_*_liga_*.ttf` faces specifically: `Mono` for fixed-width
+cells, `liga` for the programming ligatures that `disable_ligatures cursor`
+assumes exist. Without them installed, kitty warns and falls back to Menlo.
+
 # vim
 For file searching and neovim:
 ```zsh
