@@ -42,7 +42,7 @@ brew install jenv nodenv pyenv rbenv
 ```
 
 # tmux additional steps
-- Install the [tmux plugin manager](https://github.com/tmux-plugins/tpm)
+- The [tmux plugin manager](https://github.com/tmux-plugins/tpm) needs no setup: `tmux.conf` clones it on first launch and installs any missing plugin on config reload. Adding a plugin takes two reloads — the first clones it, the second sources it.
 - Install [tmuxinator](https://github.com/tmuxinator/tmuxinator) for workspace management:
 ```zsh
 brew install tmuxinator
