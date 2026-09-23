@@ -44,6 +44,30 @@ Local git config lives in `.git/config`, so this never gets committed to a share
 
 Coding style and behavior preferences that apply everywhere, not just this repo, live in [`claude/CLAUDE.md`](claude/CLAUDE.md) (symlinked to `~/.claude/CLAUDE.md`) rather than here.
 
+## graft rewrites tracked settings on every `init`
+
+`graft init` does not only write the untracked per-machine shim documented in
+the README. It also rewrites the hook commands in `claude/settings.json`,
+replacing `$HOME` with the absolute home directory of whichever machine it ran
+on (`node "/Users/<you>/.claude/helpers/graft-hooks.cjs" ...`). That file is
+tracked and shared, so the rewrite pins it to one machine and the hooks break
+everywhere else. After any `graft init`, put `$HOME` back and confirm `git diff
+claude/settings.json` is empty before committing. (`graft upgrade` only bumps
+the npm package and rewrites nothing; it is re-running `init` afterwards that
+does.)
+
+`init` is also repo-scoped, not just global: run in a repo it writes
+`.claude/settings.json`, `.claude/helpers/*.cjs`, `.claude/skills/graft/` and
+`.mcp.json` there. Those duplicate the user-level wiring rather than adding to
+it, so every graft hook then fires twice in that repo — once from
+`claude/settings.json`, once from the project copy. They are gitignored here
+for that reason. Keeping the project copy for its one unique feature, graft's
+statusline, would also mean tracking `.claude/helpers/graft-statusline.cjs`,
+the same vendored shim this repo deliberately does not track.
+
+For a repo that just needs a graph, `graft build` alone is enough — `init` is
+the once-per-machine wiring step.
+
 ## Repo-specific Neovim config without touching the repo
 
 `init.lua` sets `opt.exrc = true` / `opt.secure = true`, so Neovim auto-sources a `.nvim.lua` (or `.nvimrc`/`.exrc`) found in the cwd on startup, prompting `:trust` the first time. Use this for config that only makes sense in one repo (e.g. a clangd `--query-driver` glob pointing at a project's custom compiler wrapper) instead of adding repo-specific logic to this dotfiles repo.
