@@ -30,6 +30,7 @@ done
 # real and local. Notably absent: helpers/graft-hooks.cjs, which `graft init`
 # generates and overwrites in place per machine -- vendored, not ours to track.
 echo "Symlinking shared claude/ config into ~/.claude"
+mkdir -p ~/.claude
 claude_files=(CLAUDE.md settings.json keybindings.json)
 for file in "${claude_files[@]}"
 do
