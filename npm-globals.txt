@@ -12,3 +12,9 @@
 
 @nanonets/graft
 json
+
+# tsserver, which typescript-language-server wraps. Pinned to 5.x on purpose:
+# typescript 7 is the native port and ships only tsc, no tsserver, so both the
+# brew formula and typescript@latest leave the language server with nothing to
+# drive. nvim's ts_ls needs the same binary.
+typescript@5

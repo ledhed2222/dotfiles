@@ -228,6 +228,15 @@ if [[ -a $GOPATH ]]; then
   export PATH="$PATH:$GOPATH/bin"
 fi
 
+# The github plugin's MCP server (claude/settings.json) sends this as a bearer
+# token to api.githubcopilot.com. Unset, the header goes out as a bare "Bearer "
+# and the server 400s with "Authorization header is badly formatted" -- which
+# looks like a broken plugin rather than a missing token. gh already keeps one
+# in the keyring, so read it from there instead of putting a copy on disk.
+if (command -v gh > /dev/null); then
+  export GITHUB_PERSONAL_ACCESS_TOKEN=$(gh auth token 2>/dev/null)
+fi
+
 # Elixir setup
 export ERL_AFLAGS="-kernel shell_history enabled"
 
