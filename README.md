@@ -37,27 +37,27 @@ tracked `claude/settings.json` with this machine's absolute home path, so
 running it automatically would dirty the repo every time. The script just
 reminds you when graft is installed but unwired.
 
-The two manifests are the source of truth for what gets installed. `make.sh`
-runs both, and either is safe to run alone at any time — they install what's
-missing and leave the rest alone:
+`Brewfile` and `npm-globals.txt` are the source of truth for what's installed;
+`make.sh` runs both. To see what's missing without installing anything:
+`brew bundle check --global` and `npm ls -g --depth=0`.
 
-| manifest | holds | install | check |
-|---|---|---|---|
-| `Brewfile` | formulae + casks | `brew bundle --global` | `brew bundle check --global` |
-| `npm-globals.txt` | npm globals | `grep -v '^#' npm-globals.txt \| xargs npm i -g` | `npm ls -g --depth=0` |
+## where a new dependency goes
 
-To add a dependency, put it in the matching manifest and re-run `./make.sh` —
-`brew "ripgrep"` in the Brewfile, or a bare package name on its own line in
-`npm-globals.txt`. Homebrew reads `~/.Brewfile`, which `make.sh` symlinks, so
-`--global` works from any directory; the npm line reads the file out of the
-repo.
+Nothing gets installed by hand. Add it in one place, run `./make.sh`:
 
-`npm-globals.txt` exists because `brew bundle` only knows about formulae, casks
-and taps. Globals install into the *current* nodenv version's prefix, so
-`nodenv global <new-version>` leaves them behind — re-run `./make.sh` and
-they're back. On a bare machine that bites once in the other direction too:
-nodenv arrives with the Brewfile but has no node version yet, so `npm` doesn't
-exist and the globals are skipped with a message. Run
+| what it is | where it goes |
+|---|---|
+| brew formula or cask | `Brewfile` — macOS-only lines get `if OS.mac?` |
+| npm global | `npm-globals.txt` |
+| ships its own updater (claude code) | a step in `make.sh`, never a manifest |
+| installs itself (tpm) | nowhere |
+| platform-specific git config | `gitconfig_darwin` / `gitconfig_linux` |
+| a secret | nowhere tracked — read it at shell start, the way `zshrc` gets the GitHub token from `gh auth token` |
+| machine-specific anything else | `~/.zshrc_local_overrides`, `~/.gitconfig_local_overrides` |
+| a project's own toolchain | that project, not here |
+
+One gotcha on a bare machine: `nodenv` arrives with the Brewfile but has no node
+version, so `npm` is missing and the globals are skipped with a message. Run
 `nodenv install <version> && nodenv global <version>`, then `./make.sh` again.
 
 ## what can't be automated

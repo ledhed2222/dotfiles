@@ -2,9 +2,26 @@
 
 ## Installation
 
-`make.sh` symlinks each top-level file/dir in this repo to its `~/.<name>` counterpart, so edits to those files take effect immediately without reinstalling. `claude/` is the exception: `~/.claude` holds megabytes of local session state (history, credentials, plugin installs) alongside shared config, so rather than symlinking the whole directory, `make.sh` symlinks only `claude/{CLAUDE.md,settings.json,keybindings.json}` individually into the real `~/.claude/`. Adding another shared file under `claude/` means adding it to `make.sh`'s `claude_files` list too, not just the `.gitignore` allowlist. `~/.claude/helpers/graft-hooks.cjs` is deliberately not one of them — `graft init` generates and overwrites it in place, so it's vendored per machine, not tracked here.
+`make.sh` is the whole install: it symlinks each top-level file/dir in this repo to its `~/.<name>` counterpart (so edits take effect immediately without reinstalling), then installs oh my zsh, the two dependency manifests, and Claude Code. Every step is skipped when already satisfied, so it stays safe and cheap to re-run — which is the normal reason to run it. Two orderings inside it are load-bearing: oh my zsh must precede the symlink loop (its installer replaces an existing `~/.zshrc`, and its own check matches symlinks too, via `-h`), and `nodenv rehash` must follow the npm install (a global's binary isn't on `PATH` until a shim exists, so a fresh package looks like a failed install).
+
+`claude/` is the exception to the symlinking: `~/.claude` holds megabytes of local session state (history, credentials, plugin installs) alongside shared config, so rather than symlinking the whole directory, `make.sh` symlinks only `claude/{CLAUDE.md,settings.json,keybindings.json}` individually into the real `~/.claude/`. Adding another shared file under `claude/` means adding it to `make.sh`'s `claude_files` list too, not just the `.gitignore` allowlist. `~/.claude/helpers/graft-hooks.cjs` is deliberately not one of them — `graft init` generates and overwrites it in place, so it's vendored per machine, not tracked here.
 
 `zshrc` sources every `zsh/*.zsh` in this repo, resolved relative to its own real path, so those files work without `make.sh` having run.
+
+## Where a new dependency goes
+
+Nothing is installed by hand. Pick the home by *how the thing updates itself*, then run `./make.sh`:
+
+- **Homebrew formula or cask** → `Brewfile`. macOS-only entries get `if OS.mac?`; the file is shared with Linux, where `cask` doesn't exist.
+- **npm global** → `npm-globals.txt`. `brew bundle` only understands formulae, casks and taps, hence the second manifest. These install into the *current* nodenv version's prefix, so switching node versions leaves them behind — re-running `make.sh` restores them.
+- **Ships its own updater** (Claude Code) → a step in `make.sh`, never a manifest. A formula would install a second copy that competes with the self-updater.
+- **Installs itself** (tpm, cloned by `tmux.conf`) → nothing at all.
+- **Platform-specific git config** → `gitconfig_darwin` / `gitconfig_linux`, which `make.sh` links to `~/.gitconfig_os`. Git has no OS conditional; `includeIf` matches only gitdir, branch and remote url.
+- **A secret** → never a tracked file. Read it at shell start from wherever it already lives: `zshrc` gets the GitHub token from `gh auth token`, so the keyring stays the only copy.
+- **Machine-specific anything else** → `~/.zshrc_local_overrides` or `~/.gitconfig_local_overrides`, both untracked and applied last.
+- **A project's own toolchain** (typescript, say) → that project's `package.json`, not here.
+
+Prose describing an install is a liability; the manifest that performs it can't drift. When both exist, delete the prose.
 
 ## Adding files to tracked directories
 
