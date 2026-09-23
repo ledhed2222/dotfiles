@@ -60,8 +60,6 @@ nodenv arrives with the Brewfile but has no node version yet, so `npm` doesn't
 exist and the globals are skipped with a message. Run
 `nodenv install <version> && nodenv global <version>`, then `./make.sh` again.
 
-**tpm** needs no step of its own — `tmux.conf` clones it on first launch.
-
 ## what can't be automated
 
 - **The PragmataPro font** — paid and per-person licensed, see below.
@@ -101,23 +99,6 @@ with your license and drop them in `~/Library/Fonts`. The config wants the
 `PragmataPro_Mono_*_liga_*.ttf` faces specifically: `Mono` for fixed-width
 cells, `liga` for the programming ligatures that `disable_ligatures cursor`
 assumes exist. Without them installed, kitty warns and falls back to Menlo.
-
-# lsp support
-
-- Go — [gopls](https://go.dev/gopls/)
-- C/C++ — [clangd](https://clangd.llvm.org/), which ships with the Xcode
-  Command Line Tools on macOS but needs `llvm` on Linux
-- Elixir — [elixir-ls](https://github.com/elixir-lsp/elixir-ls)
-- JavaScript/TypeScript —
-  [typescript-language-server](https://github.com/typescript-language-server/typescript-language-server)
-
-All but clangd come from the Brewfile. The `*-lsp` plugins enabled in
-`claude/settings.json` spawn these same binaries, so one install serves both
-neovim and Claude Code.
-
-`typescript-language-server` needs typescript as a dependency of the project
-you're editing; there's deliberately no global copy. See [CLAUDE.md](CLAUDE.md)
-for why, and why it complains outside a JS/TS repo.
 
 # tmux
 
