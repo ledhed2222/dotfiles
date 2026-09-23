@@ -58,3 +58,10 @@ claude/*
 !claude/keybindings.json
 !claude/skills
 claude/skills/*
+!claude/helpers
+claude/helpers/*
+!claude/helpers/graft-hooks.cjs
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
+/.ignore
