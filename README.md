@@ -115,12 +115,9 @@ All but clangd come from the Brewfile. The `*-lsp` plugins enabled in
 `claude/settings.json` spawn these same binaries, so one install serves both
 neovim and Claude Code.
 
-`typescript-language-server` drives `tsserver`, which it resolves from the
-project's own `node_modules/typescript` — so a JS/TS repo needs typescript as a
-local dependency, which it should be pinning anyway. There is deliberately no
-global fallback: the brew formula's bundled copy is typescript 7, the native
-port, which ships only `tsc` and dropped `tsserver` entirely. Outside a project
-that has it locally, expect the server to complain; inside one, it's fine.
+`typescript-language-server` needs typescript as a dependency of the project
+you're editing; there's deliberately no global copy. See [CLAUDE.md](CLAUDE.md)
+for why, and why it complains outside a JS/TS repo.
 
 # tmux
 

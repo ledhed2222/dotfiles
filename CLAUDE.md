@@ -68,6 +68,26 @@ the same vendored shim this repo deliberately does not track.
 For a repo that just needs a graph, `graft build` alone is enough — `init` is
 the once-per-machine wiring step.
 
+## typescript-language-server has no global fallback, on purpose
+
+`typescript-language-server` is a wrapper: the actual work is done by
+`tsserver`, which it resolves from the *project's* `node_modules/typescript`.
+A JS/TS repo therefore needs typescript as a local dependency -- which it
+should be pinning anyway, so the editor and CI agree on a compiler version.
+
+Outside such a project -- this repo, a scratch `.ts` file -- there is nothing
+to fall back to, and the server will complain. That is expected, not a broken
+install. Homebrew's `typescript-language-server` bundles a `typescript` that is
+a symlink to brew's `typescript` formula, now at 7.x: the native port, whose
+only binary is `tsc`. TypeScript 7 dropped `tsserver` entirely, so the bundled
+copy cannot drive the server, and `typescript@latest` on npm is the same 7.x.
+The last release carrying `tsserver` is 5.9.3.
+
+Installing `typescript@5` globally was tried and reverted: it only serves repos
+that would never ask for it, and the brew-installed server looks in its own
+`node_modules` (the 7.x symlink) before anything global, so it isn't reliably
+picked up anyway. Fix it in the project, not here.
+
 ## Repo-specific Neovim config without touching the repo
 
 `init.lua` sets `opt.exrc = true` / `opt.secure = true`, so Neovim auto-sources a `.nvim.lua` (or `.nvimrc`/`.exrc`) found in the cwd on startup, prompting `:trust` the first time. Use this for config that only makes sense in one repo (e.g. a clangd `--query-driver` glob pointing at a project's custom compiler wrapper) instead of adding repo-specific logic to this dotfiles repo.
