@@ -49,3 +49,23 @@ brew install tmuxinator
 ```
 - The default layout (`mux start default`) opens nvim, claude, and a terminal in the current directory
 - To override per-project, run `mux new <project-name>` or place `.tmuxinator.yml` in the project root and run `mux local`
+
+# graft (code context graph for Claude Code)
+```zsh
+npm i -g @nanonets/graft
+graft init
+```
+- `graft init` wires the Claude Code integration once per machine: it merges a
+  hooks stanza into `settings.json` (tracked in this repo, so the wiring
+  itself is shared) and generates `~/.claude/helpers/graft-hooks.cjs`, the
+  shim those hooks call. The shim is deliberately *not* tracked — `graft
+  init`/`graft upgrade` overwrite it in place with whatever version ships, so
+  committing it would just mean fighting graft's own updates. `settings.json`
+  only lands back in this repo if `~/.claude` is actually the symlink
+  `make.sh` sets up — if `~/.claude` predates that (a real directory with its
+  own history/plugins/etc.), merge it in and symlink it by hand first, or
+  `graft init`'s writes will just go to the untracked real directory instead.
+- Per-repo, run `graft build` (no `init`) inside any repo you want a context
+  graph for. It writes a git-ignored `graft/` directory there — regenerate it
+  any time, nothing under it is committed. `wt new` runs this automatically
+  for every worktree it creates.

@@ -224,6 +224,12 @@ _wt_new() {
   # is never touched — no stashing or switching branches first.
   git worktree add -b "$branch" "$dir" "$start_point" || return 1
 
+  # Each worktree is its own checkout, so its context graph needs its own
+  # build — graft doesn't follow git worktrees back to a shared one.
+  if (( $+commands[graft] )); then
+    graft build "$dir" >/dev/null 2>&1 || print -u2 "wt: graft build failed for $dir (continuing)"
+  fi
+
   _wt_session "$dir" "$suffix" "$layout" || return 1
   _wt_goto "$suffix"
 }

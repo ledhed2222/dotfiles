@@ -255,6 +255,9 @@ if (command -v rbenv > /dev/null); then
 fi
 
 # load nodenv
+if [[ -d "$HOME/.nodenv" ]] && ! command -v nodenv > /dev/null; then
+  export PATH="$HOME/.nodenv/bin:$PATH"
+fi
 if (command -v nodenv > /dev/null); then
   eval "$(nodenv init -)"
 fi
