@@ -12,7 +12,7 @@
   { ... }`, or two sibling early-return branches covering both cases), phrase
   the condition on the affirmative form of the variable (`if isNative`) rather
   than its negation (`if !isNative`), and order the branches so the
-  affirmative one comes first. Applies across languages, not just Go.
+  affirmative one comes first. Applies across languages.
 
 ## Git
 - Do not include Claude as a co-author in commits.

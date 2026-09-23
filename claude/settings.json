@@ -100,11 +100,6 @@
       }
     }
   },
-  "modelSettings": {
-    "claude-sonnet-5": {
-      "effortLevel": "high"
-    }
-  },
   "tui": "fullscreen",
   "agentPushNotifEnabled": true
 }
