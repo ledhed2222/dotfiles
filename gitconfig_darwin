@@ -1,0 +1,6 @@
+# macOS-specific git config. make.sh symlinks this to ~/.gitconfig_os, which
+# gitconfig includes unconditionally. Git has no OS conditional of its own --
+# includeIf only matches gitdir, onbranch and remote urls -- so the install
+# step is what picks the platform.
+[credential]
+  helper = osxkeychain

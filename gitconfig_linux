@@ -1,0 +1,8 @@
+# Linux-specific git config. make.sh symlinks this to ~/.gitconfig_os, which
+# gitconfig includes unconditionally. See gitconfig_darwin for why the install
+# step picks the platform rather than git itself.
+#
+# libsecret needs to be built on some distros: the helper ships as source with
+# git, under /usr/share/doc/git/contrib/credential/libsecret.
+[credential]
+  helper = libsecret

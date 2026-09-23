@@ -26,14 +26,16 @@
   cmd = nvim -d -O $REMOTE $LOCAL
 [pull]
   rebase = false
-[credential]
-  helper = osxkeychain
 [filter "lfs"]
   required = true
   clean = git-lfs clean -- %f
   smudge = git-lfs smudge -- %f
   process = git-lfs filter-process
 [include]
+  # platform-specific config (credential helper), symlinked by make.sh from
+  # gitconfig_darwin / gitconfig_linux. Missing file = silently skipped.
+  path = ~/.gitconfig_os
+[include]
   # put a file here with overrides to any of the above configs to override
-  # them locally only.
+  # them locally only. Included last, so it wins over the platform file.
   path = ~/.gitconfig_local_overrides

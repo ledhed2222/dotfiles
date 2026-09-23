@@ -1,0 +1,14 @@
+# Globally installed npm packages, the npm equivalent of the Brewfile.
+# Install (or reinstall) them all with:
+#
+#   grep -v '^#' npm-globals.txt | xargs npm i -g
+#
+# These land in the *current* nodenv version's prefix, not somewhere shared, so
+# `nodenv global <new-version>` leaves them behind. Re-run the line above after
+# switching node versions -- that's the main reason this file exists.
+#
+# nodenv also needs `nodenv rehash` afterwards to put a shim on PATH, or a
+# freshly installed binary looks like it never installed. make.sh does that.
+
+@nanonets/graft
+json
