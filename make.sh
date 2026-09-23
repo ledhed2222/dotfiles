@@ -27,10 +27,10 @@ done
 # ~/.claude mixes shared config with megabytes of local session state (history,
 # credentials, plugin installs), so unlike every other top-level entry above,
 # only these specific files/dirs are symlinked in -- the rest of ~/.claude stays
-# real and local.
+# real and local. Notably absent: helpers/graft-hooks.cjs, which `graft init`
+# generates and overwrites in place per machine -- vendored, not ours to track.
 echo "Symlinking shared claude/ config into ~/.claude"
-mkdir -p ~/.claude/helpers
-claude_files=(CLAUDE.md settings.json keybindings.json skills helpers/graft-hooks.cjs)
+claude_files=(CLAUDE.md settings.json keybindings.json)
 for file in "${claude_files[@]}"
 do
 	target=~/.claude/$file

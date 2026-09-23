@@ -2,7 +2,7 @@
 
 ## Installation
 
-`make.sh` symlinks each top-level file/dir in this repo to its `~/.<name>` counterpart, so edits to those files take effect immediately without reinstalling. `claude/` is the exception: `~/.claude` holds megabytes of local session state (history, credentials, plugin installs) alongside shared config, so rather than symlinking the whole directory, `make.sh` symlinks only `claude/{CLAUDE.md,settings.json,keybindings.json,skills,helpers/graft-hooks.cjs}` individually into the real `~/.claude/`. Adding another shared file under `claude/` means adding it to `make.sh`'s `claude_files` list too, not just the `.gitignore` allowlist.
+`make.sh` symlinks each top-level file/dir in this repo to its `~/.<name>` counterpart, so edits to those files take effect immediately without reinstalling. `claude/` is the exception: `~/.claude` holds megabytes of local session state (history, credentials, plugin installs) alongside shared config, so rather than symlinking the whole directory, `make.sh` symlinks only `claude/{CLAUDE.md,settings.json,keybindings.json}` individually into the real `~/.claude/`. Adding another shared file under `claude/` means adding it to `make.sh`'s `claude_files` list too, not just the `.gitignore` allowlist. `~/.claude/helpers/graft-hooks.cjs` is deliberately not one of them — `graft init` generates and overwrites it in place, so it's vendored per machine, not tracked here.
 
 `zshrc` sources every `zsh/*.zsh` in this repo, resolved relative to its own real path, so those files work without `make.sh` having run.
 
