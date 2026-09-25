@@ -225,9 +225,19 @@ _wt_new() {
   git worktree add -b "$branch" "$dir" "$start_point" || return 1
 
   # Each worktree is its own checkout, so its context graph needs its own
-  # build — graft doesn't follow git worktrees back to a shared one.
+  # build — graft doesn't follow git worktrees back to a shared one. graft
+  # seeds a new worktree's graph from the main checkout's when one exists
+  # (fast: a content-hash diff, not a re-parse); without a seed, `graft build`
+  # cold-parses the whole repo, which on a large one can run long enough to
+  # look like `wt new` hung -- so skip the build and warn instead of doing it.
   if (( $+commands[graft] )); then
-    graft build "$dir" >/dev/null 2>&1 || print -u2 "wt: graft build failed for $dir (continuing)"
+    local main_root=$(_wt_list | head -1 | cut -f2)
+    if [[ -f "$main_root/graft/.graph/wiring.json" ]]; then
+      graft build "$dir" >/dev/null 2>&1 || print -u2 "wt: graft build failed for $dir (continuing)"
+    else
+      print -u2 "wt: $main_root has no graft graph yet -- skipping graft build for $dir"
+      print -u2 "wt: run 'graft build' there first so new worktrees build fast instead of cold-parsing the whole repo"
+    fi
   fi
 
   _wt_session "$dir" "$suffix" "$layout" || return 1
@@ -343,7 +353,7 @@ _wt_comp_worktrees() {
 _wt() {
   local -a subcommands layout_opt base_opt
   subcommands=(
-    'new:branch off origin default (or -b\'s ref), open a session, switch to it'
+    'new:branch off origin default (or the ref -b gives), open a session, switch to it'
     'open:open (or jump to) the session for an existing worktree'
     'close:remove the worktree, delete the branch, kill the session'
     'ls:list worktrees, marking the ones with a live session'
