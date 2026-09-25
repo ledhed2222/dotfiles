@@ -202,23 +202,6 @@ _wt_new() {
   fi
   git rev-parse --git-dir >/dev/null 2>&1 || { print -u2 "wt: not in a git repo"; return 1 }
 
-  # Each worktree is its own checkout, so its context graph needs its own
-  # build — graft doesn't follow git worktrees back to a shared one. graft
-  # seeds a new worktree's graph from the main checkout's when one exists
-  # (fast: a content-hash diff, not a re-parse); without a seed, `graft build`
-  # cold-parses the whole repo, which on a large one can run long enough to
-  # look like `wt new` hung. So a worktree with graft installed but no seed
-  # available isn't created at all — better than one that's silently slow
-  # (or graft-less) to set up.
-  if (( $+commands[graft] )); then
-    local main_root=$(_wt_list | head -1 | cut -f2)
-    if [[ ! -f "$main_root/graft/.graph/wiring.json" ]]; then
-      print -u2 "wt: $main_root has no graft graph yet -- run 'graft build' there first"
-      print -u2 "wt: (a worktree with no graph to seed from would cold-parse the whole repo)"
-      return 1
-    fi
-  fi
-
   local repo suffix dir start_point
   repo=$(_wt_repo_name)
   suffix=${branch##*/}
@@ -241,9 +224,20 @@ _wt_new() {
   # is never touched — no stashing or switching branches first.
   git worktree add -b "$branch" "$dir" "$start_point" || return 1
 
-  # Seeds from main_root's graph (checked above), so this is fast.
+  # Each worktree is its own checkout, so its context graph needs its own
+  # build — graft doesn't follow git worktrees back to a shared one. graft
+  # seeds a new worktree's graph from the main checkout's when one exists
+  # (fast: a content-hash diff, not a re-parse); without a seed, `graft build`
+  # cold-parses the whole repo, which on a large one can run long enough to
+  # look like `wt new` hung -- so skip the build and warn instead of doing it.
   if (( $+commands[graft] )); then
-    graft build "$dir" >/dev/null 2>&1 || print -u2 "wt: graft build failed for $dir (continuing)"
+    local main_root=$(_wt_list | head -1 | cut -f2)
+    if [[ -f "$main_root/graft/.graph/wiring.json" ]]; then
+      graft build "$dir" >/dev/null 2>&1 || print -u2 "wt: graft build failed for $dir (continuing)"
+    else
+      print -u2 "wt: $main_root has no graft graph yet -- skipping graft build for $dir"
+      print -u2 "wt: run 'graft build' there first so new worktrees build fast instead of cold-parsing the whole repo"
+    fi
   fi
 
   _wt_session "$dir" "$suffix" "$layout" || return 1

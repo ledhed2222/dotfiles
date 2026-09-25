@@ -127,6 +127,6 @@ Installed from `npm-globals.txt`; `graft init` is in the install block above.
 - Per-repo, run `graft build` (no `init`) inside any repo you want a context
   graph for. It writes a git-ignored `graft/` directory there — regenerate it
   any time, nothing under it is committed. `wt new` runs this automatically for
-  every worktree it creates, and refuses to create one at all until the main
+  every worktree it creates, but skips it (with a warning) until the main
   checkout has a graph of its own to seed the new one from — see
   [CLAUDE.md](CLAUDE.md).
