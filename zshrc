@@ -57,6 +57,11 @@ fi
 
 # Linux-specific stuff
 if [[ $(uname) == "Linux" ]]; then
+  # Homebrew setup
+  if [[ -d "/home/linuxbrew/.linuxbrew" ]]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+  fi
+
   # fzf setup (assumes installed in ~/.fzf)
   ##
   ## add to path
