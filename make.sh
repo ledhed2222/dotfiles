@@ -36,19 +36,19 @@ case "$SHELL" in
 	*) echo "Switching default shell to zsh"; chsh -s "$(which zsh)" ;;
 esac
 
-echo "Creating $olddir for backup of any existing dotfiles in ~"
-mkdir -p $olddir
-echo "...done"
-
-echo "Moving any existing dotfiles from ~ to $olddir"
 for file in $files; do
 	target=~/.$file
 	# Only back up a REAL file: a symlink is either ours already or stale, and
 	# replacing it loses nothing. Backing one up is actively harmful -- if
 	# $olddir holds a same-named symlink to a directory from an earlier run,
 	# mv follows it and moves the link INTO that directory, which is inside
-	# this repo. That is how stray lein/lein and zsh/zsh appear.
+	# this repo, leaving strays like config/config or zsh/zsh. $olddir is
+	# therefore created only when something real is actually being moved: on a
+	# normal re-run nothing is, and an empty backup dir is just that trap
+	# waiting for the next person to repopulate it by hand.
 	if [ -e "$target" ] && [ ! -L "$target" ]; then
+		echo "Backing up real ~/.$file to $olddir"
+		mkdir -p "$olddir"
 		mv "$target" "$olddir"
 	fi
 	echo "Creating symlink to $file in home directory"
