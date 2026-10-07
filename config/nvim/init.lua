@@ -98,6 +98,17 @@ local autocmd = vim.api.nvim_create_autocmd
 -- Treat .hapi as C++
 vim.filetype.add({ extension = { hapi = "cpp" } })
 
+-- MUMPS
+-- ponytail: .m always wins as mumps, so MATLAB/Objective-C .m files lose
+-- highlighting; scope by path or content if those are ever actually opened.
+vim.filetype.add({ extension = { m = "mumps" } })
+autocmd("FileType", {
+  pattern = "mumps",
+  callback = function()
+    vim.opt_local.commentstring = "; %s"
+  end,
+})
+
 -- Plain text / git commits
 autocmd("FileType", {
   pattern = { "text", "gitcommit" },
