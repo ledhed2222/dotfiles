@@ -277,15 +277,23 @@ _wt_close() {
   fi
 
   # Squash-merged branches still look unmerged by ancestry, so this is a
-  # confirmation rather than a hard stop.
+  # confirmation rather than a hard stop. `wt prune` sets WT_ASSUME_YES after
+  # confirming the whole batch once, so it isn't asked again per branch -- it
+  # deliberately does NOT cover the dirty-worktree force prompt below, because
+  # deleting a merged branch is recoverable and discarding uncommitted work
+  # is not.
   if ! git merge-base --is-ancestor "$branch" "origin/$base" 2>/dev/null; then
-    print -n "wt: $branch is not merged into origin/$base. Delete anyway? [y/N] "
-    if ! read -q; then
+    if (( ${WT_ASSUME_YES:-0} )); then
+      force_branch=1
+    else
+      print -n "wt: $branch is not merged into origin/$base. Delete anyway? [y/N] "
+      if ! read -q; then
+        print ""
+        return 1
+      fi
       print ""
-      return 1
+      force_branch=1
     fi
-    print ""
-    force_branch=1
   fi
 
   # Never sit inside the directory being removed
@@ -327,6 +335,47 @@ _wt_ls() {
   done
 }
 
+# Branches whose upstream is gone: the remote branch was deleted, which in this
+# workflow means the PR merged. Worktree-backed ones go through _wt_close so the
+# session teardown, main-worktree guard and force handling stay in one place;
+# the rest are plain branch deletes with nothing else to tear down.
+#
+# Detection uses for-each-ref rather than parsing `git branch -vv`: the porcelain
+# writes "[origin/<branch>: gone]" and only under -vv, so a grep for a literal
+# "[gone]" matches nothing and reports success having done nothing.
+_wt_prune() {
+  local -a gone
+  gone=(${(f)"$(git for-each-ref --format='%(refname:short) %(upstream:track)' refs/heads 2>/dev/null | awk '$2 == "[gone]" { print $1 }')"})
+
+  if (( ! $#gone )); then
+    print "wt: no branches whose upstream is gone"
+    return 0
+  fi
+
+  local b wt
+  print "wt: these branches have no upstream left:"
+  for b in $gone; do
+    wt=$(_wt_list | awk -F'\t' -v b="$b" '$1 == b { print $2 }')
+    print "  $b${wt:+  -> $wt}"
+  done
+
+  print -n "wt: delete these, and remove the worktrees shown? [y/N] "
+  if ! read -q; then
+    print ""
+    return 1
+  fi
+  print ""
+
+  for b in $gone; do
+    wt=$(_wt_list | awk -F'\t' -v b="$b" '$1 == b { print $2 }')
+    if [[ -n $wt ]]; then
+      WT_ASSUME_YES=1 _wt_close "$b"
+    else
+      git branch -D "$b" || print -u2 "wt: could not delete $b"
+    fi
+  done
+}
+
 function wt {
   local cmd=${1:-ls}
   (( $# )) && shift
@@ -335,7 +384,8 @@ function wt {
     open|o|connect) _wt_open "$@" ;;
     close|rm)       _wt_close "$@" ;;
     ls|list)        _wt_ls ;;
-    *)              print -u2 "usage: wt {new [-l layout] [-b base] <branch>|open [-l layout] [branch]|close [branch]|ls}"; return 1 ;;
+    prune|gone)     _wt_prune ;;
+    *)              print -u2 "usage: wt {new [-l layout] [-b base] <branch>|open [-l layout] [branch]|close [branch]|ls|prune}"; return 1 ;;
   esac
 }
 
@@ -357,6 +407,7 @@ _wt() {
     'open:open (or jump to) the session for an existing worktree'
     'close:remove the worktree, delete the branch, kill the session'
     'ls:list worktrees, marking the ones with a live session'
+    'prune:delete branches whose upstream is gone, with their worktrees and sessions'
   )
   # Recognised so `-l` doesn't fall through to filenames; its value is a layout
   # name you can list with `mux ls`, so nothing is offered for it.

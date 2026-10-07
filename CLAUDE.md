@@ -37,6 +37,25 @@ Directories like `claude/`, `config/`, etc. are gitignored by default with expli
 
 `open` and `close` accept an exact branch (full name, suffix, or worktree directory name), a fuzzy fragment, or nothing at all. Exact matches are used directly; anything else goes to `fzf` with the argument as the starting query. `open` auto-accepts a single fuzzy hit, `close` never does — it always makes you confirm the selection, so a typo can't delete the wrong worktree.
 - `wt ls` — lists worktrees, marking those with a live session
+- `wt prune` — deletes every local branch whose upstream is gone (the remote
+  branch was deleted, which here means the PR merged), removing each one's
+  worktree and tmux session too. Lists what it will do and asks once.
+
+`prune` trusts `[gone]` rather than re-checking merge status, because a
+squash-merged branch is not an ancestor of `origin/<default>` and so always
+looks unmerged — that is exactly why it confirms the batch up front. It sets
+`WT_ASSUME_YES` so `_wt_close` doesn't re-ask per branch, which deliberately
+does *not* extend to the dirty-worktree force prompt: deleting a merged branch
+is recoverable from the reflog, discarding uncommitted work is not. Branches
+with no worktree are a plain `git branch -D`, since there is nothing else to
+tear down.
+
+Prefer it over the `commit-commands` plugin's `/clean_gone`, which greps `git
+branch -v` for a literal `[gone]`. Git writes `[origin/<branch>: gone]`, and
+only under `-vv`, so that command matches nothing and reports success having
+deleted nothing; it also leaves the tmux session of any worktree it removes
+running. `wt prune` detects with `git for-each-ref
+--format='%(refname:short) %(upstream:track)'` instead.
 
 Sessions are named after the branch suffix (everything after the last `/`). `WORKTREE_HOME` defaults to `$DEVHOME/.worktrees` (`~/.worktrees` if `DEVHOME` is unset) — hidden so the duplicate checkouts stay out of `fd`/`rg`/fzf runs over the dev dir. `zshrc` exports the common-location vars before it sources `zsh/*.zsh` so `DEVHOME` is visible there.
 
