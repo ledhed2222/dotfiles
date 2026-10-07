@@ -132,6 +132,22 @@ if grep -q "$HOME/.claude/helpers/graft-hooks.cjs" "$settings" 2>/dev/null; then
 	sed -i '' "s|$HOME/.claude/helpers/graft-hooks.cjs|\$HOME/.claude/helpers/graft-hooks.cjs|g" "$settings"
 fi
 
+# `/effort` persists its pick as modelSettings.<model>.effortLevel in the same
+# tracked file, so toggling effort mid-session dirties the repo -- and there is
+# no in-session alternative, since --effort and CLAUDE_CODE_EFFORT_LEVEL only
+# apply at launch. Strip just that leaf: maxEffortLevel lives beside it and is
+# the opposite kind of thing, a deliberate cap that clamps every effort source,
+# so it has to survive. Model entries left empty are dropped, and modelSettings
+# goes with them when nothing else remains.
+if command -v jq >/dev/null && jq -e '[.modelSettings // {} | .[] | .effortLevel] | any' "$settings" >/dev/null 2>&1; then
+	echo "Dropping per-session effortLevel from claude/settings.json"
+	jq --indent 2 'if .modelSettings then
+		.modelSettings |= with_entries(.value |= del(.effortLevel))
+		| .modelSettings |= with_entries(select(.value | length > 0))
+		| (if (.modelSettings | length) == 0 then del(.modelSettings) else . end)
+	else . end' "$settings" > "$settings.tmp" && mv "$settings.tmp" "$settings"
+fi
+
 # Deliberately NOT run here: `graft init`. It does the same rewrite, plus a
 # graph build, so running it on every make.sh would churn the repo. Run it by
 # hand once per machine.
