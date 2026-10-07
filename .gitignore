@@ -13,7 +13,7 @@ config/nvim/after/indent/*
 !config/nvim/after/indent/elixir.lua
 !config/nvim/syntax
 config/nvim/syntax/*
-!config/nvim/syntax/mumps.vim
+!config/nvim/syntax/mumps.lua
 
 # allow pgcli
 !config/pgcli
