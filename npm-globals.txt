@@ -9,6 +9,16 @@
 #
 # nodenv also needs `nodenv rehash` afterwards to put a shim on PATH, or a
 # freshly installed binary looks like it never installed. make.sh does that.
+#
+# A pinned entry is upgraded by editing the version HERE, not with npm. graft
+# prints its own nudge at session start ("graft X -> Y available: run npm i -g
+# @nanonets/graft@latest") -- following that literally would be undone by the
+# next make.sh, which installs the pinned version and silently downgrades you.
+# The ritual is: bump the line below, ./make.sh, start a session (graft rewrites
+# its hook paths in claude/settings.json), ./make.sh again to normalise them.
 
-@nanonets/graft
+# Pinned because a version change makes graft rewrite the tracked hook commands
+# in claude/settings.json, swapping $HOME for this machine's absolute home --
+# see CLAUDE.md. Unpinned, every release did that behind your back.
+@nanonets/graft@0.21.1
 json

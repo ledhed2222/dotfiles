@@ -61,17 +61,36 @@ Local git config lives in `.git/config`, so this never gets committed to a share
 
 Coding style and behavior preferences that apply everywhere, not just this repo, live in [`claude/CLAUDE.md`](claude/CLAUDE.md) (symlinked to `~/.claude/CLAUDE.md`) rather than here.
 
-## graft rewrites tracked settings on every `init`
+## graft rewrites tracked settings on any version change
 
 `graft init` does not only write the untracked per-machine shim documented in
 the README. It also rewrites the hook commands in `claude/settings.json`,
 replacing `$HOME` with the absolute home directory of whichever machine it ran
 on (`node "/Users/<you>/.claude/helpers/graft-hooks.cjs" ...`). That file is
 tracked and shared, so the rewrite pins it to one machine and the hooks break
-everywhere else. After any `graft init`, put `$HOME` back and confirm `git diff
-claude/settings.json` is empty before committing. (`graft upgrade` only bumps
-the npm package and rewrites nothing; it is re-running `init` afterwards that
-does.)
+everywhere else. The absolute form is deliberate on graft's side, not a bug:
+the user-level install has to work in a project with no `.claude/helpers/`, so
+`${CLAUDE_PROJECT_DIR}` is unusable there. `$HOME` is our edit, and graft will
+overwrite it every time.
+
+**It is not only `graft init` that rewrites it.** Any version change does,
+with no command from you: at session start (and MCP boot) graft's upkeep
+compares a stamp against the running version, and on a mismatch replays the
+whole wiring — `upkeep-run.js` → `runInit` → `installClaudeGlobal`. That path
+exists because "no skill, rule file, or MCP instruction tells an agent to run
+`graft init`", so an upgrade would otherwise leave stale hooks forever. It
+fires once per version change, then re-stamps.
+
+Two things therefore guard the file. `npm-globals.txt` pins the graft version,
+so upgrades are deliberate rather than a side effect of `make.sh` running `npm
+i -g` (which is how 0.19.0 → 0.21.1 happened unasked). And `make.sh`
+normalises those five commands back to `$HOME` when it finds them absolute —
+the rewrite lands at session start, so a later `make.sh` cleans it up. graft
+still nudges you about new versions at session start; it compares against the
+npm registry and knows nothing about the pin. To take an upgrade: bump the
+version in `npm-globals.txt`, `./make.sh`, start a session, `./make.sh` again.
+Never follow the nudge's own `npm i -g @nanonets/graft@latest` while pinned —
+the next `make.sh` silently downgrades you back.
 
 `init` is also repo-scoped, not just global: run in a repo it writes
 `.claude/settings.json`, `.claude/helpers/*.cjs`, `.claude/skills/graft/` and

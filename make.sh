@@ -119,10 +119,22 @@ else
 	curl -fsSL https://claude.ai/install.sh | bash
 fi
 
-# Deliberately NOT run here: `graft init`. It rewrites the hook commands in the
-# tracked claude/settings.json, replacing $HOME with this machine's absolute
-# home path -- see CLAUDE.md. Running it on every make.sh would dirty the repo
-# every time. Run it by hand once per machine, then put $HOME back.
+# graft rewrites the hook commands in the tracked claude/settings.json to this
+# machine's absolute home whenever its version changes -- not only on `graft
+# init`, which is why npm-globals.txt pins it (see CLAUDE.md). Put $HOME back
+# so the file stays portable; the rewrite happens at session start, so this
+# catches the previous session's drift rather than the current run's.
+# Match the path alone, not a quoted form: in the JSON it sits inside escaped
+# quotes (\"...\"), so the character after .cjs is a backslash.
+settings="$dir/claude/settings.json"
+if grep -q "$HOME/.claude/helpers/graft-hooks.cjs" "$settings" 2>/dev/null; then
+	echo "Normalising graft hook paths in claude/settings.json back to \$HOME"
+	sed -i '' "s|$HOME/.claude/helpers/graft-hooks.cjs|\$HOME/.claude/helpers/graft-hooks.cjs|g" "$settings"
+fi
+
+# Deliberately NOT run here: `graft init`. It does the same rewrite, plus a
+# graph build, so running it on every make.sh would churn the repo. Run it by
+# hand once per machine.
 if command -v graft >/dev/null && [ ! -f ~/.claude/helpers/graft-hooks.cjs ]; then
 	echo "graft is installed but not wired up -- run 'graft init' once, then"
 	echo "check 'git diff claude/settings.json' before committing (see CLAUDE.md)"
