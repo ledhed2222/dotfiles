@@ -8,6 +8,7 @@ FLAG="🔴"
 
 target="$1"
 [ -n "$target" ] || exit 0
+tmux set-option -w -t "$target" -u @claude-stop 2>/dev/null
 
 current_name=$(tmux display-message -p -t "$target" '#{window_name}' 2>/dev/null) || exit 0
 

@@ -11,6 +11,7 @@ FLAG="🔴"
 command -v tmux >/dev/null 2>&1 || exit 0
 
 target=$(tmux display-message -p -t "$TMUX_PANE" '#{session_name}:#{window_index}' 2>/dev/null) || exit 0
+tmux set-option -w -t "$target" -u @claude-stop 2>/dev/null
 current_name=$(tmux display-message -p -t "$target" '#{window_name}' 2>/dev/null) || exit 0
 
 case "$current_name" in
