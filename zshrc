@@ -236,11 +236,6 @@ fi
 # Elixir setup
 export ERL_AFLAGS="-kernel shell_history enabled"
 
-# Only read if mise has to build a ruby from source (it prefers a prebuilt one)
-if (command -v brew > /dev/null); then
-  export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@3)"
-fi
-
 # node, python, ruby, java and npm CLIs, per config/mise/config.toml
 if (command -v mise > /dev/null); then
   eval "$(mise activate zsh)"
