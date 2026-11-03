@@ -251,14 +251,21 @@ if command -v jq >/dev/null; then
 		echo "$merged" > "$claude_live"
 		echo "$merged" > "$claude_last"
 	else
-		echo "~/.claude/settings.json has changes from neither input -- leaving it alone:"
-		if [ -f "$claude_last" ]; then
-			diff <(normalise "$claude_last") <(normalise "$claude_live")
-		else
-			diff <(echo "$merged" | normalise) <(normalise "$claude_live")
-		fi
-		echo "Move each one into claude/settings.json (every machine) or"
-		echo "~/.claude/settings.machine.json (this one), then re-run ./make.sh."
+		settings_blocked=1
+		{
+			echo "WARNING: ~/.claude/settings.json has changes from neither input -- NOT regenerated:"
+			if [ -f "$claude_last" ]; then
+				diff <(normalise "$claude_last") <(normalise "$claude_live")
+				pending=$(diff <(normalise "$claude_last") <(echo "$merged" | normalise)) || {
+					echo "So these input changes are not applied yet:"
+					echo "$pending"
+				}
+			else
+				diff <(echo "$merged" | normalise) <(normalise "$claude_live")
+			fi
+			echo "Move each live-only change into claude/settings.json (every machine) or"
+			echo "~/.claude/settings.machine.json (this one), then re-run ./make.sh."
+		} >&2
 	fi
 else
 	echo "No jq on PATH -- skipping ~/.claude/settings.json"
@@ -269,3 +276,5 @@ if command -v brew >/dev/null; then
 	source "$dir/zsh/brew-audit.zsh"
 	brew-audit
 fi
+
+[ -z "$settings_blocked" ] || exit 1
