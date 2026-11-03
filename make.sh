@@ -264,3 +264,8 @@ else
 	echo "No jq on PATH -- skipping ~/.claude/settings.json"
 fi
 
+# what's installed by hand but not in the Brewfile; also runnable as brew-audit
+if command -v brew >/dev/null; then
+	source "$dir/zsh/brew-audit.zsh"
+	brew-audit
+fi
