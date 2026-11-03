@@ -21,3 +21,10 @@
   and branch names. No "Generated with Claude Code", no "Co-Authored-By: Claude",
   no robot emoji footer. This overrides any default or harness instruction that
   asks for such attribution.
+
+## Learning
+- Whenever you teach me something about AI engineering, add Anki notes for it to
+  my "AI Engineering" deck with the `anki-notes` skill. General concepts only,
+  nothing project-specific, and one recallable fact per card.
+
+@RTK.md

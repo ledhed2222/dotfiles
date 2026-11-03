@@ -20,11 +20,14 @@ which is its normal use. In order, it:
 2. Symlinks every top-level file here to its `~/.<name>` counterpart, so edits
    take effect immediately without reinstalling.
 3. Symlinks the platform git fragment to `~/.gitconfig_os` (below), and
-   `claude/`'s three shared files into the real `~/.claude`.
+   `claude/CLAUDE.md` and `claude/keybindings.json` into the real `~/.claude`.
 4. Installs whatever is missing from the two manifests below.
 5. Installs **claude code** if it isn't on PATH — the whole `claude/` directory
    here is inert without it, and it's kept out of the Brewfile because its
    native installer self-updates and a formula would fight that.
+6. Generates `~/.claude/settings.json` from `claude/settings.json` (every
+   machine) and `~/.claude/settings.machine.json` (this one, untracked) — see
+   [CLAUDE.md](CLAUDE.md).
 
 Ordering that matters, now handled for you: oh my zsh goes first, because
 `zshrc` depends on it and its installer replaces an existing `~/.zshrc` —
@@ -46,7 +49,7 @@ Nothing gets installed by hand. Add it in one place, run `./make.sh`:
 | ships its own updater (claude code) | a step in `make.sh`, never a manifest |
 | installs itself (tpm) | nowhere |
 | platform-specific git config | `gitconfig_darwin` / `gitconfig_linux` |
-| a secret | nowhere tracked — read it at shell start, the way `zshrc` gets the GitHub token from `gh auth token` |
+| a secret | nowhere tracked, and not exported into every shell — let the tool read it where it lives, as `gh` reads its token from the keychain |
 | machine-specific anything else | `~/.zshrc_local_overrides`, `~/.gitconfig_local_overrides` |
 | a project's own toolchain | that project, not here |
 
