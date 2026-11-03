@@ -94,6 +94,17 @@ with your license and drop them in `~/Library/Fonts`. The config wants the
 cells, `liga` for the programming ligatures that `disable_ligatures cursor`
 assumes exist. Without them installed, kitty warns and falls back to Menlo.
 
+# neovim
+
+Plugins are managed by [lazy.nvim](https://github.com/folke/lazy.nvim), and
+`config/nvim/lazy-lock.json` pins the exact commit of each one, so every
+machine runs the same versions.
+
+- To upgrade: `:Lazy update` in nvim, which updates the plugins and rewrites
+  the lockfile, then commit `lazy-lock.json`.
+- On another machine, after pulling: `:Lazy restore`, which installs exactly
+  the versions in the lockfile. (`:Lazy update` there would upgrade past them.)
+
 # tmux
 
 - The [tmux plugin manager](https://github.com/tmux-plugins/tpm) needs no

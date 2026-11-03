@@ -39,9 +39,9 @@ opt.secure         = true
 opt.hlsearch       = true
 opt.mouse          = "a"
 
--- Use ag for keyword lookup if available
-if vim.fn.executable("ag") == 1 then
-  opt.keywordprg = "ag"
+-- Use rg for keyword lookup if available
+if vim.fn.executable("rg") == 1 then
+  opt.keywordprg = "rg"
 else
   opt.keywordprg = "grep"
 end
@@ -237,6 +237,19 @@ require("lazy").setup({
       })
       vim.lsp.enable("ts_ls")
 
+      -- Python
+      vim.lsp.config("basedpyright", {
+        on_attach = function(_, bufnr)
+          local opts = { buffer = bufnr }
+          vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+          vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+          vim.keymap.set("n", "<leader>i", vim.lsp.buf.hover, opts)
+          vim.keymap.set("n", "<leader>e", vim.lsp.buf.rename, opts)
+          vim.keymap.set("n", "<leader>m", vim.lsp.buf.implementation, opts)
+        end,
+      })
+      vim.lsp.enable("basedpyright")
+
       -- Format on save
       vim.api.nvim_create_autocmd("BufWritePre", {
         pattern = { "*.go" },
@@ -344,16 +357,28 @@ require("lazy").setup({
       vim.opt.rtp:append(vim.fn.expand("~/.fzf"))
 
       vim.api.nvim_create_user_command("Files", function(opts)
-        vim.fn["fzf#vim#files"]("", { source = "ag --hidden -f -g ''" }, opts.bang)
+        vim.fn["fzf#vim#files"]("", { source = "rg --files --hidden --follow --glob '!.git'" }, opts.bang)
       end, { bang = true, nargs = "*" })
 
-      vim.api.nvim_create_user_command("Ag", function(opts)
-        vim.fn["fzf#vim#ag"](opts.args, "--hidden", opts.bang and 1 or 0)
+      vim.api.nvim_create_user_command("Rg", function(opts)
+        vim.fn["fzf#vim#grep"](
+          "rg --column --line-number --no-heading --color=always --smart-case --hidden --glob '!.git' -- "
+            .. vim.fn.shellescape(opts.args),
+          opts.bang and 1 or 0
+        )
       end, { bang = true, nargs = "*" })
 
       vim.keymap.set("n", "<leader><space>", ":Files<cr>")
-      vim.keymap.set("n", "<leader>/", ":Ag ")
+      vim.keymap.set("n", "<leader>/", ":Rg ")
       vim.keymap.set("n", "<leader>colors", ":Colors<cr>")
+    end,
+  },
+
+  -- Git diff review: `gd` / `gds` in the shell open this
+  {
+    "sindrets/diffview.nvim",
+    config = function()
+      require("diffview").setup({ use_icons = false })
     end,
   },
 
@@ -371,11 +396,11 @@ require("lazy").setup({
 
   -- Markdown preview
   {
-    "iamcco/markdown-preview.nvim",
-    build = function() vim.fn["mkdp#util#install"]() end,
+    "MeanderingProgrammer/render-markdown.nvim",
+    ft = "markdown",
     config = function()
-      vim.g.mkdp_browser = ""
-      vim.keymap.set("n", "<leader>pre", "<Plug>MarkdownPreviewToggle")
+      require("render-markdown").setup({})
+      vim.keymap.set("n", "<leader>pre", ":RenderMarkdown toggle<cr>")
     end,
   },
 
