@@ -18,7 +18,9 @@ which is its normal use. In order, it:
 1. Installs **[oh my zsh](https://ohmyz.sh/)** if missing, and `chsh`es to zsh
    if that isn't your shell yet.
 2. Symlinks every top-level file here to its `~/.<name>` counterpart, so edits
-   take effect immediately without reinstalling.
+   take effect immediately without reinstalling. `config/` is the exception:
+   `~/.config` stays a real directory, since every app writes its state there,
+   and only each tracked `config/<dir>` is symlinked into it.
 3. Symlinks the platform git fragment to `~/.gitconfig_os` (below), and
    `claude/CLAUDE.md` and `claude/keybindings.json` into the real `~/.claude`.
 4. Installs whatever is missing from the two manifests below.
