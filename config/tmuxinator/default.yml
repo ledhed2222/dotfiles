@@ -12,6 +12,6 @@ name: <%= ENV['PROJECT_NAME'] || File.basename(Dir.pwd) %>
 root: <%= ENV['PROJECT_ROOT'] || Dir.pwd %>
 
 windows:
-  - editor: nvim
   - ai: claude
+  - editor: nvim
   - zsh:
