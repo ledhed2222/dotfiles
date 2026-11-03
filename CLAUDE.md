@@ -4,7 +4,7 @@
 
 `make.sh` is the whole install: it symlinks each top-level file/dir in this repo to its `~/.<name>` counterpart (so edits take effect immediately without reinstalling), then installs oh my zsh, the two dependency manifests, and Claude Code. Every step is skipped when already satisfied, so it stays safe and cheap to re-run — which is the normal reason to run it. Two orderings inside it are load-bearing: oh my zsh must precede the symlink loop (its installer replaces an existing `~/.zshrc`, and its own check matches symlinks too, via `-h`), and `nodenv rehash` must follow the npm install (a global's binary isn't on `PATH` until a shim exists, so a fresh package looks like a failed install).
 
-`claude/` is the exception to the symlinking: `~/.claude` holds megabytes of local session state (history, credentials, plugin installs) alongside shared config, so rather than symlinking the whole directory, `make.sh` symlinks only `claude/{CLAUDE.md,settings.json,keybindings.json}` individually into the real `~/.claude/`. Adding another shared file under `claude/` means adding it to `make.sh`'s `claude_files` list too, not just the `.gitignore` allowlist. `~/.claude/helpers/graft-hooks.cjs` is deliberately not one of them — `graft init` generates and overwrites it in place, so it's vendored per machine, not tracked here.
+`claude/` is the exception to the symlinking: `~/.claude` holds megabytes of local session state (history, credentials, plugin installs) alongside shared config, so rather than symlinking the whole directory, `make.sh` symlinks only `claude/{CLAUDE.md,settings.json,keybindings.json}` individually into the real `~/.claude/`. Adding another shared file under `claude/` means adding it to `make.sh`'s `claude_files` list too, not just the `.gitignore` allowlist.
 
 `zshrc` sources every `zsh/*.zsh` in this repo, resolved relative to its own real path, so those files work without `make.sh` having run.
 
@@ -31,7 +31,7 @@ Directories like `claude/`, `config/`, etc. are gitignored by default with expli
 
 `zsh/worktree.zsh` defines `wt`, which pairs a git worktree with a tmux session. It replaces the old `/new-worktree`, `/connect-worktree`, and `/close-worktree` Claude skills so worktree navigation doesn't require Claude.
 
-- `wt new [-l layout] <branch>` — branches off `origin`'s default branch, creates a worktree at `$WORKTREE_HOME/<repo>/<branch-suffix>`, starts a session and switches to it. The current checkout is never touched. If graft is installed, `wt new` also skips the automatic `graft build` in the new worktree (and warns) unless the main checkout already has a `graft/` graph (`graft/.graph/wiring.json`) to seed it from — a worktree with no seed would cold-parse the whole repo, which on a large one runs long enough to look like `wt new` hung. Run `graft build` in the main checkout once and every worktree after that seeds fast instead of getting skipped.
+- `wt new [-l layout] <branch>` — branches off `origin`'s default branch, creates a worktree at `$WORKTREE_HOME/<repo>/<branch-suffix>`, starts a session and switches to it. The current checkout is never touched.
 - `wt open [-l layout] [branch]` — opens (or jumps to) the session for an existing worktree
 - `wt close [branch]` — removes the worktree, deletes the branch, kills the session. Prompts if the branch is unmerged or the tree is dirty.
 
@@ -79,49 +79,6 @@ Local git config lives in `.git/config`, so this never gets committed to a share
 ## Claude behavior across all repos
 
 Coding style and behavior preferences that apply everywhere, not just this repo, live in [`claude/CLAUDE.md`](claude/CLAUDE.md) (symlinked to `~/.claude/CLAUDE.md`) rather than here.
-
-## graft rewrites tracked settings on any version change
-
-`graft init` does not only write the untracked per-machine shim documented in
-the README. It also rewrites the hook commands in `claude/settings.json`,
-replacing `$HOME` with the absolute home directory of whichever machine it ran
-on (`node "/Users/<you>/.claude/helpers/graft-hooks.cjs" ...`). That file is
-tracked and shared, so the rewrite pins it to one machine and the hooks break
-everywhere else. The absolute form is deliberate on graft's side, not a bug:
-the user-level install has to work in a project with no `.claude/helpers/`, so
-`${CLAUDE_PROJECT_DIR}` is unusable there. `$HOME` is our edit, and graft will
-overwrite it every time.
-
-**It is not only `graft init` that rewrites it.** Any version change does,
-with no command from you: at session start (and MCP boot) graft's upkeep
-compares a stamp against the running version, and on a mismatch replays the
-whole wiring — `upkeep-run.js` → `runInit` → `installClaudeGlobal`. That path
-exists because "no skill, rule file, or MCP instruction tells an agent to run
-`graft init`", so an upgrade would otherwise leave stale hooks forever. It
-fires once per version change, then re-stamps.
-
-Two things therefore guard the file. `npm-globals.txt` pins the graft version,
-so upgrades are deliberate rather than a side effect of `make.sh` running `npm
-i -g` (which is how 0.19.0 → 0.21.1 happened unasked). And `make.sh`
-normalises those five commands back to `$HOME` when it finds them absolute —
-the rewrite lands at session start, so a later `make.sh` cleans it up. graft
-still nudges you about new versions at session start; it compares against the
-npm registry and knows nothing about the pin. To take an upgrade: bump the
-version in `npm-globals.txt`, `./make.sh`, start a session, `./make.sh` again.
-Never follow the nudge's own `npm i -g @nanonets/graft@latest` while pinned —
-the next `make.sh` silently downgrades you back.
-
-`init` is also repo-scoped, not just global: run in a repo it writes
-`.claude/settings.json`, `.claude/helpers/*.cjs`, `.claude/skills/graft/` and
-`.mcp.json` there. Those duplicate the user-level wiring rather than adding to
-it, so every graft hook then fires twice in that repo — once from
-`claude/settings.json`, once from the project copy. They are gitignored here
-for that reason. Keeping the project copy for its one unique feature, graft's
-statusline, would also mean tracking `.claude/helpers/graft-statusline.cjs`,
-the same vendored shim this repo deliberately does not track.
-
-For a repo that just needs a graph, `graft build` alone is enough — `init` is
-the once-per-machine wiring step.
 
 ## typescript-language-server has no global fallback, on purpose
 

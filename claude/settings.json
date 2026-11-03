@@ -19,15 +19,6 @@
             "command": "~/.config/claude/hooks/tmux-clear-attention.sh"
           }
         ]
-      },
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$HOME/.claude/helpers/graft-hooks.cjs\" prompt",
-            "timeout": 15000
-          }
-        ]
       }
     ],
     "PreToolUse": [
@@ -36,50 +27,6 @@
           {
             "type": "command",
             "command": "~/.config/claude/hooks/tmux-clear-attention.sh"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$HOME/.claude/helpers/graft-hooks.cjs\" post-edit",
-            "timeout": 10000
-          }
-        ]
-      },
-      {
-        "matcher": "Bash|mcp__graft__|Read|Grep|Glob",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$HOME/.claude/helpers/graft-hooks.cjs\" tool-savings",
-            "timeout": 8000
-          }
-        ]
-      }
-    ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$HOME/.claude/helpers/graft-hooks.cjs\" session-start",
-            "timeout": 8000
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"$HOME/.claude/helpers/graft-hooks.cjs\" stop",
-            "timeout": 8000
           }
         ]
       }

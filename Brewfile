@@ -58,6 +58,5 @@ brew "bun"
 # Deliberately absent, because each ships its own updater and a formula would
 # just install a second copy that competes with it:
 #   claude code  -- native installer, self-updates ~/.local/share/claude/versions
-#   graft        -- npm i -g @nanonets/graft
 #   oh my zsh    -- its own curl installer
 #   tpm          -- tmux.conf clones it on first launch

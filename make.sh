@@ -5,12 +5,9 @@ dir=`pwd`
 olddir=~/dotfiles_backup
 # files in this repo that should NOT be symlinked into ~
 # - claude: handled below, per-file, alongside the real ~/.claude
-# - graft: this repo's own `graft build` output (like any repo's), not a
-#   dotfile -- ~/.graft is graft the CLI's unrelated global state dir
-#   (telemetry, update-check), and the two must never become the same path
 # - gitconfig_darwin/linux: picked by platform below, not symlinked by name
 # - npm-globals.txt: a manifest read by npm, not a dotfile
-ignore=(make.sh README.md CLAUDE.md claude graft gitconfig_darwin gitconfig_linux npm-globals.txt)
+ignore=(make.sh README.md CLAUDE.md claude gitconfig_darwin gitconfig_linux npm-globals.txt)
 ignore_pattern=$(IFS='|'; echo "^(${ignore[*]})$")
 files=`ls | grep -Ev "$ignore_pattern"`
 
@@ -71,8 +68,7 @@ fi
 # ~/.claude mixes shared config with megabytes of local session state (history,
 # credentials, plugin installs), so unlike every other top-level entry above,
 # only these specific files/dirs are symlinked in -- the rest of ~/.claude stays
-# real and local. Notably absent: helpers/graft-hooks.cjs, which `graft init`
-# generates and overwrites in place per machine -- vendored, not ours to track.
+# real and local.
 echo "Symlinking shared claude/ config into ~/.claude"
 mkdir -p ~/.claude
 claude_files=(CLAUDE.md settings.json keybindings.json)
@@ -119,18 +115,7 @@ else
 	curl -fsSL https://claude.ai/install.sh | bash
 fi
 
-# graft rewrites the hook commands in the tracked claude/settings.json to this
-# machine's absolute home whenever its version changes -- not only on `graft
-# init`, which is why npm-globals.txt pins it (see CLAUDE.md). Put $HOME back
-# so the file stays portable; the rewrite happens at session start, so this
-# catches the previous session's drift rather than the current run's.
-# Match the path alone, not a quoted form: in the JSON it sits inside escaped
-# quotes (\"...\"), so the character after .cjs is a backslash.
 settings="$dir/claude/settings.json"
-if grep -q "$HOME/.claude/helpers/graft-hooks.cjs" "$settings" 2>/dev/null; then
-	echo "Normalising graft hook paths in claude/settings.json back to \$HOME"
-	sed -i '' "s|$HOME/.claude/helpers/graft-hooks.cjs|\$HOME/.claude/helpers/graft-hooks.cjs|g" "$settings"
-fi
 
 # `/effort` persists its pick as modelSettings.<model>.effortLevel in the same
 # tracked file, so toggling effort mid-session dirties the repo -- and there is
@@ -148,10 +133,3 @@ if command -v jq >/dev/null && jq -e '[.modelSettings // {} | .[] | .effortLevel
 	else . end' "$settings" > "$settings.tmp" && mv "$settings.tmp" "$settings"
 fi
 
-# Deliberately NOT run here: `graft init`. It does the same rewrite, plus a
-# graph build, so running it on every make.sh would churn the repo. Run it by
-# hand once per machine.
-if command -v graft >/dev/null && [ ! -f ~/.claude/helpers/graft-hooks.cjs ]; then
-	echo "graft is installed but not wired up -- run 'graft init' once, then"
-	echo "check 'git diff claude/settings.json' before committing (see CLAUDE.md)"
-fi

@@ -9,7 +9,6 @@ From a fresh machine:
 git clone git@github.com:ledhed2222/dotfiles.git ~/Dev/dotfiles
 cd ~/Dev/dotfiles
 ./make.sh
-graft init    # once per machine, see below
 ```
 
 `make.sh` does the whole install, and skips every step that's already
@@ -31,11 +30,6 @@ Ordering that matters, now handled for you: oh my zsh goes first, because
 `zshrc` depends on it and its installer replaces an existing `~/.zshrc` —
 including a *symlink*, which its own check tests for with `-h`. Run by hand
 afterwards it would clobber the link, so pass `--keep-zshrc` if you ever do.
-
-`graft init` is the one step `make.sh` won't take for you: it rewrites the
-tracked `claude/settings.json` with this machine's absolute home path, so
-running it automatically would dirty the repo every time. The script just
-reminds you when graft is installed but unwired.
 
 `Brewfile` and `npm-globals.txt` are the source of truth for what's installed;
 `make.sh` runs both. To see what's missing without installing anything:
@@ -110,23 +104,3 @@ assumes exist. Without them installed, kitty warns and falls back to Menlo.
   directory.
 - To override per-project, run `mux new <project-name>` or place a
   `.tmuxinator.yml` in the project root and run `mux local`.
-
-# graft (code context graph for Claude Code)
-
-Installed from `npm-globals.txt`; `graft init` is in the install block above.
-
-- `graft init` wires the Claude Code integration once per machine: it merges a
-  hooks stanza into `settings.json` (tracked in this repo, so the wiring itself
-  is shared) and generates `~/.claude/helpers/graft-hooks.cjs`, the shim those
-  hooks call. The shim is deliberately *not* tracked — `graft init`/`graft
-  upgrade` overwrite it in place with whatever version ships, so committing it
-  would just mean fighting graft's own updates. Those writes reach this repo
-  only because `make.sh` symlinks `claude/settings.json` into the otherwise
-  real, local `~/.claude`; see [CLAUDE.md](CLAUDE.md) for what else `init`
-  rewrites, and why its per-repo output is gitignored here.
-- Per-repo, run `graft build` (no `init`) inside any repo you want a context
-  graph for. It writes a git-ignored `graft/` directory there — regenerate it
-  any time, nothing under it is committed. `wt new` runs this automatically for
-  every worktree it creates, but skips it (with a warning) until the main
-  checkout has a graph of its own to seed the new one from — see
-  [CLAUDE.md](CLAUDE.md).
