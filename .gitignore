@@ -1,64 +1,20 @@
-# don't check in nvim plugins
-config/*
 .DS_Store
 
-# allow nvim
-!config/nvim
-config/nvim/*
-!config/nvim/init.lua
-!config/nvim/lazy-lock.json
-!config/nvim/after
-config/nvim/after/*
-!config/nvim/after/indent
-config/nvim/after/indent/*
-!config/nvim/after/indent/elixir.lua
-!config/nvim/syntax
-config/nvim/syntax/*
-!config/nvim/syntax/mumps.lua
-
-# allow pgcli
-!config/pgcli
-config/pgcli/*
-!config/pgcli/config
-
-# allow kitty
-!config/kitty
-config/kitty/*
-!config/kitty/kitty.conf
-
-# allow tmux
-!config/tmux
-config/tmux/*
-!config/tmux/tmux.conf
-!config/tmux/tmux-clear-flag.sh
-!config/tmux/tmux-attention-summary.sh
-
-# allow claude hooks
-!config/claude
-config/claude/*
-!config/claude/hooks
-config/claude/hooks/*
-!config/claude/hooks/tmux-flag-attention.sh
-!config/claude/hooks/tmux-clear-attention.sh
-
-# allow tmuxinator default template only
-!config/tmuxinator
-config/tmuxinator/*
-!config/tmuxinator/default.yml
+# ~/.config/<dir> symlinks into config/<dir> for each tracked dir (make.sh),
+# so these are what their own tools still write inside a tracked dir
+config/tmux/plugins/
+config/tmux/install_plugins.log
 
 # disallow lein repl history
 lein/repl-history
-
-# local gitconfig overrides (machine-specific, not committed)
-gitconfig_local_overrides
-
-# local zshrc overrides (machine-specific, not committed)
-zshrc_local_overrides
 
 # only check in specific claude config files
 claude/*
 !claude/CLAUDE.md
 !claude/settings.json
 !claude/keybindings.json
+!claude/skills
+claude/skills/**/__pycache__/
+claude/skills/**/.ruff_cache/
 
 /.ignore

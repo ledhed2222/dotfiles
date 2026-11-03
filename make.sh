@@ -5,11 +5,15 @@ dir=`pwd`
 olddir=~/dotfiles_backup
 # files in this repo that should NOT be symlinked into ~
 # - claude: handled below, per-file, alongside the real ~/.claude
+# - config: handled below, per-directory, inside a real ~/.config
 # - gitconfig_darwin/linux: picked by platform below, not symlinked by name
 # - npm-globals.txt: a manifest read by npm, not a dotfile
-ignore=(make.sh README.md CLAUDE.md claude gitconfig_darwin gitconfig_linux npm-globals.txt)
+# - zsh: zshrc sources zsh/*.zsh from this repo directly, by its own real path
+ignore=(make.sh README.md CLAUDE.md claude config gitconfig_darwin gitconfig_linux npm-globals.txt zsh)
 ignore_pattern=$(IFS='|'; echo "^(${ignore[*]})$")
-files=`ls | grep -Ev "$ignore_pattern"`
+# tracked entries only, so a scratch file in the checkout never becomes ~/.<name>;
+# the repo's own dotfiles (.gitignore) are repo config, not dotfiles to link
+files=`git -C "$dir" ls-files | cut -d/ -f1 | sort -u | grep -v '^\.' | grep -Ev "$ignore_pattern"`
 
 # Every install step below is skipped when it's already satisfied, so this
 # stays cheap to re-run after editing a config file -- which is the normal
@@ -53,6 +57,52 @@ for file in $files; do
 	ln -sfn "$dir/$file" "$target"
 done
 
+# A file deleted from the repo leaves its link dangling wherever it was linked
+# to. Clear those -- only links into this repo, so nothing else is touched.
+for link in ~/.[!.]* ~/.config/* ~/.claude/* ~/.claude/skills/*; do
+	if [ -L "$link" ] && [ ! -e "$link" ] && [[ "$(readlink "$link")" == "$dir"/* ]]; then
+		echo "Removing dangling link $link"
+		rm "$link"
+	fi
+done
+# ~/.zsh linked to zsh/ before zsh/ was taken off the link list
+[ -L ~/.zsh ] && [ "$(readlink ~/.zsh)" = "$dir/zsh" ] && rm ~/.zsh
+
+# ~/.config is where every app writes its state, so it is a real directory and
+# only the tracked config/<dir>s are symlinked into it. It used to be one symlink
+# to config/, which put every app's state -- gh's login, 1Password -- inside
+# this working tree. Undo that once: whatever is in config/ but untracked was
+# written through the old link and belongs to its app, so it moves out.
+if [ -L ~/.config ]; then
+	echo "Replacing the ~/.config symlink with a real directory"
+	rm ~/.config
+	mkdir ~/.config
+	shopt -s nullglob dotglob
+	for entry in "$dir"/config/*; do
+		name=$(basename "$entry")
+		if [ -z "$(git -C "$dir" ls-files -- "config/$name")" ]; then
+			echo "Moving untracked config/$name out to ~/.config"
+			# an app that is running can recreate its dir first; never clobber it
+			mv "$entry" ~/.config/ || echo "WARNING: config/$name is still in the repo -- quit its app, merge it into ~/.config/$name by hand"
+		fi
+	done
+	shopt -u nullglob dotglob
+fi
+mkdir -p ~/.config
+for entry in "$dir"/config/*/; do
+	name=$(basename "$entry")
+	# only shared config: an untracked dir here is app state that failed to move
+	[ -n "$(git -C "$dir" ls-files -- "config/$name")" ] || continue
+	target=~/.config/$name
+	if [ -e "$target" ] && [ ! -L "$target" ]; then
+		echo "Backing up real ~/.config/$name to $olddir/config"
+		mkdir -p "$olddir/config"
+		mv "$target" "$olddir/config/"
+	fi
+	echo "Creating symlink to config/$name in ~/.config"
+	ln -sfn "$dir/config/$name" "$target"
+done
+
 # Git has no OS conditional of its own -- includeIf only matches gitdir,
 # onbranch and remote urls -- so the platform fragment gets picked here, at
 # install time, and gitconfig includes ~/.gitconfig_os unconditionally.
@@ -80,6 +130,21 @@ for file in "${claude_files[@]}"; do
 	fi
 	echo "Creating symlink to claude/$file in ~/.claude"
 	ln -sf "$dir/claude/$file" "$target"
+done
+
+# Skills link one by one, like config/: ~/.claude/skills also holds skills that
+# plugins and work tooling install, which stay real and local to this machine.
+mkdir -p ~/.claude/skills
+for entry in "$dir"/claude/skills/*/; do
+	name=$(basename "$entry")
+	target=~/.claude/skills/$name
+	if [ -e "$target" ] && [ ! -L "$target" ]; then
+		echo "Backing up real ~/.claude/skills/$name to $olddir/claude/skills"
+		mkdir -p "$olddir/claude/skills"
+		mv "$target" "$olddir/claude/skills/"
+	fi
+	echo "Creating symlink to claude/skills/$name in ~/.claude/skills"
+	ln -sfn "$dir/claude/skills/$name" "$target"
 done
 
 # Dependencies, from the two manifests. Both commands install only what's
@@ -182,3 +247,4 @@ if command -v jq >/dev/null; then
 else
 	echo "No jq on PATH -- skipping ~/.claude/settings.json"
 fi
+
