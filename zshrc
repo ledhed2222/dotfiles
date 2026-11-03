@@ -133,6 +133,8 @@ export ZSH_TMUX_CONFIG=~/.config/tmux/tmux.conf
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(git tmux vi-mode)
+# Default 0.4s Esc wait makes vi-mode feel laggy.
+KEYTIMEOUT=1
 
 source $ZSH/oh-my-zsh.sh
 
