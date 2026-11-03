@@ -68,10 +68,10 @@ fi
 # ~/.claude mixes shared config with megabytes of local session state (history,
 # credentials, plugin installs), so unlike every other top-level entry above,
 # only these specific files/dirs are symlinked in -- the rest of ~/.claude stays
-# real and local.
+# real and local. settings.json is not among them: it is generated, at the end.
 echo "Symlinking shared claude/ config into ~/.claude"
 mkdir -p ~/.claude
-claude_files=(CLAUDE.md settings.json keybindings.json)
+claude_files=(CLAUDE.md keybindings.json)
 for file in "${claude_files[@]}"; do
 	target=~/.claude/$file
 	if [ -e "$target" ] && [ ! -L "$target" ]; then
@@ -115,21 +115,70 @@ else
 	curl -fsSL https://claude.ai/install.sh | bash
 fi
 
-settings="$dir/claude/settings.json"
-
-# `/effort` persists its pick as modelSettings.<model>.effortLevel in the same
-# tracked file, so toggling effort mid-session dirties the repo -- and there is
-# no in-session alternative, since --effort and CLAUDE_CODE_EFFORT_LEVEL only
-# apply at launch. Strip just that leaf: maxEffortLevel lives beside it and is
-# the opposite kind of thing, a deliberate cap that clamps every effort source,
-# so it has to survive. Model entries left empty are dropped, and modelSettings
-# goes with them when nothing else remains.
-if command -v jq >/dev/null && jq -e '[.modelSettings // {} | .[] | .effortLevel] | any' "$settings" >/dev/null 2>&1; then
-	echo "Dropping per-session effortLevel from claude/settings.json"
-	jq --indent 2 'if .modelSettings then
-		.modelSettings |= with_entries(.value |= del(.effortLevel))
-		| .modelSettings |= with_entries(select(.value | length > 0))
-		| (if (.modelSettings | length) == 0 then del(.modelSettings) else . end)
-	else . end' "$settings" > "$settings.tmp" && mv "$settings.tmp" "$settings"
+# ~/.claude/settings.json is the only user-scope settings file Claude Code reads,
+# and every /plugin install, /model, /config and theme change writes to it. So
+# it is generated, never symlinked: claude/settings.json (shared, tracked) deep-
+# merged with ~/.claude/settings.machine.json (this machine only, untracked).
+# Objects merge key by key, arrays concatenate, machine wins on a scalar.
+#
+# Claude's own writes land in the generated file. Overwriting it would silently
+# undo them, so it is only rewritten while it still matches what was last
+# generated (or already matches the new merge). Otherwise this prints what
+# changed and leaves it alone: move each change into one of the two inputs,
+# then re-run. /effort's per-session effortLevel is ignored in that comparison
+# -- it is session state, not config -- and is dropped on the next rewrite.
+claude_shared="$dir/claude/settings.json"
+claude_machine=~/.claude/settings.machine.json
+claude_live=~/.claude/settings.json
+claude_last=~/.claude/.settings.generated.json
+if command -v jq >/dev/null; then
+	# the symlink this used to be points into the repo; never write through it
+	[ -L "$claude_live" ] && rm "$claude_live"
+	[ -f "$claude_machine" ] || echo '{}' > "$claude_machine"
+	merged=$(jq -n --indent 2 --slurpfile shared "$claude_shared" --slurpfile machine "$claude_machine" '
+		def merge($a; $b):
+			if ($a | type) == "object" and ($b | type) == "object" then
+				reduce ($b | keys_unsorted[]) as $k ($a; .[$k] = merge($a[$k]; $b[$k]))
+			elif ($a | type) == "array" and ($b | type) == "array" then $a + ($b - $a)
+			elif $b == null then $a
+			else $b end;
+		merge($shared[0]; $machine[0])') || exit 1
+	normalise() {
+		jq -S 'if .modelSettings then
+			.modelSettings |= with_entries(.value |= del(.effortLevel))
+			| .modelSettings |= with_entries(select(.value | length > 0))
+			| (if (.modelSettings | length) == 0 then del(.modelSettings) else . end)
+		else . end' "$@"
+	}
+	# Every leaf (arrays count as one, unordered) that Claude changed since the
+	# last generation must already read the same in the new merge -- then
+	# rewriting loses nothing, even when the inputs changed too.
+	absorbed() {
+		jq -n -e --slurpfile last <(normalise "$claude_last") --slurpfile live <(normalise "$claude_live") \
+			--slurpfile merged <(echo "$merged" | normalise) '
+			def leaves: if type == "object" then (keys[] as $k | (.[$k] | leaves) as $p | [$k] + $p) else [] end;
+			def at($p): getpath($p) | if type == "array" then sort else . end;
+			$last[0] as $a | $live[0] as $b | $merged[0] as $m
+			| [($a, $b) | leaves] | unique
+			| map(. as $p | select(($a | at($p)) != ($b | at($p))))
+			| all(.[]; . as $p | ($m | at($p)) == ($b | at($p)))' >/dev/null
+	}
+	if [ ! -f "$claude_live" ] \
+		|| [ "$(normalise "$claude_live")" = "$(echo "$merged" | normalise)" ] \
+		|| { [ -f "$claude_last" ] && absorbed; }; then
+		echo "Generating ~/.claude/settings.json from claude/settings.json + settings.machine.json"
+		echo "$merged" > "$claude_live"
+		echo "$merged" > "$claude_last"
+	else
+		echo "~/.claude/settings.json has changes from neither input -- leaving it alone:"
+		if [ -f "$claude_last" ]; then
+			diff <(normalise "$claude_last") <(normalise "$claude_live")
+		else
+			diff <(echo "$merged" | normalise) <(normalise "$claude_live")
+		fi
+		echo "Move each one into claude/settings.json (every machine) or"
+		echo "~/.claude/settings.machine.json (this one), then re-run ./make.sh."
+	fi
+else
+	echo "No jq on PATH -- skipping ~/.claude/settings.json"
 fi
-

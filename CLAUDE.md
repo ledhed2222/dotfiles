@@ -4,7 +4,9 @@
 
 `make.sh` is the whole install: it symlinks each top-level file/dir in this repo to its `~/.<name>` counterpart (so edits take effect immediately without reinstalling), then installs oh my zsh, the two dependency manifests, and Claude Code. Every step is skipped when already satisfied, so it stays safe and cheap to re-run — which is the normal reason to run it. Two orderings inside it are load-bearing: oh my zsh must precede the symlink loop (its installer replaces an existing `~/.zshrc`, and its own check matches symlinks too, via `-h`), and `nodenv rehash` must follow the npm install (a global's binary isn't on `PATH` until a shim exists, so a fresh package looks like a failed install).
 
-`claude/` is the exception to the symlinking: `~/.claude` holds megabytes of local session state (history, credentials, plugin installs) alongside shared config, so rather than symlinking the whole directory, `make.sh` symlinks only `claude/{CLAUDE.md,settings.json,keybindings.json}` individually into the real `~/.claude/`. Adding another shared file under `claude/` means adding it to `make.sh`'s `claude_files` list too, not just the `.gitignore` allowlist.
+`claude/` is the exception to the symlinking: `~/.claude` holds megabytes of local session state (history, credentials, plugin installs) alongside shared config, so rather than symlinking the whole directory, `make.sh` symlinks only `claude/{CLAUDE.md,keybindings.json}` individually into the real `~/.claude/`. Adding another shared file under `claude/` means adding it to `make.sh`'s `claude_files` list too, not just the `.gitignore` allowlist.
+
+`~/.claude/settings.json` is generated, not symlinked. It is the only user-scope settings file Claude Code reads (there is no user-level `settings.local.json`), and `/plugin install`, `/model`, `/config` and theme changes all write to it — symlinked, every machine-specific install landed in the tracked file. `make.sh` deep-merges `claude/settings.json` (every machine) with the untracked `~/.claude/settings.machine.json` (work plugins, private marketplaces, machine-only hooks and permissions): objects merge by key, arrays concatenate, the machine file wins on a scalar. Claude's writes go to the generated file, so `make.sh` rewrites it only while it still matches the last generation; otherwise it prints the diff and leaves it alone until each change is moved into one of the two inputs. Edit those, never the generated file. Machine-only instructions follow the same idea: an untracked file `@`-imported from `claude/CLAUDE.md`, as `@RTK.md` is.
 
 `zshrc` sources every `zsh/*.zsh` in this repo, resolved relative to its own real path, so those files work without `make.sh` having run.
 
@@ -17,7 +19,7 @@ Nothing is installed by hand. Pick the home by *how the thing updates itself*, t
 - **Ships its own updater** (Claude Code) → a step in `make.sh`, never a manifest. A formula would install a second copy that competes with the self-updater.
 - **Installs itself** (tpm, cloned by `tmux.conf`) → nothing at all.
 - **Platform-specific git config** → `gitconfig_darwin` / `gitconfig_linux`, which `make.sh` links to `~/.gitconfig_os`. Git has no OS conditional; `includeIf` matches only gitdir, branch and remote url.
-- **A secret** → never a tracked file. Read it at shell start from wherever it already lives: `zshrc` gets the GitHub token from `gh auth token`, so the keyring stays the only copy.
+- **A secret** → never a tracked file, and never exported into every shell: an exported variable reaches every process, Claude Code and each command it runs included. Let the tool that needs it read it from where it already lives, the way `gh` reads its token from the keychain on each call.
 - **Machine-specific anything else** → `~/.zshrc_local_overrides` or `~/.gitconfig_local_overrides`, both untracked and applied last.
 - **A project's own toolchain** (typescript, say) → that project's `package.json`, not here.
 

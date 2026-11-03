@@ -29,20 +29,36 @@
             "command": "~/.config/claude/hooks/tmux-clear-attention.sh"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "rtk hook claude"
+          }
+        ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "ccstatusline",
+    "padding": 0,
+    "refreshInterval": 10
   },
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
-    "github@claude-plugins-official": true,
+    "github@claude-plugins-official": false,
     "commit-commands@claude-plugins-official": true,
     "ponytail@ponytail": true,
     "claude-mem@thedotmack": true,
     "claude-code-setup@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
-    "cc-plugin-you-should-know@builtin": true
+    "cc-plugin-you-should-know@builtin": true,
+    "skill-creator@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "ponytail": {
@@ -58,6 +74,64 @@
       }
     }
   },
-  "tui": "fullscreen",
-  "agentPushNotifEnabled": true
+  "tui": "default",
+  "theme": "auto",
+  "agentPushNotifEnabled": true,
+  "permissions": {
+    "allow": [
+      "Bash(git push *)"
+    ],
+    "deny": [
+      "Bash(cat *mise.local.toml*)",
+      "Bash(gh auth token*)",
+      "Bash(grep *mise.local.toml*)",
+      "Bash(head *mise.local.toml*)",
+      "Bash(less *mise.local.toml*)",
+      "Bash(mise env*)",
+      "Bash(sed *mise.local.toml*)",
+      "Bash(tail *mise.local.toml*)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*.local)",
+      "Edit(**/.env.development)",
+      "Edit(**/.env.local)",
+      "Edit(**/.env.production)",
+      "Edit(**/.env.test)",
+      "Edit(**/mise.local.toml)",
+      "Edit(~/**/.env)",
+      "Edit(~/**/.env.*.local)",
+      "Edit(~/**/.env.development)",
+      "Edit(~/**/.env.local)",
+      "Edit(~/**/.env.production)",
+      "Edit(~/**/.env.test)",
+      "Edit(~/**/mise.local.toml)",
+      "Read(**/.env)",
+      "Read(**/.env.*.local)",
+      "Read(**/.env.development)",
+      "Read(**/.env.local)",
+      "Read(**/.env.production)",
+      "Read(**/.env.test)",
+      "Read(**/mise.local.toml)",
+      "Read(~/**/.env)",
+      "Read(~/**/.env.*.local)",
+      "Read(~/**/.env.development)",
+      "Read(~/**/.env.local)",
+      "Read(~/**/.env.production)",
+      "Read(~/**/.env.test)",
+      "Read(~/**/mise.local.toml)",
+      "Write(**/.env)",
+      "Write(**/.env.*.local)",
+      "Write(**/.env.development)",
+      "Write(**/.env.local)",
+      "Write(**/.env.production)",
+      "Write(**/.env.test)",
+      "Write(**/mise.local.toml)",
+      "Write(~/**/.env)",
+      "Write(~/**/.env.*.local)",
+      "Write(~/**/.env.development)",
+      "Write(~/**/.env.local)",
+      "Write(~/**/.env.production)",
+      "Write(~/**/.env.test)",
+      "Write(~/**/mise.local.toml)"
+    ]
+  }
 }

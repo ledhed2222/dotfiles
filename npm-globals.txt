@@ -11,3 +11,4 @@
 # freshly installed binary looks like it never installed. make.sh does that.
 
 json
+ccstatusline-usage

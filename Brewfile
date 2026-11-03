@@ -21,6 +21,7 @@ cask "kitty" if OS.mac?
 brew "git"
 brew "gh"
 brew "git-lfs"  # gitconfig declares the lfs filter with required = true
+brew "jq"  # make.sh merges ~/.claude/settings.json with it
 
 # search
 brew "ripgrep"
@@ -56,6 +57,9 @@ brew "tmuxinator"
 
 # runtime for claude-mem's local worker service
 brew "bun"
+
+# various ai helpers
+brew "rtk"
 
 # Deliberately absent, because each ships its own updater and a formula would
 # just install a second copy that competes with it:
