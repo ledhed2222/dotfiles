@@ -23,12 +23,13 @@ brew "gh"
 brew "git-lfs"  # gitconfig declares the lfs filter with required = true
 
 # search
-brew "the_silver_searcher"  # provides `ag`
+brew "ripgrep"
 brew "fzf"
 
 # editor
 brew "neovim"
 brew "tree-sitter-cli"
+brew "universal-ctags"  # tagbar; macOS ships a BSD ctags it rejects
 
 # language servers, shared by neovim's lsp config and Claude Code's *-lsp
 # plugins in claude/settings.json -- one install serves both.
@@ -37,6 +38,7 @@ brew "tree-sitter-cli"
 brew "typescript-language-server"
 brew "elixir-ls"
 brew "gopls"
+brew "basedpyright"
 brew "llvm" if OS.linux?  # clangd
 
 # languages installed directly (the rest come from the version managers below)

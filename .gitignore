@@ -6,6 +6,7 @@ config/*
 !config/nvim
 config/nvim/*
 !config/nvim/init.lua
+!config/nvim/lazy-lock.json
 !config/nvim/after
 config/nvim/after/*
 !config/nvim/after/indent
