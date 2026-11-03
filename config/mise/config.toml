@@ -1,0 +1,13 @@
+# Global tool versions, for anywhere a repo doesn't pin its own (a repo's
+# mise.toml, .ruby-version, .nvmrc or .python-version wins). `mise use -g
+# <tool>@<version>` edits this file; `mise up` moves within these ranges.
+[tools]
+node = "26"
+python = "3.15"
+ruby = "4.0"
+java = "temurin-25"
+
+# CLIs from npm, installed per tool rather than into the active node's
+# prefix, so changing the node version above doesn't strand them
+"npm:json" = "latest"
+"npm:ccstatusline-usage" = "latest"

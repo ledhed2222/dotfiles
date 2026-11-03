@@ -36,9 +36,9 @@ Ordering that matters, now handled for you: oh my zsh goes first, because
 including a *symlink*, which its own check tests for with `-h`. Run by hand
 afterwards it would clobber the link, so pass `--keep-zshrc` if you ever do.
 
-`Brewfile` and `npm-globals.txt` are the source of truth for what's installed;
-`make.sh` runs both. To see what's missing without installing anything:
-`brew bundle check --global` and `npm ls -g --depth=0`.
+`Brewfile` and `config/mise/config.toml` are the source of truth for what's
+installed; `make.sh` runs both. To see what's missing without installing
+anything: `brew bundle check --global` and `mise ls --missing`.
 
 ## where a new dependency goes
 
@@ -47,7 +47,8 @@ Nothing gets installed by hand. Add it in one place, run `./make.sh`:
 | what it is | where it goes |
 |---|---|
 | brew formula or cask | `Brewfile` — macOS-only lines get `if OS.mac?` |
-| npm global | `npm-globals.txt` |
+| a language version (node, python, ruby, java) | `config/mise/config.toml`, via `mise use -g <tool>@<version>` |
+| an npm CLI | `config/mise/config.toml`, via `mise use -g npm:<package>` |
 | ships its own updater (claude code) | a step in `make.sh`, never a manifest |
 | installs itself (tpm) | nowhere |
 | platform-specific git config | `gitconfig_darwin` / `gitconfig_linux` |
@@ -55,15 +56,9 @@ Nothing gets installed by hand. Add it in one place, run `./make.sh`:
 | machine-specific anything else | `~/.zshrc_local_overrides`, `~/.gitconfig_local_overrides` |
 | a project's own toolchain | that project, not here |
 
-One gotcha on a bare machine: `nodenv` arrives with the Brewfile but has no node
-version, so `npm` is missing and the globals are skipped with a message. Run
-`nodenv install <version> && nodenv global <version>`, then `./make.sh` again.
-
 ## what can't be automated
 
 - **The PragmataPro font** — paid and per-person licensed, see below.
-- **A JDK**, if you want Java. `jenv` only *manages* JDKs; unlike
-  `nodenv`/`pyenv`/`rbenv` it won't build one for you.
 - **Machine-specific config**, which goes in `~/.zshrc_local_overrides` and
   `~/.gitconfig_local_overrides`. Both are sourced/included last when present,
   and neither is tracked here.
