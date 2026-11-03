@@ -236,35 +236,9 @@ fi
 # Elixir setup
 export ERL_AFLAGS="-kernel shell_history enabled"
 
-# Java/jenv setup
-if (command -v jenv > /dev/null); then
-  export PATH="$HOME/.jenv/bin:$PATH"
-  eval "$(jenv init -)"
-fi
-
-# load pyenv
-if (command -v pyenv > /dev/null); then
-  export PYENV_ROOT="$HOME/.pyenv"
-  export PATH="$PYENV_ROOT/bin:$PATH"
-  eval "$(pyenv init --path)"
-  eval "$(pyenv init -)"
-fi
-
-# Ruby/rbenv setup
-if (command -v brew > /dev/null); then
-  export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl@3)"
-fi
-
-if (command -v rbenv > /dev/null); then
-  eval "$(rbenv init -)"
-fi
-
-# load nodenv
-if [[ -d "$HOME/.nodenv" ]] && ! command -v nodenv > /dev/null; then
-  export PATH="$HOME/.nodenv/bin:$PATH"
-fi
-if (command -v nodenv > /dev/null); then
-  eval "$(nodenv init -)"
+# node, python, ruby, java and npm CLIs, per config/mise/config.toml
+if (command -v mise > /dev/null); then
+  eval "$(mise activate zsh)"
 fi
 
 # Finally - allow a place per machine to override anything here in case some

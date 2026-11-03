@@ -42,14 +42,11 @@ brew "gopls"
 brew "basedpyright"
 brew "llvm" if OS.linux?  # clangd
 
-# languages installed directly (the rest come from the version managers below)
+# languages installed directly (the rest come from mise, below)
 brew "go"
 
-# language version managers
-brew "jenv"
-brew "nodenv"
-brew "pyenv"
-brew "rbenv"
+# node, python, ruby, java and npm CLIs, per config/mise/config.toml
+brew "mise"
 
 # tmux, plus the layout manager wt/mux drive
 brew "tmux"

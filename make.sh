@@ -7,9 +7,8 @@ olddir=~/dotfiles_backup
 # - claude: handled below, per-file, alongside the real ~/.claude
 # - config: handled below, per-directory, inside a real ~/.config
 # - gitconfig_darwin/linux: picked by platform below, not symlinked by name
-# - npm-globals.txt: a manifest read by npm, not a dotfile
 # - zsh: zshrc sources zsh/*.zsh from this repo directly, by its own real path
-ignore=(make.sh README.md CLAUDE.md claude config gitconfig_darwin gitconfig_linux npm-globals.txt zsh)
+ignore=(make.sh README.md CLAUDE.md claude config gitconfig_darwin gitconfig_linux zsh)
 ignore_pattern=$(IFS='|'; echo "^(${ignore[*]})$")
 # tracked entries only, so a scratch file in the checkout never becomes ~/.<name>;
 # the repo's own dotfiles (.gitignore) are repo config, not dotfiles to link
@@ -147,7 +146,7 @@ for entry in "$dir"/claude/skills/*/; do
 	ln -sfn "$dir/claude/skills/$name" "$target"
 done
 
-# Dependencies, from the two manifests. Both commands install only what's
+# Dependencies, from the Brewfile and the mise config. Both install only what's
 # missing, so re-running costs a check and nothing else.
 if command -v brew >/dev/null; then
 	if brew bundle check --global >/dev/null 2>&1; then
@@ -160,17 +159,34 @@ else
 	echo "No brew on PATH -- skipping the Brewfile"
 fi
 
-if command -v npm >/dev/null; then
-	echo "Installing npm globals from npm-globals.txt"
-	grep -v '^#' "$dir/npm-globals.txt" | xargs npm i -g
-	# nodenv puts a global's binary in the version's prefix but only exposes it
-	# through a shim, so anything newly installed is missing from PATH until
-	# this runs -- it looks like the install silently failed.
-	if command -v nodenv >/dev/null; then
-		nodenv rehash
-	fi
+# Languages and npm CLIs, from config/mise/config.toml (linked into ~/.config
+# above). Installs only what's missing, like the Brewfile.
+if command -v mise >/dev/null; then
+	echo "Installing global tools from config/mise/config.toml"
+	mise install --yes
 else
-	echo "No npm on PATH -- skipping npm-globals.txt"
+	echo "No mise on PATH -- skipping config/mise/config.toml"
+fi
+
+# Retired by mise: the per-language managers. Their formulae go once mise is
+# here to take over; their state dirs go only when they hold no versions --
+# anything installed there needs porting to config/mise/config.toml first.
+if command -v mise >/dev/null; then
+	for manager in jenv nodenv pyenv rbenv; do
+		if command -v brew >/dev/null && brew list --formula "$manager" >/dev/null 2>&1; then
+			echo "Uninstalling $manager (replaced by mise)"
+			brew uninstall "$manager"
+		fi
+		state=~/.$manager
+		[ -d "$state" ] || continue
+		versions=$(ls -A "$state/versions" 2>/dev/null)
+		if [ -z "$versions" ]; then
+			echo "Removing $state (no versions installed)"
+			rm -rf "$state"
+		else
+			echo "WARNING: $state still has versions: $(echo $versions) -- add what you need via mise use -g, then rm -rf $state"
+		fi
+	done
 fi
 
 if command -v claude >/dev/null; then
