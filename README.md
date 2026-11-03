@@ -38,7 +38,11 @@ afterwards it would clobber the link, so pass `--keep-zshrc` if you ever do.
 
 `Brewfile` and `config/mise/config.toml` are the source of truth for what's
 installed; `make.sh` runs both. To see what's missing without installing
-anything: `brew bundle check --global` and `mise ls --missing`.
+anything: `brew bundle check --global` and `mise ls --missing`. The other
+direction -- installed by hand but not in the Brewfile -- is `brew-audit`,
+which `make.sh` also runs at the end. `brew leaves --installed-on-request` is
+the full list of top-level formulae, and `brew uses --installed <formula>`
+says why a dependency is there.
 
 ## where a new dependency goes
 

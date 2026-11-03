@@ -164,8 +164,6 @@ export EDITOR="nvim"
 alias rm="rm -i"
 alias top="top -o cpu -s 3 -stats pid,command,cpu,rprvt,rsize,vprvt,vsize,user,state,threads,ppid,pgrp,faults,cow"
 alias grep="grep -E --color=always"
-alias gd="git difftool"
-alias gds="git difftool --staged"
 alias mux="tmuxinator"
 # need to get kitty ssh copy/paste buffer synching working another time
 # if [[ -n "$KITTY_WINDOW_ID" ]]; then

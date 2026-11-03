@@ -22,6 +22,7 @@
   ignoreSubmodules = dirty
 [difftool]
   prompt = false
+  trustExitCode = true
 [difftool "vimdiff"]
   cmd = nvim -d -O $REMOTE $LOCAL
 [pull]
@@ -35,6 +36,13 @@
   # platform-specific config (credential helper), symlinked by make.sh from
   # gitconfig_darwin / gitconfig_linux. Missing file = silently skipped.
   path = ~/.gitconfig_os
+[credential "https://github.com"]
+  # empty value clears the platform helper for this host, so gh answers alone
+  helper =
+  helper = !gh auth git-credential
+[credential "https://gist.github.com"]
+  helper =
+  helper = !gh auth git-credential
 [include]
   # put a file here with overrides to any of the above configs to override
   # them locally only. Included last, so it wins over the platform file.
