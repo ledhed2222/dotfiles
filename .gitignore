@@ -5,6 +5,11 @@
 config/tmux/plugins/
 config/tmux/install_plugins.log
 
+# custom tmuxinator layouts per machine that are not checked in unless they
+# are alllowed here
+config/tmuxinator/*
+!config/tmuxinator/default.yml
+
 # disallow lein repl history
 lein/repl-history
 
