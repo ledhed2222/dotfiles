@@ -9,7 +9,8 @@
 # Homebrew runs on Linux too, so this file is shared. The DSL is Ruby, so
 # anything platform-specific is guarded with `if OS.mac?` / `if OS.linux?`:
 # a guarded line is skipped entirely on the other platform, not attempted
-# and failed. `cask` exists only on macOS, so every cask needs the guard.
+# and failed. Casks install on Linux too, but only those that ship a Linux
+# build; guard any cask that is macOS-only.
 
 # terminal emulator. The PragmataPro font kitty.conf asks for is paid and
 # per-person licensed -- see the README, it can't be installed from here.
@@ -57,6 +58,7 @@ brew "bun"
 
 # various ai helpers
 brew "rtk"
+cask "anthropics/tap/ant"  # Claude Platform CLI
 
 # Deliberately absent, because each ships its own updater and a formula would
 # just install a second copy that competes with it:
