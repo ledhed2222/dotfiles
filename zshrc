@@ -124,7 +124,7 @@ DEFAULT_USER="$(whoami)"
 
 # tmux configs
 export ZSH_TMUX_AUTOSTART=true
-export ZSH_TMUX_AUTOCONNECT=true
+export ZSH_TMUX_AUTOCONNECT=${ZSH_TMUX_AUTOCONNECT:-true}
 export ZSH_TMUX_UNICODE=true
 export ZSH_TMUX_CONFIG=~/.config/tmux/tmux.conf
 
