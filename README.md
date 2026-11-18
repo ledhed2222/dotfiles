@@ -82,7 +82,12 @@ Homebrew runs on Linux, so one file covers both.
 Docker on macOS needs **Docker Desktop** (the `docker-desktop` cask), not the
 `docker` formula: containers need a Linux kernel, so the engine runs in a VM
 that only Docker Desktop provides, and the formula is a CLI with no engine to
-talk to. On Linux the engine runs natively and is installed from the distro.
+talk to. On Linux the engine runs natively as a systemd daemon, which Homebrew
+can't manage, so nothing here installs it: once per machine, install Docker's
+apt packages (`curl -fsSL https://get.docker.com | sh` adds the repo and
+installs `docker-ce`, `docker-ce-cli`, `containerd.io` and
+`docker-compose-plugin`), then `sudo usermod -aG docker "$USER"` and log in
+again to run `docker` without sudo. apt keeps it updated from there.
 
 # shell
 
