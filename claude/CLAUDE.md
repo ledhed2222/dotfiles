@@ -7,7 +7,6 @@
 
 ## Code style
 - No comments unless the why is genuinely non-obvious.
-- No docstrings.
 - When a boolean has both a true and a false branch (e.g. `if x { ... } else
   { ... }`, or two sibling early-return branches covering both cases), phrase
   the condition on the affirmative form of the variable (`if isNative`) rather
