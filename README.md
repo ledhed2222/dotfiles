@@ -79,6 +79,11 @@ unrecognized platform degrades to the base config rather than breaking.
 The `Brewfile` guards its macOS-only entries with `if OS.mac?` the same way.
 Homebrew runs on Linux, so one file covers both.
 
+Docker on macOS needs **Docker Desktop** (the `docker-desktop` cask), not the
+`docker` formula: containers need a Linux kernel, so the engine runs in a VM
+that only Docker Desktop provides, and the formula is a CLI with no engine to
+talk to. On Linux the engine runs natively and is installed from the distro.
+
 # shell
 
 `zshrc` sources every `zsh/*.zsh` in this repo, resolved relative to its own

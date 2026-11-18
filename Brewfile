@@ -43,6 +43,11 @@ brew "gopls"
 brew "basedpyright"
 brew "llvm" if OS.linux?  # clangd
 
+# containers. On macOS the engine needs a Linux VM, which only the cask
+# brings; the `docker` formula is just the CLI and has nothing to talk to.
+# Its CLI lands in ~/.docker/bin, which zshrc adds to PATH.
+cask "docker-desktop" if OS.mac?
+
 # languages installed directly (the rest come from mise, below)
 brew "go"
 
