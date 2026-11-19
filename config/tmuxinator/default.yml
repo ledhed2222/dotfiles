@@ -10,6 +10,7 @@
 
 name: <%= ENV['PROJECT_NAME'] || File.basename(Dir.pwd) %>
 root: <%= ENV['PROJECT_ROOT'] || Dir.pwd %>
+on_project_first_start: test ! -f mise.toml || mise run setup
 
 windows:
   - ai: claude
