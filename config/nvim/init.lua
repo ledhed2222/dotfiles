@@ -64,7 +64,7 @@ map("n", "<c-l>", "<c-w>l")
 
 -- Quickfix navigation
 map("n", "<c-n>", ":cnext<cr>")
-map("n", "<c-m>", ":cprevious<cr>")
+map("n", "<c-p>", ":cprevious<cr>")
 map("n", "<leader>a", ":cclose<cr>")
 
 -- Switch between current and last buffer
@@ -178,7 +178,7 @@ require("lazy").setup({
         ensure_installed = {
           "go", "python", "javascript", "typescript", "tsx",
           "lua", "bash", "markdown", "json", "yaml", "toml",
-          "cpp", "c", "elixir", "ruby", "html", "sql",
+          "cpp", "c", "elixir", "ruby", "rbs", "html", "sql",
           "supercollider", "scss", "css",
         },
       })
@@ -225,7 +225,7 @@ require("lazy").setup({
       vim.lsp.enable("clangd")
 
       -- JS/TS
-      vim.lsp.config("ts_ls", {
+      vim.lsp.config("tsc", {
         on_attach = function(_, bufnr)
           local opts = { buffer = bufnr }
           vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
@@ -235,7 +235,7 @@ require("lazy").setup({
           vim.keymap.set("n", "<leader>m", vim.lsp.buf.implementation, opts)
         end,
       })
-      vim.lsp.enable("ts_ls")
+      vim.lsp.enable("tsc")
 
       -- Python
       vim.lsp.config("basedpyright", {
@@ -249,6 +249,19 @@ require("lazy").setup({
         end,
       })
       vim.lsp.enable("basedpyright")
+
+      -- Ruby
+      vim.lsp.config("ruby_lsp", {
+        on_attach = function(_, bufnr)
+          local opts = { buffer = bufnr }
+          vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+          vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+          vim.keymap.set("n", "<leader>i", vim.lsp.buf.hover, opts)
+          vim.keymap.set("n", "<leader>e", vim.lsp.buf.rename, opts)
+          vim.keymap.set("n", "<leader>m", vim.lsp.buf.implementation, opts)
+        end,
+      })
+      vim.lsp.enable("ruby_lsp")
 
       -- Format on save
       vim.api.nvim_create_autocmd("BufWritePre", {
@@ -301,11 +314,6 @@ require("lazy").setup({
     "mfussenegger/nvim-lint",
     config = function()
       local lint = require("lint")
-      lint.linters.eslint = vim.tbl_deep_extend("force", lint.linters.eslint, {
-        cwd = function(params)
-          return vim.fs.dirname(params.filename)
-        end,
-      })
       lint.linters_by_ft = {
         javascript      = { "eslint" },
         javascriptreact = { "eslint" },
@@ -314,7 +322,7 @@ require("lazy").setup({
       }
       vim.api.nvim_create_autocmd({ "BufWritePost", "BufReadPost" }, {
         callback = function()
-          lint.try_lint()
+          lint.try_lint(nil, { cwd = vim.fs.dirname(vim.api.nvim_buf_get_name(0)), ignore_errors = true })
         end,
       })
     end,

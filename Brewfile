@@ -40,10 +40,8 @@ brew "universal-ctags"  # tagbar; macOS ships a BSD ctags it rejects
 # plugins in claude/settings.json -- one install serves both.
 # clangd ships with the Xcode Command Line Tools on macOS, but has to be
 # installed on Linux.
-brew "typescript-language-server"
 brew "elixir-ls"
 brew "gopls"
-brew "basedpyright"
 brew "llvm" if OS.linux?  # clangd
 
 # containers. On macOS the engine needs a Linux VM, which only the cask

@@ -84,25 +84,17 @@ Local git config lives in `.git/config`, so this never gets committed to a share
 
 Coding style and behavior preferences that apply everywhere, not just this repo, live in [`claude/CLAUDE.md`](claude/CLAUDE.md) (symlinked to `~/.claude/CLAUDE.md`) rather than here.
 
-## typescript-language-server has no global fallback, on purpose
+## TypeScript LSP is `tsc --lsp`, not typescript-language-server
 
-`typescript-language-server` is a wrapper: the actual work is done by
-`tsserver`, which it resolves from the *project's* `node_modules/typescript`.
-A JS/TS repo therefore needs typescript as a local dependency -- which it
-should be pinning anyway, so the editor and CI agree on a compiler version.
-
-Outside such a project -- this repo, a scratch `.ts` file -- there is nothing
-to fall back to, and the server will complain. That is expected, not a broken
-install. Homebrew's `typescript-language-server` bundles a `typescript` that is
-a symlink to brew's `typescript` formula, now at 7.x: the native port, whose
-only binary is `tsc`. TypeScript 7 dropped `tsserver` entirely, so the bundled
-copy cannot drive the server, and `typescript@latest` on npm is the same 7.x.
-The last release carrying `tsserver` is 5.9.3.
-
-Installing `typescript@5` globally was tried and reverted: it only serves repos
-that would never ask for it, and the brew-installed server looks in its own
-`node_modules` (the 7.x symlink) before anything global, so it isn't reliably
-picked up anyway. Fix it in the project, not here.
+TypeScript 7 (the native port) dropped `tsserver`, which
+`typescript-language-server` needs, so neovim uses lspconfig's `tsc` server
+instead: TS 7's own `tsc --lsp --stdio`. It uses the project's
+`node_modules/.bin/tsc` when that is 7+; otherwise (no local typescript, or a
+local 5.x with no `--lsp`) it falls back to the global `npm:typescript` from
+mise. In a 5.x repo the editor therefore checks with 7.x while CI uses 5.x, so
+diagnostics can disagree; upgrade the project rather than pinning anything
+here. Claude Code's `typescript-lsp` plugin runs `typescript-language-server`,
+so it is not enabled in `claude/settings.json` and the brew package is gone.
 
 ## Repo-specific Neovim config without touching the repo
 

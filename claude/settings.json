@@ -61,13 +61,13 @@
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
+    "ruby-lsp@claude-plugins-official": true,
     "github@claude-plugins-official": false,
     "commit-commands@claude-plugins-official": true,
     "ponytail@ponytail": true,
     "claude-mem@thedotmack": true,
     "claude-code-setup@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
     "cc-plugin-you-should-know@builtin": true,
     "skill-creator@claude-plugins-official": true,
     "rememberthemilk@ledhed2222": true
