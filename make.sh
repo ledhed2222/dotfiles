@@ -146,6 +146,22 @@ for entry in "$dir"/claude/skills/*/; do
 	ln -sfn "$dir/claude/skills/$name" "$target"
 done
 
+# Directories the shell config only ever reads. zshrc exports these as common
+# locations, and adds $GOPATH/bin to PATH *only when GOPATH exists* -- so on a
+# machine where it doesn't, a `go install` lands somewhere not on PATH and the
+# binary looks like it failed to build. The paths are read out of zshrc rather
+# than repeated here: they are plain assignments that bash evaluates the same
+# way zsh does, so this can't drift from the values the shell actually uses.
+eval "$(grep -E '^export (DEVHOME|WORKHOME|GOPATH)=' "$dir/zshrc")"
+eval "$(grep -E '^export WORKTREE_HOME=' "$dir/zsh/worktree.zsh")"
+for d in "$DEVHOME" "$WORKHOME" "$GOPATH" "$WORKTREE_HOME"; do
+	if [ -z "$d" ] || [ -d "$d" ]; then
+		continue
+	fi
+	echo "Creating $d"
+	mkdir -p "$d"
+done
+
 # Dependencies, from the Brewfile and the mise config. Both install only what's
 # missing, so re-running costs a check and nothing else.
 if command -v brew >/dev/null; then

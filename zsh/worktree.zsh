@@ -1,7 +1,7 @@
 # Git worktree + tmux session management.
 #
-#   wt new [-l layout] [-b base] <branch>  branch off origin's default branch (or -b's ref),
-#                                          open a session, switch to it
+#   wt new [-l layout] [-b base] <branch>  branch off origin's default branch (or -b's ref,
+#                                          exact or a fuzzy fragment), open a session, switch to it
 #   wt open [-l layout] [branch]          open (or jump to) the session for an existing worktree
 #   wt close [branch]                     remove the worktree, delete the branch, kill the session
 #   wt ls                                 list worktrees, marking the ones with a live session
@@ -47,6 +47,41 @@ _wt_default_branch() {
   else
     git remote show origin 2>/dev/null | awk '/HEAD branch/ {print $NF}'
   fi
+}
+
+# Candidate base refs for `wt new -b`: every local branch and every
+# remote-tracking one. origin/HEAD is dropped: it is a symref to the default
+# branch, and %(refname:short) renders it as a bare "origin", which is not a
+# branch anyone can base anything on.
+# Deliberately no fetch: this runs on every Tab, and a ref pushed since the
+# last fetch is missing here either way (see the -b note in _wt_new).
+_wt_refs() {
+  local -a refs
+  refs=(${(f)"$(git for-each-ref --format='%(refname)' refs/heads refs/remotes 2>/dev/null)"})
+  refs=(${refs:#refs/remotes/*/HEAD})
+  refs=(${${refs#refs/heads/}#refs/remotes/})
+  (( $#refs )) && print -l -- $refs
+  return 0
+}
+
+# Resolve a -b value that is not already a ref, seeding fzf with it the way
+# open and close seed theirs. --select-1 accepts a unique hit outright: basing a
+# new branch on the wrong ref is cheap to undo, unlike anything close does.
+_wt_pick_ref() {
+  local query=$1 sel rc
+  if ! (( $+commands[fzf] )); then
+    print -u2 "wt: no such ref '$query' (install fzf to match fuzzily)"
+    return 1
+  fi
+  sel=$(_wt_refs | fzf --height=40% --reverse --prompt="base> " --query="$query" --select-1 --exit-0)
+  rc=$?
+  case $rc in
+    0)   ;;
+    1)   print -u2 "wt: no ref matching '$query'"; return 1 ;;
+    130) return 1 ;;  # backed out on purpose, nothing to say
+    *)   print -u2 "wt: fzf exited with status $rc"; return 1 ;;
+  esac
+  print -- "$sel"
 }
 
 # "<branch>\t<path>" per worktree. Branch first so it leads in the fzf picker
@@ -209,8 +244,11 @@ _wt_new() {
 
   if [[ -n $base ]]; then
     # An explicit base is used as-is — it's the caller's job to make sure
-    # it's up to date (e.g. a local feature branch mid-review).
-    git rev-parse --verify --quiet "$base" >/dev/null || { print -u2 "wt: no such ref '$base'"; return 1 }
+    # it's up to date (e.g. a local feature branch mid-review). Anything that
+    # isn't already a ref is treated as a fuzzy fragment and goes through fzf.
+    if ! git rev-parse --verify --quiet "$base" >/dev/null; then
+      base=$(_wt_pick_ref "$base") || return 1
+    fi
     start_point=$base
   else
     base=$(_wt_default_branch)
@@ -384,6 +422,12 @@ _wt_comp_worktrees() {
   _describe -t worktrees 'worktree' branches -Q
 }
 
+_wt_comp_refs() {
+  local -a refs
+  refs=(${(f)"$(_wt_refs 2>/dev/null)"})
+  _describe -t refs 'base ref' refs -Q
+}
+
 _wt() {
   local -a subcommands layout_opt base_opt
   subcommands=(
@@ -396,9 +440,10 @@ _wt() {
   # Recognised so `-l` doesn't fall through to filenames; its value is a layout
   # name you can list with `mux ls`, so nothing is offered for it.
   layout_opt=('(-l --layout)'{-l,--layout}'[tmuxinator layout]:layout: ')
-  # Recognised so `-b` doesn't fall through to filenames; offer existing
-  # branches as a starting point but let free text through for any ref.
-  base_opt=('(-b --base)'{-b,--base}'[base ref]:base:_wt_comp_worktrees')
+  # Recognised so `-b` doesn't fall through to filenames; offers every local and
+  # remote branch, and still lets free text through -- a tag, a SHA, or a fuzzy
+  # fragment for _wt_pick_ref to resolve.
+  base_opt=('(-b --base)'{-b,--base}'[base ref]:base:_wt_comp_refs')
 
   local curcontext=$curcontext state line
   _arguments -C '1: :->cmd' '*:: :->args'

@@ -19,59 +19,33 @@ if [[ $(uname) == "Darwin" ]]; then
   if [[ -d "$HOME/.docker/bin" ]]; then
     export PATH="$HOME/.docker/bin:$PATH"
   fi
-
-  # Different things depending on Apple or Intel
-  if [[ $(sysctl -n machdep.cpu.brand_string | grep Apple) ]]; then
-    # Homebrew setup
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-
-    # Setup fzf
-    # ---------
-    if [[ ! "$PATH" == */opt/homebrew/opt/fzf/bin* ]]; then
-      PATH="${PATH:+${PATH}:}/opt/homebrew/opt/fzf/bin"
-    fi
-    
-    # Auto-completion
-    # ---------------
-    [[ $- == *i* ]] && source "/opt/homebrew/opt/fzf/shell/completion.zsh" 2> /dev/null
-    
-    # Key bindings
-    # ------------
-    source "/opt/homebrew/opt/fzf/shell/key-bindings.zsh"
-    export FZF_HOME=/opt/homebrew/opt/fzf
-  else
-    # Homebrew setup
-    export PATH="$PATH:/usr/local/sbin"
-
-    # fzf setup (assumes installed with homebrew)
-    if [[ ! "$PATH" == */usr/local/opt/fzf/bin* ]]; then
-      export PATH="${PATH:+${PATH}:}/usr/local/opt/fzf/bin"
-    fi
-    ## auto-completion
-    [[ $- == *i* ]] && source "/usr/local/opt/fzf/shell/completion.zsh" 2> /dev/null
-    ## key bindings
-    source "/usr/local/opt/fzf/shell/key-bindings.zsh"
-    export FZF_HOME=/usr/local/opt/fzf
-  fi
 fi
 
-# Linux-specific stuff
-if [[ $(uname) == "Linux" ]]; then
-  # Homebrew setup
-  if [[ -d "/home/linuxbrew/.linuxbrew" ]]; then
-    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+# Homebrew, wherever this platform keeps it: /opt/homebrew on Apple silicon,
+# /usr/local on an Intel mac, /home/linuxbrew on Linux. Its shellenv is what
+# exports HOMEBREW_PREFIX, which everything below keys on rather than repeating
+# those prefixes -- and picking the prefix by probing for the binary replaces a
+# `sysctl | grep` pair that ran at every single shell start.
+for _brew in /opt/homebrew/bin/brew /usr/local/bin/brew /home/linuxbrew/.linuxbrew/bin/brew; do
+  if [[ -x $_brew ]]; then
+    eval "$($_brew shellenv)"
+    break
   fi
+done
+unset _brew
 
-  # fzf setup (assumes installed in ~/.fzf)
-  ##
-  ## add to path
-  if [[ ! "$PATH" == *"$HOME/.fzf/bin"* ]]; then
-    export PATH="$HOME/.fzf/bin:$PATH"
+# fzf, installed from the Brewfile. This was three near-identical blocks, one
+# per platform; the Linux copy pointed at ~/.fzf, which nothing installs any
+# more, so its unguarded `source` failed on every Linux shell start. Guarding on
+# the directory keeps the source itself unguarded, so a genuinely broken install
+# still says so instead of failing silently.
+if [[ -d $HOMEBREW_PREFIX/opt/fzf ]]; then
+  export FZF_HOME="$HOMEBREW_PREFIX/opt/fzf"
+  if [[ ! "$PATH" == *"$FZF_HOME/bin"* ]]; then
+    export PATH="${PATH:+${PATH}:}$FZF_HOME/bin"
   fi
-  ## auto-completion
-  [[ $- == *i* ]] && source "$HOME/.fzf/shell/completion.zsh" 2> /dev/null
-  ## key bindings
-  source "$HOME/.fzf/shell/key-bindings.zsh"
+  [[ $- == *i* ]] && source "$FZF_HOME/shell/completion.zsh" 2> /dev/null
+  source "$FZF_HOME/shell/key-bindings.zsh"
 fi
 
 # Path to your oh-my-zsh installation.
@@ -164,48 +138,23 @@ export EDITOR="nvim"
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 alias rm="rm -i"
-alias top="top -o cpu -s 3 -stats pid,command,cpu,rprvt,rsize,vprvt,vsize,user,state,threads,ppid,pgrp,faults,cow"
 alias grep="grep -E --color=always"
+# `clear` only erases the visible screen: no terminfo entry on this machine
+# defines E3 (not screen-256color, not even kitty's own), so clear/tput never
+# emit the scrollback reset. CSI 3J is that reset, and tmux implements it by
+# clearing the pane's history -- so this wipes the scrollback, not just the view.
+alias clear='printf "\033[H\033[2J\033[3J"'
 alias mux="tmuxinator"
-# need to get kitty ssh copy/paste buffer synching working another time
-# if [[ -n "$KITTY_WINDOW_ID" ]]; then
-#   alias ssh="kitty +kitten ssh"
-# fi
-
-# serve this directory - default port is 3000
-function server {
-	if [[ "${#1}" == 0 ]]; then
-		python2 -m SimpleHTTPServer 3000
-	else
-		python2 -m SimpleHTTPServer "${1}"
-	fi
-}
-
-# fo - open the selected file with the default editor. ctrl-o open with
-# default command
-function fo {
-  local out file key
-  IFS=$'\n' out=($(fzf-tmux --select-1 --query="$1" --exit-0 --expect=ctrl-o,ctrl-e))
-  key=$(head -1 <<< "$out")
-  file=$(head -2 <<< "$out" | tail -1)
-  if [[ -n "$file" ]]; then
-    [ "$key" = ctrl-o ] && open "$file" || ${EDITOR:-vim} "$file"
-  fi
-}
-
-# fbr - fuzzy checkout git branch
-function fbr {
-  local branches branch
-  branches=$(git branch -vv) &&
-    branch=$(echo "$branches" | fzf +m) &&
-    git checkout $(echo "$branch" | awk '{print $1}' | sed "s/.* //")
-}
 
 # Bare `claude` resumes this directory's most recent conversation. `--continue`
 # exits 1 when there's no history to resume, so fall back to a fresh session.
-# Any explicit args (-p, --resume, a prompt) pass straight through.
+# `--new` forces a fresh one; claude has no such flag of its own, so it is
+# stripped rather than passed on. Any other args (-p, --resume, a prompt) pass
+# straight through.
 function claude {
-  if (( $# == 0 )); then
+  if (( ${@[(I)--new]} )); then
+    command claude "${@:#--new}"
+  elif (( $# == 0 )); then
     command claude --continue || command claude
   else
     command claude "$@"

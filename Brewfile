@@ -28,6 +28,9 @@ brew "jq"  # make.sh merges ~/.claude/settings.json with it
 brew "ripgrep"
 brew "fzf"
 
+# process viewer
+brew "htop"
+
 # editor
 brew "neovim"
 brew "tree-sitter-cli"
@@ -48,10 +51,7 @@ brew "llvm" if OS.linux?  # clangd
 # Its CLI lands in ~/.docker/bin, which zshrc adds to PATH.
 cask "docker-desktop" if OS.mac?
 
-# languages installed directly (the rest come from mise, below)
-brew "go"
-
-# node, python, ruby, java and npm CLIs, per config/mise/config.toml
+# node, python, ruby, java, go and npm CLIs, per config/mise/config.toml
 brew "mise"
 
 # tmux, plus the layout manager wt/mux drive

@@ -35,7 +35,7 @@ Prose describing an install is a liability; the manifest that performs it can't 
 
 `zsh/worktree.zsh` defines `wt`, which pairs a git worktree with a tmux session. It replaces the old `/new-worktree`, `/connect-worktree`, and `/close-worktree` Claude skills so worktree navigation doesn't require Claude.
 
-- `wt new [-l layout] <branch>` — branches off `origin`'s default branch, creates a worktree at `$WORKTREE_HOME/<repo>/<branch-suffix>`, starts a session and switches to it. The current checkout is never touched.
+- `wt new [-l layout] [-b base] <branch>` — branches off `origin`'s default branch, or off `-b`'s ref (an exact ref, or a fuzzy fragment resolved through `fzf` over every local and remote branch; `<TAB>` completes the same set). Creates a worktree at `$WORKTREE_HOME/<repo>/<branch-suffix>`, starts a session and switches to it. The current checkout is never touched.
 - `wt open [-l layout] [branch]` — opens (or jumps to) the session for an existing worktree
 - `wt close [branch]` — removes the worktree, deletes the branch, kills the session. Prompts if the branch is unmerged or the tree is dirty.
 
