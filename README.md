@@ -50,9 +50,9 @@ Nothing gets installed by hand. Add it in one place, run `./make.sh`:
 
 | what it is | where it goes |
 |---|---|
-| brew formula or cask | `Brewfile` — macOS-only lines get `if OS.mac?` |
-| a language version (node, python, ruby, java) | `config/mise/config.toml`, via `mise use -g <tool>@<version>` |
-| an npm CLI | `config/mise/config.toml`, via `mise use -g npm:<package>` |
+| a language runtime (node, python, ruby, go, elixir…) | `config/mise/config.toml`, via `mise use -g <tool>@<version>` |
+| a tool from a language's registry (`npm:`, `pipx:`, `gem:`, `go:`) or that runs on a mise runtime (elixir-ls) | `config/mise/config.toml` too, even if brew has a formula — so a repo can pin its version and brew doesn't add a second runtime |
+| any other brew formula or cask | `Brewfile` — macOS-only lines get `if OS.mac?` |
 | ships its own updater (claude code) | a step in `make.sh`, never a manifest |
 | installs itself (tpm) | nowhere |
 | platform-specific git config | `gitconfig_darwin` / `gitconfig_linux` |

@@ -37,11 +37,11 @@ brew "tree-sitter-cli"
 brew "universal-ctags"  # tagbar; macOS ships a BSD ctags it rejects
 
 # language servers, shared by neovim's lsp config and Claude Code's *-lsp
-# plugins in claude/settings.json -- one install serves both.
+# plugins in claude/settings.json -- one install serves both. Only the ones
+# not tied to a mise language live here; gopls, elixir-ls, ruby-lsp and
+# basedpyright are in config/mise/config.toml.
 # clangd ships with the Xcode Command Line Tools on macOS, but has to be
 # installed on Linux.
-brew "elixir-ls"
-brew "gopls"
 brew "llvm" if OS.linux?  # clangd
 
 # containers. On macOS the engine needs a Linux VM, which only the cask
@@ -56,11 +56,9 @@ brew "mise"
 brew "tmux"
 brew "tmuxinator"
 
-# runtime for claude-mem's local worker service
-brew "bun"
-
 # various ai helpers
 brew "rtk"
+brew "bun"  # runtime for claude-mem's local worker service
 cask "anthropics/tap/ant"  # Claude Platform CLI
 
 # Deliberately absent, because each ships its own updater and a formula would

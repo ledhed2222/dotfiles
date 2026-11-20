@@ -69,6 +69,7 @@
     "claude-code-setup@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
     "cc-plugin-you-should-know@builtin": true,
+    "cc-plugin-diff@builtin": false,
     "skill-creator@claude-plugins-official": true,
     "rememberthemilk@ledhed2222": true
   },
@@ -92,7 +93,7 @@
       }
     }
   },
-  "tui": "default",
+  "tui": "fullscreen",
   "theme": "auto",
   "agentPushNotifEnabled": true,
   "permissions": {

@@ -1,13 +1,15 @@
 # Global tool versions, for anywhere a repo doesn't pin its own (a repo's
 # mise.toml, .ruby-version, .nvmrc or .python-version wins). `mise use -g
-# <tool>@<version>` edits this file; `mise up` moves within these ranges.
+# <tool>@<version>` edits this file; `mise up` moves each to its newest release (or LTS).
 [tools]
-node = "26"
-python = "3.15"
-ruby = { version = "4.0", postinstall = "gem update --system" }
-java = "temurin-25"
-maven = "3"
-go = "1.27"
+node = "lts"
+python = "latest"
+ruby = { version = "latest", postinstall = "gem update --system" }
+java = "lts"
+maven = "latest"
+go = "latest"
+erlang = "latest"
+elixir = "latest"
 
 # CLIs from npm, installed per tool rather than into the active node's
 # prefix, so changing the node version above doesn't strand them
@@ -22,3 +24,13 @@ go = "1.27"
 # python packages, each in its own venv (mise installs them with uv)
 uv = "latest"
 "pipx:basedpyright" = "latest"
+
+# go modules, built with the go above
+"go:golang.org/x/tools/gopls" = "latest"
+
+# runs on the elixir above, so it must come from here rather than brew,
+# whose formula drags in a second elixir and erlang
+elixir-ls = "latest"
+
+[settings.java]
+shorthand_vendor = "temurin"

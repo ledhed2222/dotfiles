@@ -14,8 +14,8 @@
 
 Nothing is installed by hand. Pick the home by *how the thing updates itself*, then run `./make.sh`:
 
-- **Homebrew formula or cask** → `Brewfile`. macOS-only entries get `if OS.mac?`; the file is shared with Linux, where `cask` doesn't exist.
-- **A language version or an npm CLI** → `config/mise/config.toml`, by running `mise use -g <tool>@<version>` (or `npm:<package>`), which edits that tracked file. mise installs each npm CLI as its own tool rather than into the active node's prefix, so changing the node version doesn't strand them. A repo's own `mise.toml` / `.ruby-version` / `.nvmrc` / `.python-version` overrides the global versions inside that repo.
+- **A language runtime, or a tool that belongs to one** → `config/mise/config.toml`, by running `mise use -g <tool>@<version>`, which edits that tracked file. "Belongs to one" means installed from a language's package registry (`npm:`, `pipx:`, `gem:`, `go:`) or run on a mise-managed runtime (`elixir-ls` on elixir). This holds even when Homebrew has a formula for it: the formula pins one global version and can pull in a second copy of the runtime (brew's `elixir-ls` brings its own elixir and erlang), while mise lets a repo pin the version its CI uses. mise installs each such tool on its own, so changing the runtime's version doesn't strand it. A repo's own `mise.toml` / `.ruby-version` / `.nvmrc` / `.python-version` overrides the global versions inside that repo.
+- **Any other formula or cask** (standalone programs, C libraries) → `Brewfile`. macOS-only entries get `if OS.mac?`; the file is shared with Linux, where `cask` doesn't exist.
 - **Ships its own updater** (Claude Code) → a step in `make.sh`, never a manifest. A formula would install a second copy that competes with the self-updater.
 - **Installs itself** (tpm, cloned by `tmux.conf`) → nothing at all.
 - **Platform-specific git config** → `gitconfig_darwin` / `gitconfig_linux`, which `make.sh` links to `~/.gitconfig_os`. Git has no OS conditional; `includeIf` matches only gitdir, branch and remote url.
