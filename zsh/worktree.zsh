@@ -5,6 +5,8 @@
 #   wt open [-l layout] [branch]          open (or jump to) the session for an existing worktree
 #   wt close [branch]                     remove the worktree, delete the branch, kill the session
 #   wt ls                                 list worktrees, marking the ones with a live session
+#   wt layout [name]                      create a per-repo tmuxinator layout (default: repo
+#                                         name) and set git config wt.layout to it
 #
 # open and close take an exact branch, a fuzzy fragment, or no argument at all —
 # anything short of an exact match goes through fzf.
@@ -357,6 +359,59 @@ _wt_ls() {
   done
 }
 
+# Create (or adopt) a per-repo layout and point this repo at it.
+#
+# The layout file goes in ~/.config/tmuxinator, which is the dotfiles repo's
+# config/tmuxinator, so it is shared across machines once that repo tracks it.
+# What ties it to THIS repo is `git config wt.layout`: that lands in .git/config,
+# which is never committed to a shared repo and is shared by every worktree of
+# it, so one call covers the worktrees that exist and the ones that don't yet.
+#
+# Seeded from default.yml rather than `mux new`'s template on purpose. wt passes
+# PROJECT_NAME/PROJECT_ROOT per worktree, and a template whose `name:` is a
+# literal starts a session under the wrong name while still exiting 0 -- the
+# failure _wt_session has to guess at after the fact.
+_wt_layout_new() {
+  git rev-parse --git-dir >/dev/null 2>&1 || { print -u2 "wt: not in a git repo"; return 1 }
+
+  local name=${1:-$(_wt_repo_name)}
+  local layouts=~/.config/tmuxinator
+  local target=$layouts/$name.yml
+
+  if [[ -e $target ]]; then
+    print "wt: layout '$name' already exists at $target -- leaving its contents alone"
+  else
+    if [[ ! -f $layouts/default.yml ]]; then
+      print -u2 "wt: no $layouts/default.yml to seed from"
+      return 1
+    fi
+    # ~ rather than $HOME: tmuxinator expands it, and the file is shared with
+    # machines whose home is somewhere else.
+    local root=${$(_wt_list | head -1 | cut -f2)/#$HOME/\~}
+    {
+      print -r -- "# Layout for $name. wt drives it via \`git config wt.layout\` in that repo."
+      print -r -- "# wt passes PROJECT_NAME/PROJECT_ROOT per worktree; the fallbacks below are"
+      print -r -- "# what a bare \`mux start $name\` falls back to."
+      print -r --
+      sed -n '/^name:/,$p' $layouts/default.yml \
+        | sed -e "s@^name: .*@name: <%= ENV['PROJECT_NAME'] || '$name' %>@" \
+              -e "s@^root: .*@root: <%= ENV['PROJECT_ROOT'] || '$root' %>@"
+    } > $target || return 1
+    print "wt: created $target from default.yml"
+  fi
+
+  git config wt.layout "$name" || return 1
+  print "wt: $(_wt_repo_name) now starts sessions with layout '$name'"
+
+  # Shared across machines only once the dotfiles repo tracks it.
+  local real=${target:A}
+  if ! git -C ${real:h} ls-files --error-unmatch "$real" >/dev/null 2>&1; then
+    print "wt: untracked -- git -C ${real:h} add ${real:t}, then commit, to share it"
+  fi
+
+  ${EDITOR:-vim} $target
+}
+
 # Branches whose upstream is gone: the remote branch was deleted, which in this
 # workflow means the PR merged. Worktree-backed ones go through _wt_close so the
 # session teardown, main-worktree guard and force handling stay in one place;
@@ -407,7 +462,8 @@ function wt {
     close|rm)       _wt_close "$@" ;;
     ls|list)        _wt_ls ;;
     prune|gone)     _wt_prune ;;
-    *)              print -u2 "usage: wt {new [-l layout] [-b base] <branch>|open [-l layout] [branch]|close [branch]|ls|prune}"; return 1 ;;
+    layout|lay)     _wt_layout_new "$@" ;;
+    *)              print -u2 "usage: wt {new [-l layout] [-b base] <branch>|open [-l layout] [branch]|close [branch]|ls|prune|layout [name]}"; return 1 ;;
   esac
 }
 
@@ -420,6 +476,12 @@ _wt_comp_worktrees() {
   branches=(${(f)"$(_wt_list 2>/dev/null | cut -f1)"})
   # -Q since branch names contain slashes that would otherwise be quoted
   _describe -t worktrees 'worktree' branches -Q
+}
+
+_wt_comp_layouts() {
+  local -a layouts
+  layouts=(~/.config/tmuxinator/*.yml(N:t:r))
+  _describe -t layouts 'layout' layouts
 }
 
 _wt_comp_refs() {
@@ -436,10 +498,11 @@ _wt() {
     'close:remove the worktree, delete the branch, kill the session'
     'ls:list worktrees, marking the ones with a live session'
     'prune:delete branches whose upstream is gone, with their worktrees and sessions'
+    'layout:create a per-repo tmuxinator layout and point this repo at it'
   )
-  # Recognised so `-l` doesn't fall through to filenames; its value is a layout
-  # name you can list with `mux ls`, so nothing is offered for it.
-  layout_opt=('(-l --layout)'{-l,--layout}'[tmuxinator layout]:layout: ')
+  # Recognised so `-l` doesn't fall through to filenames; the value completes
+  # from config/tmuxinator, which is what `mux ls` lists.
+  layout_opt=('(-l --layout)'{-l,--layout}'[tmuxinator layout]:layout:_wt_comp_layouts')
   # Recognised so `-b` doesn't fall through to filenames; offers every local and
   # remote branch, and still lets free text through -- a tag, a SHA, or a fuzzy
   # fragment for _wt_pick_ref to resolve.
@@ -457,6 +520,7 @@ _wt() {
         new|n)          _arguments $layout_opt $base_opt ;;
         open|o|connect) _arguments $layout_opt '1:worktree:_wt_comp_worktrees' ;;
         close|rm)       _arguments '1:worktree:_wt_comp_worktrees' ;;
+        layout|lay)     _arguments '1:layout:_wt_comp_layouts' ;;
       esac
       ;;
   esac

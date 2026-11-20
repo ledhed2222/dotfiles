@@ -10,9 +10,6 @@ config/tmux/install_plugins.log
 config/tmuxinator/*
 !config/tmuxinator/default.yml
 
-# disallow lein repl history
-lein/repl-history
-
 # only check in specific claude config files
 claude/*
 !claude/CLAUDE.md

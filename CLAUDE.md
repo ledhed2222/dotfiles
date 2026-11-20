@@ -17,7 +17,7 @@ Nothing is installed by hand. Pick the home by *how the thing updates itself*, t
 - **A language runtime, or a tool that belongs to one** → `config/mise/config.toml`, by running `mise use -g <tool>@<version>`, which edits that tracked file. "Belongs to one" means installed from a language's package registry (`npm:`, `pipx:`, `gem:`, `go:`) or run on a mise-managed runtime (`elixir-ls` on elixir). This holds even when Homebrew has a formula for it: the formula pins one global version and can pull in a second copy of the runtime (brew's `elixir-ls` brings its own elixir and erlang), while mise lets a repo pin the version its CI uses. mise installs each such tool on its own, so changing the runtime's version doesn't strand it. A repo's own `mise.toml` / `.ruby-version` / `.nvmrc` / `.python-version` overrides the global versions inside that repo.
 - **Any other formula or cask** (standalone programs, C libraries) → `Brewfile`. macOS-only entries get `if OS.mac?`; the file is shared with Linux, where `cask` doesn't exist.
 - **Ships its own updater** (Claude Code) → a step in `make.sh`, never a manifest. A formula would install a second copy that competes with the self-updater.
-- **Installs itself** (tpm, cloned by `tmux.conf`) → nothing at all.
+- **Installs itself** (tpm, cloned by `tmux.conf`; nvim plugins, installed by lazy.nvim, which `init.lua` clones first) → nothing at all. Neither gets an entry in a manifest here. The difference between them is reproducibility: nvim's versions are pinned by the tracked `config/nvim/lazy-lock.json`, so `:Lazy restore` reproduces them exactly on another machine, while tpm has no lockfile and clones each plugin's default branch. Both install outside this repo's reach — lazy under `~/.local/share/nvim`, tpm under `config/tmux/plugins/`, which is gitignored for that reason.
 - **Platform-specific git config** → `gitconfig_darwin` / `gitconfig_linux`, which `make.sh` links to `~/.gitconfig_os`. Git has no OS conditional; `includeIf` matches only gitdir, branch and remote url.
 - **A secret** → never a tracked file, and never exported into every shell: an exported variable reaches every process, Claude Code and each command it runs included. Let the tool that needs it read it from where it already lives, the way `gh` reads its token from the keychain on each call.
 - **Machine-specific anything else** → `~/.zshrc_local_overrides` or `~/.gitconfig_local_overrides`, both untracked and applied last.
@@ -41,6 +41,7 @@ Prose describing an install is a liability; the manifest that performs it can't 
 
 `open` and `close` accept an exact branch (full name, suffix, or worktree directory name), a fuzzy fragment, or nothing at all. Exact matches are used directly; anything else goes to `fzf` with the argument as the starting query. `open` auto-accepts a single fuzzy hit, `close` never does — it always makes you confirm the selection, so a typo can't delete the wrong worktree.
 - `wt ls` — lists worktrees, marking those with a live session
+- `wt layout [name]` — creates a per-repo tmuxinator layout (name defaults to the repo's) and sets this repo's `wt.layout` to it
 - `wt prune` — deletes every local branch whose upstream is gone (the remote
   branch was deleted, which here means the PR merged), removing each one's
   worktree and tmux session too. Lists what it will do and asks once.
@@ -71,12 +72,14 @@ Sessions are named after the branch suffix (everything after the last `/`). `WOR
 PROJECT_ROOT=<path> PROJECT_NAME=<name> mux start default --no-attach
 ```
 
-`wt` uses `default` unless the repo sets another layout from `config/tmuxinator/`:
+`wt` uses `default` unless the repo sets another layout from `config/tmuxinator/`. `wt layout [name]` does both halves of that in one call — writes `config/tmuxinator/<name>.yml` seeded from `default.yml`, sets `wt.layout`, and opens the file in `$EDITOR`. It never overwrites an existing layout, so re-running it in another repo is how you point that repo at the same one. By hand it is:
 
 ```
 git config wt.layout personalsite     # this repo
 git config --global wt.layout <name>  # personal default everywhere
 ```
+
+Seeding from `default.yml` rather than `mux new` is the point of the subcommand: `mux new`'s template hardcodes `name:`, and a layout whose name doesn't come from `PROJECT_NAME` starts a session under the wrong name *and still exits 0*, which surfaces later as a confusing "can't find session". The generated file keeps `default.yml`'s `ENV[...] ||` form and only swaps the fallbacks for this repo's name and main-worktree root, written with a leading `~` (tmuxinator expands it) so the file still works on a machine with a different home.
 
 Local git config lives in `.git/config`, so this never gets committed to a shared repo and needs no `.gitignore` entry, and every worktree of the repo reads the same value. Resolution order is `wt -l <layout>` → local → global → `default`. Any layout `wt` drives has to read `PROJECT_ROOT`/`PROJECT_NAME` the way `default.yml` does.
 

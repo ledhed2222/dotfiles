@@ -39,6 +39,4 @@ if defined?(Rails)
 
     ActiveRecord::Base.include(ActiveRecordExtensions)
   end
-
 end
-

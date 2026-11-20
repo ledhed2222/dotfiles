@@ -54,7 +54,7 @@ Nothing gets installed by hand. Add it in one place, run `./make.sh`:
 | a tool from a language's registry (`npm:`, `pipx:`, `gem:`, `go:`) or that runs on a mise runtime (elixir-ls) | `config/mise/config.toml` too, even if brew has a formula — so a repo can pin its version and brew doesn't add a second runtime |
 | any other brew formula or cask | `Brewfile` — macOS-only lines get `if OS.mac?` |
 | ships its own updater (claude code) | a step in `make.sh`, never a manifest |
-| installs itself (tpm) | nowhere |
+| installs itself (tpm; nvim plugins, via lazy.nvim) | nowhere — but commit `config/nvim/lazy-lock.json` when it changes |
 | platform-specific git config | `gitconfig_darwin` / `gitconfig_linux` |
 | a secret | nowhere tracked, and not exported into every shell — let the tool read it where it lives, as `gh` reads its token from the keychain |
 | machine-specific anything else | `~/.zshrc_local_overrides`, `~/.gitconfig_local_overrides` |
@@ -63,9 +63,8 @@ Nothing gets installed by hand. Add it in one place, run `./make.sh`:
 ## what can't be automated
 
 - **The PragmataPro font** — paid and per-person licensed, see below.
-- **Machine-specific config**, which goes in `~/.zshrc_local_overrides` and
-  `~/.gitconfig_local_overrides`. Both are sourced/included last when present,
-  and neither is tracked here.
+- **Machine-specific config** — see
+  [machine-specific config](#machine-specific-config) below.
 
 ## platform differences
 
@@ -89,6 +88,44 @@ installs `docker-ce`, `docker-ce-cli`, `containerd.io` and
 `docker-compose-plugin`), then `sudo usermod -aG docker "$USER"` and log in
 again to run `docker` without sudo. apt keeps it updated from there.
 
+# machine-specific config
+
+Everything here is shared by every machine, which is the point — but some
+things can't be. A work laptop needs a different git email. A Linux box has
+different paths. One machine has a licensed tool the others don't, or work
+plugins that have no business on a personal machine. One machine is slow and
+wants a lighter setup.
+
+So each layer has exactly one untracked escape hatch, loaded last so it wins:
+
+| file | read by | what belongs in it |
+|---|---|---|
+| `~/.zshrc_local_overrides` | `zshrc`, sourced last | PATH entries, env vars, a function this machine needs. It loads *after* `zsh/*.zsh`, so it can redefine anything they define. |
+| `~/.gitconfig_local_overrides` | `gitconfig`, its last `[include]` | a work email, a different signing key, a per-machine `url.insteadOf` |
+| `~/.config/nvim/local_overrides.lua` | `init.lua`, `dofile` as its last act | a language server that only exists here, a local-only plugin path |
+| `~/.config/tmux/local_overrides.conf` | `tmux.conf`, via `if-shell` | a binding or status item that differs on this machine |
+| `~/.claude/settings.machine.json` | `make.sh`, deep-merged into the generated `~/.claude/settings.json` | work plugins, private marketplaces, machine-only hooks and permissions |
+| a file `@`-imported by `claude/CLAUDE.md` (`@RTK.md` is one) | Claude Code, every session | instructions that only make sense on this machine |
+
+All six are optional and none is tracked here. Every loader tests for the file
+first, so a machine without one behaves exactly as if the mechanism didn't
+exist — which is why `make.sh` can be the whole install on a fresh box.
+
+Two things to know:
+
+- The tmux hook is sourced *before* the plugin block, so anything `tmux.conf`
+  sets after it — including `tmux-sensible`'s defaults — wins over it. Put
+  overrides that lose this fight in a `set-hook` instead.
+- **Secrets don't belong in any of them.** `~/.zshrc_local_overrides` is
+  untracked, which makes it tempting, but an exported variable reaches every
+  process the shell starts — Claude Code and everything it runs included.
+  Have the tool read the secret where it already lives, the way `gh` reads its
+  token from the keychain. See [CLAUDE.md](CLAUDE.md).
+
+A machine-only *package* has no equivalent hook: install it by hand, and
+expect `brew-audit` to report it as installed-but-not-in-the-Brewfile on every
+`make.sh`. That listing is the intended outcome, not a warning to silence.
+
 # shell
 
 `zshrc` sources every `zsh/*.zsh` in this repo, resolved relative to its own
@@ -110,7 +147,12 @@ assumes exist. Without them installed, kitty warns and falls back to Menlo.
 
 # neovim
 
-Plugins are managed by [lazy.nvim](https://github.com/folke/lazy.nvim), and
+Plugins need no setup, the same way tpm doesn't: `init.lua` clones
+[lazy.nvim](https://github.com/folke/lazy.nvim) on first launch if it's
+missing, and lazy installs every plugin `init.lua` asks for. Nothing about
+them belongs in the `Brewfile` or the mise config.
+
+They install under `~/.local/share/nvim`, outside this repo, and
 `config/nvim/lazy-lock.json` pins the exact commit of each one, so every
 machine runs the same versions.
 
@@ -127,5 +169,46 @@ machine runs the same versions.
   the second sources it.
 - `mux start default` opens nvim, claude, and a terminal in the current
   directory.
-- To override per-project, run `mux new <project-name>` or place a
-  `.tmuxinator.yml` in the project root and run `mux local`.
+- For a repo with its own window layout, run `wt layout` in it (below) rather
+  than `mux new` — `mux new`'s template hardcodes the session name, which `wt`
+  needs to set per worktree. A `.tmuxinator.yml` in a project root works too,
+  via `mux local`, but `wt` can't drive that one.
+
+# worktrees
+
+`wt` pairs a git worktree with a tmux session, so each branch gets its own
+checkout and its own set of windows. It lives in `zsh/worktree.zsh`.
+
+| | |
+|---|---|
+| `wt new [-b base] <branch>` | branch off `origin`'s default branch (or `base`), make a worktree, start a session, switch to it |
+| `wt open [branch]` | jump to an existing worktree's session, starting it if it isn't up |
+| `wt close [branch]` | remove the worktree, delete the branch, kill the session |
+| `wt ls` | list worktrees, `●` marking those with a live session |
+| `wt prune` | delete every branch whose remote branch is gone — i.e. whose PR merged — with its worktree and session |
+| `wt layout [name]` | give this repo its own tmuxinator layout, and remember the choice |
+
+You never have to type a full branch name. `open`, `close` and `-b` take a
+fragment and hand it to `fzf` — `wt open pl1a` finds `plat-1-alpha` — or take
+nothing at all and let you pick from the list. `open` accepts a single match on
+its own; `close` always makes you confirm, so a typo can't delete the wrong
+worktree. `<TAB>` completes worktrees, refs and layout names.
+
+`wt new` never touches your current checkout: no stashing, no switching
+branches first.
+
+Worktrees go in `$WORKTREE_HOME/<repo>/<branch-suffix>`, which defaults to
+`~/Dev/.worktrees` — hidden, so duplicate checkouts stay out of `fd`/`rg`/fzf
+runs over your dev dir. Sessions are named after whatever follows the last `/`
+in the branch.
+
+`wt layout` writes `config/tmuxinator/<name>.yml`, points the repo at it with
+`git config wt.layout`, and opens it in `$EDITOR`. One call covers every
+worktree of that repo, present and future, because the setting lives in
+`.git/config` — which also means it never ends up committed to a repo you
+share. `wt -l <name>` overrides it for a single command, and `git config
+--global wt.layout <name>` sets your default everywhere. Commit the new `.yml`
+here to get it on your other machines.
+
+Prefer `wt prune` to the `/clean_gone` slash command, which doesn't work — see
+[CLAUDE.md](CLAUDE.md).
