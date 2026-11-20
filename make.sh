@@ -247,40 +247,51 @@ if command -v jq >/dev/null; then
 			| (if (.modelSettings | length) == 0 then del(.modelSettings) else . end)
 		else . end' "$@"
 	}
-	# Every leaf (arrays count as one, unordered) that Claude changed since the
-	# last generation must already read the same in the new merge -- then
-	# rewriting loses nothing, even when the inputs changed too.
-	absorbed() {
-		jq -n -e --slurpfile last <(normalise "$claude_last") --slurpfile live <(normalise "$claude_live") \
-			--slurpfile merged <(echo "$merged" | normalise) '
+	# Every leaf (arrays count as one, unordered) that changed in the live file
+	# since the last generation must already read the same in the new merge --
+	# then rewriting loses nothing, even when the inputs changed too. Prints one
+	# line per leaf that doesn't; empty output means safe to rewrite.
+	conflicts() {
+		jq -n -r --slurpfile last <(normalise "$claude_last") --slurpfile live <(normalise "$claude_live") \
+			--slurpfile merged <(echo "$merged" | normalise) \
+			--slurpfile shared "$claude_shared" --slurpfile machine "$claude_machine" '
 			def leaves: if type == "object" then (keys[] as $k | (.[$k] | leaves) as $p | [$k] + $p) else [] end;
 			def at($p): getpath($p) | if type == "array" then sort else . end;
+			def show: if . == null then "(unset)" else tojson end;
 			$last[0] as $a | $live[0] as $b | $merged[0] as $m
-			| [($a, $b) | leaves] | unique
-			| map(. as $p | select(($a | at($p)) != ($b | at($p))))
-			| all(.[]; . as $p | ($m | at($p)) == ($b | at($p)))' >/dev/null
+			| [($a, $b) | leaves] | unique[]
+			| . as $p
+			| select(($a | at($p)) != ($b | at($p)) and ($m | at($p)) != ($b | at($p)))
+			| (if ($machine[0] | getpath($p)) != null then "~/.claude/settings.machine.json"
+				elif ($shared[0] | getpath($p)) != null then "claude/settings.json"
+				else "neither input" end) as $src
+			| "  \($p | join(".")): inputs say \($m | getpath($p) | show) (\($src)), live file says \($b | getpath($p) | show)"'
 	}
+	if [ -f "$claude_live" ] && [ -f "$claude_last" ]; then
+		conflicting=$(conflicts) || exit 1
+	fi
 	if [ ! -f "$claude_live" ] \
 		|| [ "$(normalise "$claude_live")" = "$(echo "$merged" | normalise)" ] \
-		|| { [ -f "$claude_last" ] && absorbed; }; then
+		|| { [ -f "$claude_last" ] && [ -z "$conflicting" ]; }; then
 		echo "Generating ~/.claude/settings.json from claude/settings.json + settings.machine.json"
 		echo "$merged" > "$claude_live"
 		echo "$merged" > "$claude_last"
 	else
 		settings_blocked=1
 		{
-			echo "WARNING: ~/.claude/settings.json has changes from neither input -- NOT regenerated:"
 			if [ -f "$claude_last" ]; then
-				diff <(normalise "$claude_last") <(normalise "$claude_live")
-				pending=$(diff <(normalise "$claude_last") <(echo "$merged" | normalise)) || {
-					echo "So these input changes are not applied yet:"
-					echo "$pending"
-				}
+				echo "WARNING: ~/.claude/settings.json NOT regenerated. Since make.sh last wrote it,"
+				echo "it was edited (by Claude Code or by hand), and these keys now disagree with the inputs:"
+				echo "$conflicting"
+				echo "For each key, make the two agree: edit the input to match the live file, or"
+				echo "edit the live file to match the input (rm ~/.claude/settings.json takes the"
+				echo "inputs for every key). Then re-run ./make.sh."
 			else
+				echo "WARNING: ~/.claude/settings.json NOT regenerated: there is no record of the last"
+				echo "generation, so it can't tell whose changes these are (< inputs, > live file):"
 				diff <(echo "$merged" | normalise) <(normalise "$claude_live")
+				echo "Make the live file match, or rm ~/.claude/settings.json to take the inputs. Then re-run ./make.sh."
 			fi
-			echo "Move each live-only change into claude/settings.json (every machine) or"
-			echo "~/.claude/settings.machine.json (this one), then re-run ./make.sh."
 		} >&2
 	fi
 else
