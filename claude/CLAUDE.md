@@ -12,6 +12,9 @@
   the condition on the affirmative form of the variable (`if isNative`) rather
   than its negation (`if !isNative`), and order the branches so the
   affirmative one comes first. Applies across languages.
+- Python: prefix module-level constants, classes and functions with `_` when no
+  other module imports them. Exceptions: a script's `main` entry point, and
+  names a test runner discovers (`test_*`, `Test*`).
 
 ## Git
 - Do not include Claude as a co-author in commits.
