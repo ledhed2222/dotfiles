@@ -135,6 +135,9 @@ done
 # plugins and work tooling install, which stay real and local to this machine.
 mkdir -p ~/.claude/skills
 for entry in "$dir"/claude/skills/*/; do
+	# With no skill dirs the glob stays literal, so $name would be "*" and this
+	# would link ~/.claude/skills/* to a path that doesn't exist.
+	[ -d "$entry" ] || continue
 	name=$(basename "$entry")
 	target=~/.claude/skills/$name
 	if [ -e "$target" ] && [ ! -L "$target" ]; then
