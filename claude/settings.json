@@ -71,7 +71,8 @@
     "cc-plugin-you-should-know@builtin": true,
     "cc-plugin-diff@builtin": false,
     "skill-creator@claude-plugins-official": true,
-    "rememberthemilk@ledhed2222": true
+    "rememberthemilk@ledhed2222": true,
+    "anki-notes@ledhed2222": true
   },
   "extraKnownMarketplaces": {
     "ponytail": {
